@@ -1,0 +1,2571 @@
+[
+  {
+    "id": "topic-1",
+    "slug": "big-o-notation",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Big-O Notation",
+    "definition": "Big-O notation describes the upper bound on how an algorithm's running time or space grows as the input size increases, ignoring constants and lower-order terms.",
+    "importance": "It is the shared language for comparing algorithm efficiency and is asked in virtually every technical interview.",
+    "prerequisites": [],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 1
+  },
+  {
+    "id": "topic-2",
+    "slug": "space-complexity",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Space Complexity",
+    "definition": "Space complexity measures the total amount of memory an algorithm needs relative to its input size, including auxiliary space and recursion stack.",
+    "importance": "Understanding space trade-offs lets you choose algorithms that fit memory-constrained environments.",
+    "prerequisites": [
+      "big-o-notation"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 2
+  },
+  {
+    "id": "topic-3",
+    "slug": "time-complexity",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Time Complexity",
+    "definition": "Time complexity expresses how the number of basic operations an algorithm performs scales with the size of its input.",
+    "importance": "It is the primary tool for predicting whether an algorithm will run fast enough at scale.",
+    "prerequisites": [
+      "big-o-notation"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 3
+  },
+  {
+    "id": "b1rec01-0000-4000-8000-000000000008",
+    "slug": "recursion-backtracking",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Recursion & Backtracking",
+    "definition": "Recursion solves a problem by having a function call itself on smaller inputs; backtracking extends this by undoing choices that fail to reach a valid solution.",
+    "importance": "They underpin tree/graph traversal, combinatorial search, and many divide-and-conquer algorithms.",
+    "prerequisites": [
+      "time-complexity"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(2^N)",
+    "time_complexity_worst": "O(N!)",
+    "space_complexity": "O(N)",
+    "display_order": 4
+  },
+  {
+    "id": "topic-5",
+    "slug": "master-theorem",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Master Theorem",
+    "definition": "The Master Theorem provides a formula to solve recurrence relations of the form T(n) = aT(n/b) + f(n) that arise from divide-and-conquer algorithms.",
+    "importance": "It gives a quick, systematic way to derive the complexity of recursive algorithms like merge sort.",
+    "prerequisites": [
+      "recursion-backtracking",
+      "time-complexity"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 5
+  },
+  {
+    "id": "topic-6",
+    "slug": "bit-manipulation-basics",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Bit Manipulation Basics",
+    "definition": "Bit manipulation uses bitwise operators to read, set, and toggle individual bits of integers for compact, fast computation.",
+    "importance": "It enables constant-time set operations, flags, and many low-level optimizations.",
+    "prerequisites": [],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 6
+  },
+  {
+    "id": "topic-7",
+    "slug": "bit-masking",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Bit Masking",
+    "definition": "Bit masking represents a subset of items as the bits of an integer, allowing subsets to be enumerated and combined with bitwise operations.",
+    "importance": "It is the backbone of subset-based dynamic programming and state compression.",
+    "prerequisites": [
+      "bit-manipulation-basics"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(2^N)",
+    "time_complexity_worst": "O(2^N)",
+    "space_complexity": "O(1)",
+    "display_order": 7
+  },
+  {
+    "id": "topic-8",
+    "slug": "bitwise-operations-and-or-xor",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Bitwise Operations (AND, OR, XOR)",
+    "definition": "AND, OR, XOR, and NOT operate on the individual bits of integers, forming the primitive building blocks of bit manipulation.",
+    "importance": "These operations power masks, parity checks, and fast arithmetic tricks.",
+    "prerequisites": [
+      "bit-manipulation-basics"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 8
+  },
+  {
+    "id": "topic-9",
+    "slug": "euclidean-algorithm-gcd",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Euclidean Algorithm (GCD)",
+    "definition": "The Euclidean algorithm computes the greatest common divisor of two integers by repeatedly replacing the larger number with its remainder modulo the smaller.",
+    "importance": "GCD is fundamental to number theory, fractions, and modular arithmetic problems.",
+    "prerequisites": [],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(1)",
+    "display_order": 9
+  },
+  {
+    "id": "topic-10",
+    "slug": "sieve-of-eratosthenes",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Sieve of Eratosthenes",
+    "definition": "The Sieve of Eratosthenes finds all prime numbers up to N by iteratively marking the multiples of each prime as composite.",
+    "importance": "It precomputes primes efficiently for number-theory and competitive-programming problems.",
+    "prerequisites": [],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N log log N)",
+    "time_complexity_average": "O(N log log N)",
+    "time_complexity_worst": "O(N log log N)",
+    "space_complexity": "O(N)",
+    "display_order": 10
+  },
+  {
+    "id": "topic-11",
+    "slug": "fast-exponentiation",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Fast Exponentiation",
+    "definition": "Fast (binary) exponentiation computes a^b by squaring the base and halving the exponent, reducing the number of multiplications to logarithmic.",
+    "importance": "It is essential for modular exponentiation in cryptography and combinatorics.",
+    "prerequisites": [
+      "bit-manipulation-basics"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(1)",
+    "display_order": 11
+  },
+  {
+    "id": "topic-12",
+    "slug": "extended-euclidean-algorithm",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Extended Euclidean Algorithm",
+    "definition": "The Extended Euclidean algorithm computes the GCD of two integers along with coefficients x, y satisfying ax + by = gcd(a, b).",
+    "importance": "It is used to find modular multiplicative inverses and solve linear Diophantine equations.",
+    "prerequisites": [
+      "euclidean-algorithm-gcd"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(1)",
+    "display_order": 12
+  },
+  {
+    "id": "topic-13",
+    "slug": "matrix-exponentiation",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Matrix Exponentiation",
+    "definition": "Matrix exponentiation raises a transition matrix to a power using fast exponentiation to compute linear recurrences in logarithmic time.",
+    "importance": "It computes terms of sequences like Fibonacci for astronomically large indices quickly.",
+    "prerequisites": [
+      "fast-exponentiation"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(K^3 log N)",
+    "time_complexity_average": "O(K^3 log N)",
+    "time_complexity_worst": "O(K^3 log N)",
+    "space_complexity": "O(K^2)",
+    "display_order": 13
+  },
+  {
+    "id": "topic-14",
+    "slug": "modular-arithmetic",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Modular Arithmetic",
+    "definition": "Modular arithmetic performs integer operations under a modulus, wrapping results into a fixed range to keep numbers bounded.",
+    "importance": "It prevents overflow in large computations and underlies hashing and cryptography.",
+    "prerequisites": [],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 14
+  },
+  {
+    "id": "topic-15",
+    "slug": "permutations-combinations",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Permutations & Combinations",
+    "definition": "Permutations count ordered arrangements and combinations count unordered selections of items from a set.",
+    "importance": "They are core to counting problems, probability, and combinatorial DP.",
+    "prerequisites": [],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 15
+  },
+  {
+    "id": "topic-16",
+    "slug": "pascals-triangle",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Pascal's Triangle",
+    "definition": "Pascal's Triangle is a triangular array where each entry is the sum of the two above it, giving the binomial coefficients.",
+    "importance": "It provides an O(N^2) way to precompute combinations without division.",
+    "prerequisites": [
+      "permutations-combinations"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N^2)",
+    "time_complexity_average": "O(N^2)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(N^2)",
+    "display_order": 16
+  },
+  {
+    "id": "topic-17",
+    "slug": "probability-basics",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Probability Basics",
+    "definition": "Probability basics quantify the likelihood of events on a scale from 0 to 1 using counting and expected-value reasoning.",
+    "importance": "Probability underlies randomized algorithms and expected-time analysis.",
+    "prerequisites": [],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 17
+  },
+  {
+    "id": "topic-18",
+    "slug": "catalan-numbers",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Catalan Numbers",
+    "definition": "Catalan numbers form a sequence counting many recursive structures such as balanced parentheses, binary trees, and triangulations.",
+    "importance": "They appear frequently in combinatorial counting problems.",
+    "prerequisites": [
+      "permutations-combinations"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 18
+  },
+  {
+    "id": "topic-19",
+    "slug": "pigeonhole-principle",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Pigeonhole Principle",
+    "definition": "The pigeonhole principle states that if more items than containers are distributed, at least one container holds more than one item.",
+    "importance": "It gives simple existence proofs used in many algorithmic arguments.",
+    "prerequisites": [],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 19
+  },
+  {
+    "id": "topic-20",
+    "slug": "floating-point-representation",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Floating Point Representation",
+    "definition": "Floating-point representation encodes real numbers using a sign, mantissa, and exponent following the IEEE-754 standard.",
+    "importance": "Knowing its limits helps avoid precision bugs in numeric code.",
+    "prerequisites": [],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 20
+  },
+  {
+    "id": "topic-21",
+    "slug": "memory-contiguity",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Memory Contiguity",
+    "definition": "Memory contiguity refers to storing data in adjacent memory locations, which enables O(1) indexing and cache-friendly access.",
+    "importance": "It explains why arrays are fast and why cache locality matters for performance.",
+    "prerequisites": [],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 21
+  },
+  {
+    "id": "topic-22",
+    "slug": "pointers-references",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Pointers & References",
+    "definition": "Pointers and references store the memory address of a value, allowing indirect access and sharing of data between parts of a program.",
+    "importance": "They are essential for building linked structures and understanding how data is passed.",
+    "prerequisites": [
+      "memory-contiguity"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 22
+  },
+  {
+    "id": "topic-23",
+    "slug": "structs-classes",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Structs & Classes",
+    "definition": "Structs and classes bundle related fields (and, for classes, behavior) into a single user-defined type.",
+    "importance": "They are the foundation for modeling nodes, records, and objects in data structures.",
+    "prerequisites": [
+      "pointers-references"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 23
+  },
+  {
+    "id": "topic-24",
+    "slug": "amortized-analysis",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Amortized Analysis",
+    "definition": "Amortized analysis averages the cost of a sequence of operations to show that occasional expensive operations are cheap on average.",
+    "importance": "It justifies the efficiency of dynamic arrays and other structures with rare costly steps.",
+    "prerequisites": [
+      "time-complexity"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 24
+  },
+  {
+    "id": "topic-25",
+    "slug": "tail-recursion",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Tail Recursion",
+    "definition": "Tail recursion is a form of recursion where the recursive call is the last operation, allowing compilers to reuse the current stack frame.",
+    "importance": "It lets some recursive algorithms run in constant stack space.",
+    "prerequisites": [
+      "recursion-backtracking"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 25
+  },
+  {
+    "id": "topic-26",
+    "slug": "bitwise-left-right-shifts",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Bitwise Left & Right Shifts",
+    "definition": "Left and right shift operators move the bits of an integer, effectively multiplying or dividing by powers of two.",
+    "importance": "Shifts provide fast arithmetic and are building blocks of bit tricks.",
+    "prerequisites": [
+      "bitwise-operations-and-or-xor"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 26
+  },
+  {
+    "id": "topic-27",
+    "slug": "twos-complement-representation",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Two's Complement Representation",
+    "definition": "Two's complement is the standard way computers represent signed integers, where negatives are formed by inverting bits and adding one.",
+    "importance": "It explains integer overflow behavior and how negative numbers work in hardware.",
+    "prerequisites": [
+      "bit-manipulation-basics"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 27
+  },
+  {
+    "id": "topic-28",
+    "slug": "recursion-trees",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Recursion Trees",
+    "definition": "A recursion tree visualizes the recursive calls of an algorithm as nodes, summing work per level to estimate total complexity.",
+    "importance": "It is an intuitive way to derive the running time of recursive algorithms.",
+    "prerequisites": [
+      "recursion-backtracking"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 28
+  },
+  {
+    "id": "topic-29",
+    "slug": "logarithms-in-computer-science",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Logarithms in Computer Science",
+    "definition": "Logarithms measure how many times a quantity can be divided by a base, and appear whenever a problem is repeatedly halved.",
+    "importance": "They explain the efficiency of binary search, balanced trees, and divide-and-conquer.",
+    "prerequisites": [
+      "big-o-notation"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(1)",
+    "display_order": 29
+  },
+  {
+    "id": "topic-30",
+    "slug": "iterative-vs-recursive-tradeoffs",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Iterative vs Recursive Tradeoffs",
+    "definition": "This topic compares iterative and recursive implementations in terms of readability, stack usage, and performance.",
+    "importance": "Choosing the right style avoids stack overflows and clarifies code.",
+    "prerequisites": [
+      "recursion-backtracking"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 30
+  },
+  {
+    "id": "topic-31",
+    "slug": "fast-fourier-transform-fft",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Fast Fourier Transform (FFT)",
+    "definition": "The Fast Fourier Transform computes the discrete Fourier transform in O(N log N), enabling fast polynomial and big-integer multiplication.",
+    "importance": "It is a cornerstone of signal processing and high-performance multiplication.",
+    "prerequisites": [
+      "modular-arithmetic"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(N)",
+    "display_order": 31
+  },
+  {
+    "id": "topic-32",
+    "slug": "modular-multiplicative-inverse",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Modular Multiplicative Inverse",
+    "definition": "The modular multiplicative inverse of a number a modulo m is a value x such that a·x ≡ 1 (mod m).",
+    "importance": "It allows division under a modulus, which is needed in modular combinatorics.",
+    "prerequisites": [
+      "extended-euclidean-algorithm"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(1)",
+    "display_order": 32
+  },
+  {
+    "id": "topic-33",
+    "slug": "gray-code-mechanics",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Gray Code Mechanics",
+    "definition": "Gray code is an ordering of binary numbers in which two successive values differ in exactly one bit.",
+    "importance": "It minimizes transition errors in hardware and appears in combinatorial enumeration.",
+    "prerequisites": [
+      "bitwise-operations-and-or-xor"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 33
+  },
+  {
+    "id": "topic-34",
+    "slug": "chinese-remainder-theorem",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Chinese Remainder Theorem",
+    "definition": "The Chinese Remainder Theorem reconstructs a number from its remainders modulo several pairwise-coprime moduli.",
+    "importance": "It solves systems of congruences common in number-theory problems.",
+    "prerequisites": [
+      "modular-multiplicative-inverse"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(K log M)",
+    "time_complexity_average": "O(K log M)",
+    "time_complexity_worst": "O(K log M)",
+    "space_complexity": "O(K)",
+    "display_order": 34
+  },
+  {
+    "id": "topic-35",
+    "slug": "eulers-totient-function",
+    "category_id": "c0c62d00-4bfa-4c41-867b-1d743a60c04f",
+    "title": "Euler's Totient Function",
+    "definition": "Euler's totient function counts the integers up to N that are coprime with N.",
+    "importance": "It powers Euler's theorem and modular-inverse computations in cryptography.",
+    "prerequisites": [
+      "sieve-of-eratosthenes",
+      "modular-arithmetic"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(sqrt N)",
+    "time_complexity_average": "O(sqrt N)",
+    "time_complexity_worst": "O(sqrt N)",
+    "space_complexity": "O(1)",
+    "display_order": 35
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb1",
+    "slug": "array",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Array",
+    "definition": "An array is a contiguous block of memory that stores elements of the same type, giving constant-time access by index.",
+    "importance": "Arrays are the most fundamental data structure and underpin almost every other one.",
+    "prerequisites": [
+      "memory-contiguity"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 36
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb2",
+    "slug": "linked-list",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Linked List",
+    "definition": "A linked list stores elements in nodes where each node points to the next, allowing O(1) insertion and deletion at known positions.",
+    "importance": "It teaches pointer manipulation and enables dynamic sequences without contiguous memory.",
+    "prerequisites": [
+      "pointers-references"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 37
+  },
+  {
+    "id": "topic-38",
+    "slug": "doubly-linked-list",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Doubly Linked List",
+    "definition": "A doubly linked list is a linked list where each node has pointers to both its previous and next nodes, enabling bidirectional traversal.",
+    "importance": "It allows O(1) deletion given a node and backs structures like LRU caches.",
+    "prerequisites": [
+      "linked-list"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 38
+  },
+  {
+    "id": "topic-39",
+    "slug": "circular-linked-list",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Circular Linked List",
+    "definition": "A circular linked list links its last node back to the first, forming a loop with no natural end.",
+    "importance": "It models round-robin scheduling and cyclic buffers.",
+    "prerequisites": [
+      "linked-list"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 39
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb3",
+    "slug": "stack",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Stack",
+    "definition": "A stack is a last-in-first-out (LIFO) structure where elements are pushed and popped only from the top.",
+    "importance": "Stacks power function calls, expression evaluation, and backtracking.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(N)",
+    "display_order": 40
+  },
+  {
+    "id": "topic-41",
+    "slug": "stack-list-based",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Stack (List-based)",
+    "definition": "A list-based stack implements LIFO behavior using a linked list so that pushes and pops happen at the head node.",
+    "importance": "It shows how the same abstract stack can be built without a fixed-size array.",
+    "prerequisites": [
+      "stack",
+      "linked-list"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(N)",
+    "display_order": 41
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb4",
+    "slug": "queue",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Queue",
+    "definition": "A queue is a first-in-first-out (FIFO) structure where elements are enqueued at the rear and dequeued from the front.",
+    "importance": "Queues drive scheduling, buffering, and breadth-first search.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(N)",
+    "display_order": 42
+  },
+  {
+    "id": "topic-43",
+    "slug": "queue-list-based",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Queue (List-based)",
+    "definition": "A list-based queue implements FIFO behavior using a linked list with pointers to both head and tail.",
+    "importance": "It provides O(1) enqueue/dequeue without resizing an array.",
+    "prerequisites": [
+      "queue",
+      "linked-list"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(N)",
+    "display_order": 43
+  },
+  {
+    "id": "topic-44",
+    "slug": "deque-double-ended-queue",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Deque (Double Ended Queue)",
+    "definition": "A deque is a double-ended queue that supports insertion and removal at both the front and the back in O(1).",
+    "importance": "It underpins sliding-window algorithms and monotonic-queue techniques.",
+    "prerequisites": [
+      "queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(N)",
+    "display_order": 44
+  },
+  {
+    "id": "topic-45",
+    "slug": "circular-queue",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Circular Queue",
+    "definition": "A circular queue is a fixed-size queue that reuses freed slots by wrapping the rear and front pointers around the array.",
+    "importance": "It implements bounded buffers with no wasted space.",
+    "prerequisites": [
+      "queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(N)",
+    "display_order": 45
+  },
+  {
+    "id": "topic-46",
+    "slug": "monotonic-stack",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Monotonic Stack",
+    "definition": "A monotonic stack keeps its elements in sorted (increasing or decreasing) order by popping violators as new elements arrive.",
+    "importance": "It solves next-greater-element and histogram problems in linear time.",
+    "prerequisites": [
+      "stack"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 46
+  },
+  {
+    "id": "topic-47",
+    "slug": "monotonic-queue",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Monotonic Queue",
+    "definition": "A monotonic queue maintains elements in sorted order within a deque to report the min or max of a sliding window in O(1).",
+    "importance": "It is the key to O(N) sliding-window maximum problems.",
+    "prerequisites": [
+      "deque-double-ended-queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 47
+  },
+  {
+    "id": "topic-48",
+    "slug": "sparse-matrix",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Sparse Matrix",
+    "definition": "A sparse matrix stores only its non-zero entries to save memory when most cells are zero.",
+    "importance": "It makes large, mostly-empty grids and graphs practical to store.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(K)",
+    "time_complexity_worst": "O(K)",
+    "space_complexity": "O(K)",
+    "display_order": 48
+  },
+  {
+    "id": "topic-49",
+    "slug": "priority-queue",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Priority Queue",
+    "definition": "A priority queue serves elements by priority rather than insertion order, typically backed by a heap.",
+    "importance": "It is central to Dijkstra, scheduling, and greedy algorithms.",
+    "prerequisites": [
+      "queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 49
+  },
+  {
+    "id": "topic-50",
+    "slug": "skip-list",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Skip List",
+    "definition": "A skip list is a layered linked list with express lanes that allow O(log N) search, insertion, and deletion on average.",
+    "importance": "It offers a simpler, randomized alternative to balanced trees.",
+    "prerequisites": [
+      "linked-list",
+      "probability-basics"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 50
+  },
+  {
+    "id": "topic-51",
+    "slug": "unrolled-linked-list",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Unrolled Linked List",
+    "definition": "An unrolled linked list stores a small array of elements in each node, improving cache performance over a plain linked list.",
+    "importance": "It blends array locality with linked-list flexibility.",
+    "prerequisites": [
+      "linked-list",
+      "array"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(sqrt N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 51
+  },
+  {
+    "id": "topic-52",
+    "slug": "self-organizing-list",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Self-Organizing List",
+    "definition": "A self-organizing list rearranges its elements based on access frequency so that frequently used items are found faster.",
+    "importance": "It is a simple adaptive caching heuristic.",
+    "prerequisites": [
+      "linked-list"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 52
+  },
+  {
+    "id": "topic-53",
+    "slug": "xor-linked-list",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "XOR Linked List",
+    "definition": "An XOR linked list saves memory by storing the XOR of the previous and next node addresses in a single pointer field.",
+    "importance": "It demonstrates a clever bit trick for memory-efficient doubly linked lists.",
+    "prerequisites": [
+      "doubly-linked-list",
+      "bitwise-operations-and-or-xor"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 53
+  },
+  {
+    "id": "topic-54",
+    "slug": "dynamic-array-allocation",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Dynamic Array Allocation",
+    "definition": "A dynamic array grows automatically by allocating a larger buffer and copying elements when it runs out of capacity.",
+    "importance": "It gives amortized O(1) append and backs list types in most languages.",
+    "prerequisites": [
+      "array",
+      "amortized-analysis"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 54
+  },
+  {
+    "id": "topic-55",
+    "slug": "ring-buffer",
+    "category_id": "12d1b54a-bd54-4f05-99fe-005085e3cb76",
+    "title": "Ring Buffer",
+    "definition": "A ring buffer is a fixed-size circular array used as a FIFO buffer that overwrites or blocks when full.",
+    "importance": "It is widely used for streaming data and producer-consumer pipelines.",
+    "prerequisites": [
+      "circular-queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(N)",
+    "display_order": 55
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb9",
+    "slug": "binary-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Binary Tree",
+    "definition": "A binary tree is a hierarchical structure where each node has at most two children, called left and right.",
+    "importance": "It is the basis for search trees, heaps, and many recursive algorithms.",
+    "prerequisites": [
+      "recursion-backtracking"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 56
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bba",
+    "slug": "binary-search-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Binary Search Tree",
+    "definition": "A binary search tree keeps smaller keys in the left subtree and larger keys in the right, enabling ordered O(log N) operations when balanced.",
+    "importance": "It provides sorted storage with efficient search, insert, and delete.",
+    "prerequisites": [
+      "binary-tree"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 57
+  },
+  {
+    "id": "topic-58",
+    "slug": "avl-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "AVL Tree",
+    "definition": "An AVL tree is a self-balancing binary search tree that keeps subtree heights within one via rotations after each update.",
+    "importance": "It guarantees O(log N) operations even in the worst case.",
+    "prerequisites": [
+      "binary-search-tree"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 58
+  },
+  {
+    "id": "topic-59",
+    "slug": "red-black-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Red-Black Tree",
+    "definition": "A red-black tree is a self-balancing BST that uses node colors and rotation rules to keep the tree approximately balanced.",
+    "importance": "It backs many standard-library ordered maps and sets.",
+    "prerequisites": [
+      "binary-search-tree"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 59
+  },
+  {
+    "id": "topic-60",
+    "slug": "b-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "B-Tree",
+    "definition": "A B-tree is a balanced multi-way search tree where each node holds many keys, minimizing disk reads for large datasets.",
+    "importance": "It is the core structure behind databases and file systems.",
+    "prerequisites": [
+      "binary-search-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 60
+  },
+  {
+    "id": "topic-61",
+    "slug": "b-plus-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "B+ Tree",
+    "definition": "A B+ tree is a B-tree variant that stores all values in the leaves and links leaves together for fast range scans.",
+    "importance": "It is the dominant index structure in relational databases.",
+    "prerequisites": [
+      "b-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 61
+  },
+  {
+    "id": "b1trie01-0000-4000-8000-000000000003",
+    "slug": "trie-prefix-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Trie (Prefix Tree)",
+    "definition": "A trie stores strings by sharing common prefixes along tree edges, giving search time proportional to the key length.",
+    "importance": "It powers autocomplete, spell-checking, and prefix queries.",
+    "prerequisites": [
+      "binary-tree"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(L)",
+    "time_complexity_average": "O(L)",
+    "time_complexity_worst": "O(L)",
+    "space_complexity": "O(N·L)",
+    "display_order": 62
+  },
+  {
+    "id": "topic-63",
+    "slug": "segment-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Segment Tree",
+    "definition": "A segment tree stores aggregate information over array ranges in a binary tree, allowing range queries and updates in O(log N).",
+    "importance": "It answers range-sum/min/max queries with fast updates.",
+    "prerequisites": [
+      "binary-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 63
+  },
+  {
+    "id": "topic-64",
+    "slug": "fenwick-tree-binary-indexed-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Fenwick Tree (Binary Indexed Tree)",
+    "definition": "A Fenwick tree uses the binary representation of indices to compute prefix sums and point updates in O(log N) with little memory.",
+    "importance": "It is a compact alternative to segment trees for prefix aggregates.",
+    "prerequisites": [
+      "bit-manipulation-basics",
+      "array"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 64
+  },
+  {
+    "id": "b1heap01-0000-4000-8000-000000000002",
+    "slug": "heap-priority-queue",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Heap (Priority Queue)",
+    "definition": "A binary heap is a complete tree stored in an array where each parent dominates its children, giving O(log N) insert and extract.",
+    "importance": "It is the standard implementation of a priority queue.",
+    "prerequisites": [
+      "binary-tree",
+      "array"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 65
+  },
+  {
+    "id": "topic-66",
+    "slug": "max-heap",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Max Heap",
+    "definition": "A max heap is a binary heap in which every parent is greater than or equal to its children, so the maximum sits at the root.",
+    "importance": "It provides constant-time access to the largest element for scheduling and heap sort.",
+    "prerequisites": [
+      "heap-priority-queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 66
+  },
+  {
+    "id": "topic-67",
+    "slug": "treap",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Treap",
+    "definition": "A treap combines a BST on keys with a heap on random priorities to stay balanced with high probability.",
+    "importance": "It offers simple randomized balancing and supports split/merge.",
+    "prerequisites": [
+      "binary-search-tree",
+      "heap-priority-queue",
+      "probability-basics"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 67
+  },
+  {
+    "id": "topic-68",
+    "slug": "splay-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Splay Tree",
+    "definition": "A splay tree is a self-adjusting BST that moves each accessed node to the root, giving good amortized performance for skewed access.",
+    "importance": "It provides cache-like behavior without extra bookkeeping.",
+    "prerequisites": [
+      "binary-search-tree",
+      "amortized-analysis"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 68
+  },
+  {
+    "id": "topic-69",
+    "slug": "k-d-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "K-D Tree",
+    "definition": "A k-d tree partitions k-dimensional space by cycling through axes at each level to support nearest-neighbor and range queries.",
+    "importance": "It accelerates spatial searches in graphics and machine learning.",
+    "prerequisites": [
+      "binary-search-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 69
+  },
+  {
+    "id": "topic-70",
+    "slug": "quad-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Quad Tree",
+    "definition": "A quad tree recursively subdivides a 2D region into four quadrants to index spatial data.",
+    "importance": "It is used in image compression, collision detection, and maps.",
+    "prerequisites": [
+      "binary-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 70
+  },
+  {
+    "id": "topic-71",
+    "slug": "interval-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Interval Tree",
+    "definition": "An interval tree stores intervals so that all intervals overlapping a query point or range can be found efficiently.",
+    "importance": "It answers overlap queries used in scheduling and computational geometry.",
+    "prerequisites": [
+      "binary-search-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 71
+  },
+  {
+    "id": "topic-72",
+    "slug": "ternary-search-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Ternary Search Tree",
+    "definition": "A ternary search tree stores strings with three children per node (less, equal, greater), balancing trie speed with lower memory.",
+    "importance": "It is a space-efficient structure for prefix and near-neighbor string search.",
+    "prerequisites": [
+      "trie-prefix-tree",
+      "binary-search-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(L)",
+    "time_complexity_average": "O(L log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 72
+  },
+  {
+    "id": "topic-73",
+    "slug": "binomial-heap",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Binomial Heap",
+    "definition": "A binomial heap is a collection of binomial trees that supports efficient merging of two heaps in O(log N).",
+    "importance": "It is useful when frequent heap unions are required.",
+    "prerequisites": [
+      "heap-priority-queue"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 73
+  },
+  {
+    "id": "topic-74",
+    "slug": "fibonacci-heap",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Fibonacci Heap",
+    "definition": "A Fibonacci heap supports decrease-key and merge in O(1) amortized time, improving the asymptotics of some graph algorithms.",
+    "importance": "It gives the best theoretical bounds for Dijkstra and Prim.",
+    "prerequisites": [
+      "binomial-heap",
+      "amortized-analysis"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 74
+  },
+  {
+    "id": "topic-75",
+    "slug": "cartesian-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Cartesian Tree",
+    "definition": "A Cartesian tree is a binary tree derived from a sequence that is heap-ordered by value and in-order equal to the sequence.",
+    "importance": "It links range-minimum queries with lowest-common-ancestor problems.",
+    "prerequisites": [
+      "binary-tree",
+      "heap-priority-queue"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 75
+  },
+  {
+    "id": "topic-76",
+    "slug": "expression-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Expression Tree",
+    "definition": "An expression tree represents an arithmetic expression with operators at internal nodes and operands at leaves.",
+    "importance": "It is used by compilers and calculators to evaluate expressions.",
+    "prerequisites": [
+      "binary-tree",
+      "stack"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 76
+  },
+  {
+    "id": "topic-77",
+    "slug": "threaded-binary-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Threaded Binary Tree",
+    "definition": "A threaded binary tree stores otherwise-null child pointers as links to in-order predecessors and successors for pointer-free traversal.",
+    "importance": "It enables O(1)-space in-order traversal.",
+    "prerequisites": [
+      "binary-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 77
+  },
+  {
+    "id": "topic-78",
+    "slug": "radix-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Radix Tree",
+    "definition": "A radix tree (compressed trie) merges chains of single-child nodes to store strings compactly.",
+    "importance": "It is used for IP routing tables and memory-efficient dictionaries.",
+    "prerequisites": [
+      "trie-prefix-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(L)",
+    "time_complexity_average": "O(L)",
+    "time_complexity_worst": "O(L)",
+    "space_complexity": "O(N)",
+    "display_order": 78
+  },
+  {
+    "id": "topic-79",
+    "slug": "huffman-coding-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "Huffman Coding Tree",
+    "definition": "A Huffman coding tree builds an optimal prefix code by repeatedly merging the two least frequent symbols.",
+    "importance": "It is a classic greedy algorithm for lossless data compression.",
+    "prerequisites": [
+      "heap-priority-queue",
+      "greedy-algorithms"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(N)",
+    "display_order": 79
+  },
+  {
+    "id": "topic-80",
+    "slug": "aa-tree",
+    "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
+    "title": "AA Tree",
+    "definition": "An AA tree is a simplified red-black tree variant that uses levels and only right-leaning links to ease implementation.",
+    "importance": "It offers balanced-BST guarantees with simpler code.",
+    "prerequisites": [
+      "red-black-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 80
+  },
+  {
+    "id": "topic-81",
+    "slug": "adjacency-matrix",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Adjacency Matrix",
+    "definition": "An adjacency matrix represents a graph as a 2D grid where cell (i, j) marks whether an edge exists between vertices i and j.",
+    "importance": "It gives O(1) edge lookups and suits dense graphs.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(1)",
+    "space_complexity": "O(V^2)",
+    "display_order": 81
+  },
+  {
+    "id": "topic-82",
+    "slug": "adjacency-list",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Adjacency List",
+    "definition": "An adjacency list stores, for each vertex, a list of its neighboring vertices, using space proportional to the number of edges.",
+    "importance": "It is the memory-efficient representation for sparse graphs.",
+    "prerequisites": [
+      "linked-list",
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(degree)",
+    "time_complexity_worst": "O(V)",
+    "space_complexity": "O(V+E)",
+    "display_order": 82
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bbb",
+    "slug": "bfs",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "BFS",
+    "definition": "Breadth-first search explores a graph level by level using a queue, visiting all neighbors before moving deeper.",
+    "importance": "It finds shortest paths in unweighted graphs and explores connectivity.",
+    "prerequisites": [
+      "queue",
+      "adjacency-list"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V)",
+    "display_order": 83
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bbc",
+    "slug": "dfs",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "DFS",
+    "definition": "Depth-first search explores a graph by going as deep as possible along each branch before backtracking, using recursion or a stack.",
+    "importance": "It underlies cycle detection, topological sort, and connectivity checks.",
+    "prerequisites": [
+      "stack",
+      "adjacency-list"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V)",
+    "display_order": 84
+  },
+  {
+    "id": "topic-85",
+    "slug": "dijkstras-algorithm",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Dijkstra's Algorithm",
+    "definition": "Dijkstra's algorithm finds shortest paths from a source in a graph with non-negative weights using a priority queue.",
+    "importance": "It is the standard single-source shortest-path algorithm for routing.",
+    "prerequisites": [
+      "bfs",
+      "priority-queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(E log V)",
+    "time_complexity_average": "O(E log V)",
+    "time_complexity_worst": "O(E log V)",
+    "space_complexity": "O(V)",
+    "display_order": 85
+  },
+  {
+    "id": "topic-86",
+    "slug": "bellman-ford-algorithm",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Bellman-Ford Algorithm",
+    "definition": "The Bellman-Ford algorithm computes shortest paths from a source and detects negative-weight cycles by relaxing all edges V-1 times.",
+    "importance": "It handles negative edge weights that Dijkstra cannot.",
+    "prerequisites": [
+      "dijkstras-algorithm"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(E)",
+    "time_complexity_average": "O(V·E)",
+    "time_complexity_worst": "O(V·E)",
+    "space_complexity": "O(V)",
+    "display_order": 86
+  },
+  {
+    "id": "topic-87",
+    "slug": "floyd-warshall-algorithm",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Floyd-Warshall Algorithm",
+    "definition": "The Floyd-Warshall algorithm computes shortest paths between all pairs of vertices via dynamic programming over intermediate nodes.",
+    "importance": "It is a concise all-pairs shortest-path solution for small graphs.",
+    "prerequisites": [
+      "dynamic-programming",
+      "adjacency-matrix"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(V^3)",
+    "time_complexity_average": "O(V^3)",
+    "time_complexity_worst": "O(V^3)",
+    "space_complexity": "O(V^2)",
+    "display_order": 87
+  },
+  {
+    "id": "topic-88",
+    "slug": "prims-mst",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Prim's MST",
+    "definition": "Prim's algorithm grows a minimum spanning tree from a start vertex by repeatedly adding the cheapest edge that expands the tree.",
+    "importance": "It builds least-cost networks and is a classic greedy algorithm.",
+    "prerequisites": [
+      "priority-queue",
+      "greedy-algorithms"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(E log V)",
+    "time_complexity_average": "O(E log V)",
+    "time_complexity_worst": "O(E log V)",
+    "space_complexity": "O(V)",
+    "display_order": 88
+  },
+  {
+    "id": "topic-89",
+    "slug": "kruskals-mst",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Kruskal's MST",
+    "definition": "Kruskal's algorithm builds a minimum spanning tree by adding edges in increasing weight order while avoiding cycles using a disjoint set.",
+    "importance": "It efficiently constructs least-cost spanning trees on sparse graphs.",
+    "prerequisites": [
+      "disjoint-set-union-dsu",
+      "greedy-algorithms"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(E log E)",
+    "time_complexity_average": "O(E log E)",
+    "time_complexity_worst": "O(E log E)",
+    "space_complexity": "O(V)",
+    "display_order": 89
+  },
+  {
+    "id": "topic-90",
+    "slug": "topological-sort-kahns",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Topological Sort (Kahn's)",
+    "definition": "Kahn's algorithm orders a directed acyclic graph by repeatedly removing vertices with no remaining incoming edges.",
+    "importance": "It schedules tasks with dependencies and detects cycles.",
+    "prerequisites": [
+      "bfs"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V)",
+    "display_order": 90
+  },
+  {
+    "id": "topic-91",
+    "slug": "topological-sort-dfs-based",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Topological Sort (DFS-based)",
+    "definition": "DFS-based topological sort orders a DAG by finishing depth-first traversal and pushing vertices onto a stack in reverse finish order.",
+    "importance": "It provides an alternate, recursion-driven ordering of dependencies.",
+    "prerequisites": [
+      "dfs"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V)",
+    "display_order": 91
+  },
+  {
+    "id": "topic-92",
+    "slug": "disjoint-set-union-dsu",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Disjoint Set Union (DSU)",
+    "definition": "Disjoint Set Union tracks a partition of elements into groups, supporting near-constant-time union and find with path compression.",
+    "importance": "It powers Kruskal, connectivity queries, and cycle detection.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(α(N))",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 92
+  },
+  {
+    "id": "topic-93",
+    "slug": "kosarajus-scc",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Kosaraju's SCC",
+    "definition": "Kosaraju's algorithm finds strongly connected components using two depth-first passes over the graph and its transpose.",
+    "importance": "It reveals cyclic clusters in directed graphs.",
+    "prerequisites": [
+      "dfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V)",
+    "display_order": 93
+  },
+  {
+    "id": "topic-94",
+    "slug": "tarjans-scc",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Tarjan's SCC",
+    "definition": "Tarjan's algorithm finds strongly connected components in a single DFS pass using discovery times and a stack.",
+    "importance": "It computes SCCs more efficiently than two-pass approaches.",
+    "prerequisites": [
+      "dfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V)",
+    "display_order": 94
+  },
+  {
+    "id": "topic-95",
+    "slug": "eulerian-pathcircuit",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Eulerian Path/Circuit",
+    "definition": "An Eulerian path visits every edge exactly once; an Eulerian circuit does so and returns to the start, existing under specific degree conditions.",
+    "importance": "It solves route-planning problems like the Chinese postman.",
+    "prerequisites": [
+      "dfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(E)",
+    "display_order": 95
+  },
+  {
+    "id": "topic-96",
+    "slug": "hamiltonian-pathcycle",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Hamiltonian Path/Cycle",
+    "definition": "A Hamiltonian path visits every vertex exactly once; finding one is an NP-complete problem usually solved by backtracking or bitmask DP.",
+    "importance": "It models tour and sequencing problems with no known efficient solution.",
+    "prerequisites": [
+      "recursion-backtracking",
+      "bit-masking"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(2^N·N)",
+    "time_complexity_average": "O(2^N·N)",
+    "time_complexity_worst": "O(N!)",
+    "space_complexity": "O(2^N)",
+    "display_order": 96
+  },
+  {
+    "id": "topic-97",
+    "slug": "ford-fulkerson-max-flow",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Ford-Fulkerson (Max Flow)",
+    "definition": "The Ford-Fulkerson method computes maximum flow by repeatedly pushing flow along augmenting paths until none remain.",
+    "importance": "It solves network-flow and bipartite-matching problems.",
+    "prerequisites": [
+      "dfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(E·f)",
+    "time_complexity_average": "O(E·f)",
+    "time_complexity_worst": "O(E·f)",
+    "space_complexity": "O(V+E)",
+    "display_order": 97
+  },
+  {
+    "id": "topic-98",
+    "slug": "edmonds-karp-max-flow",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Edmonds-Karp (Max Flow)",
+    "definition": "Edmonds-Karp implements Ford-Fulkerson using BFS to find shortest augmenting paths, giving a polynomial time bound.",
+    "importance": "It is a reliable, easy-to-implement max-flow algorithm.",
+    "prerequisites": [
+      "ford-fulkerson-max-flow",
+      "bfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V·E^2)",
+    "time_complexity_average": "O(V·E^2)",
+    "time_complexity_worst": "O(V·E^2)",
+    "space_complexity": "O(V+E)",
+    "display_order": 98
+  },
+  {
+    "id": "topic-99",
+    "slug": "dinics-algorithm",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Dinic's Algorithm",
+    "definition": "Dinic's algorithm computes maximum flow faster by building level graphs with BFS and sending blocking flows with DFS.",
+    "importance": "It handles large flow networks efficiently.",
+    "prerequisites": [
+      "edmonds-karp-max-flow"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V^2·E)",
+    "time_complexity_average": "O(V^2·E)",
+    "time_complexity_worst": "O(V^2·E)",
+    "space_complexity": "O(V+E)",
+    "display_order": 99
+  },
+  {
+    "id": "topic-100",
+    "slug": "hopcroft-karp-bipartite-matching",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Hopcroft-Karp (Bipartite Matching)",
+    "definition": "Hopcroft-Karp finds a maximum matching in a bipartite graph by augmenting along multiple shortest paths per phase.",
+    "importance": "It is the fastest common algorithm for bipartite matching.",
+    "prerequisites": [
+      "bfs",
+      "ford-fulkerson-max-flow"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(E·sqrt V)",
+    "time_complexity_average": "O(E·sqrt V)",
+    "time_complexity_worst": "O(E·sqrt V)",
+    "space_complexity": "O(V+E)",
+    "display_order": 100
+  },
+  {
+    "id": "topic-101",
+    "slug": "johnsons-algorithm",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Johnson's Algorithm",
+    "definition": "Johnson's algorithm finds all-pairs shortest paths on sparse graphs by reweighting edges with Bellman-Ford then running Dijkstra from each vertex.",
+    "importance": "It beats Floyd-Warshall on sparse graphs with negative edges.",
+    "prerequisites": [
+      "bellman-ford-algorithm",
+      "dijkstras-algorithm"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V·E log V)",
+    "time_complexity_average": "O(V·E log V)",
+    "time_complexity_worst": "O(V·E log V)",
+    "space_complexity": "O(V^2)",
+    "display_order": 101
+  },
+  {
+    "id": "topic-102",
+    "slug": "bridges-and-cut-vertices",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Bridges and Cut Vertices",
+    "definition": "Bridges and cut vertices are edges and nodes whose removal disconnects a graph, found using DFS discovery and low-link values.",
+    "importance": "They identify critical points in networks for reliability analysis.",
+    "prerequisites": [
+      "dfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V)",
+    "display_order": 102
+  },
+  {
+    "id": "topic-103",
+    "slug": "2-sat-problem",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "2-SAT Problem",
+    "definition": "The 2-SAT problem decides satisfiability of boolean formulas with two literals per clause by finding SCCs of an implication graph.",
+    "importance": "It solves constraint problems that reduce to boolean 2-clauses in linear time.",
+    "prerequisites": [
+      "tarjans-scc"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(V+E)",
+    "time_complexity_average": "O(V+E)",
+    "time_complexity_worst": "O(V+E)",
+    "space_complexity": "O(V+E)",
+    "display_order": 103
+  },
+  {
+    "id": "topic-104",
+    "slug": "heavy-light-decomposition",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Heavy-Light Decomposition",
+    "definition": "Heavy-light decomposition splits a tree into chains so that path queries can be answered with a segment tree in O(log^2 N).",
+    "importance": "It enables efficient path updates and queries on trees.",
+    "prerequisites": [
+      "segment-tree",
+      "dfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log^2 N)",
+    "time_complexity_average": "O(log^2 N)",
+    "time_complexity_worst": "O(log^2 N)",
+    "space_complexity": "O(N)",
+    "display_order": 104
+  },
+  {
+    "id": "topic-105",
+    "slug": "centroid-decomposition",
+    "category_id": "5f9227eb-5f33-40a1-8d26-6f8101a070eb",
+    "title": "Centroid Decomposition",
+    "definition": "Centroid decomposition recursively splits a tree at its centroid to answer path and distance queries efficiently.",
+    "importance": "It solves many tree path-counting problems in O(N log N).",
+    "prerequisites": [
+      "dfs"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(N log N)",
+    "display_order": 105
+  },
+  {
+    "id": "topic-106",
+    "slug": "linear-search",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Linear Search",
+    "definition": "Linear search scans a collection element by element until it finds the target or exhausts the list.",
+    "importance": "It is the simplest search and works on unsorted data.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 106
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb5",
+    "slug": "binary-search",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Binary Search",
+    "definition": "Binary search repeatedly halves a sorted range, discarding the half that cannot contain the target.",
+    "importance": "It is the canonical O(log N) search and a template for many divide-and-conquer problems.",
+    "prerequisites": [
+      "array",
+      "logarithms-in-computer-science"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(1)",
+    "display_order": 107
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb6",
+    "slug": "bubble-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Bubble Sort",
+    "definition": "Bubble sort repeatedly steps through the list, swapping adjacent out-of-order elements until no swaps are needed.",
+    "importance": "It is a teaching sort that illustrates comparisons, swaps, and early termination.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N^2)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(1)",
+    "display_order": 108
+  },
+  {
+    "id": "topic-109",
+    "slug": "selection-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Selection Sort",
+    "definition": "Selection sort repeatedly selects the smallest remaining element and moves it to the sorted portion.",
+    "importance": "It minimizes swaps and demonstrates in-place selection.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N^2)",
+    "time_complexity_average": "O(N^2)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(1)",
+    "display_order": 109
+  },
+  {
+    "id": "topic-110",
+    "slug": "insertion-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Insertion Sort",
+    "definition": "Insertion sort builds a sorted prefix by inserting each new element into its correct position among the already-sorted items.",
+    "importance": "It is efficient for small or nearly-sorted arrays and is stable.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N^2)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(1)",
+    "display_order": 110
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb7",
+    "slug": "merge-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Merge Sort",
+    "definition": "Merge sort recursively divides the array in half, sorts each half, and merges the two sorted halves.",
+    "importance": "It guarantees O(N log N) time and is a classic stable divide-and-conquer sort.",
+    "prerequisites": [
+      "recursion-backtracking",
+      "divide-and-conquer"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(N)",
+    "display_order": 111
+  },
+  {
+    "id": "a0e69888-294b-4b20-9159-4d6cbcd34bb8",
+    "slug": "quick-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Quick Sort",
+    "definition": "Quick sort partitions the array around a pivot so smaller elements precede it and larger follow, then recurses on each side.",
+    "importance": "It is the fastest general-purpose in-place sort in practice.",
+    "prerequisites": [
+      "recursion-backtracking",
+      "divide-and-conquer"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(log N)",
+    "display_order": 112
+  },
+  {
+    "id": "topic-113",
+    "slug": "quick-sort-hoare",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Quick Sort (Hoare)",
+    "definition": "Quick sort with Hoare's partition scheme uses two pointers moving inward from both ends, performing fewer swaps than Lomuto's scheme.",
+    "importance": "It is a more efficient partition variant of quick sort.",
+    "prerequisites": [
+      "quick-sort"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(log N)",
+    "display_order": 113
+  },
+  {
+    "id": "topic-114",
+    "slug": "heap-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Heap Sort",
+    "definition": "Heap sort builds a max heap from the array and repeatedly extracts the maximum to produce a sorted order in place.",
+    "importance": "It offers guaranteed O(N log N) time without extra memory.",
+    "prerequisites": [
+      "heap-priority-queue"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(1)",
+    "display_order": 114
+  },
+  {
+    "id": "topic-115",
+    "slug": "counting-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Counting Sort",
+    "definition": "Counting sort orders integers within a small range by counting occurrences and computing prefix positions, without comparisons.",
+    "importance": "It sorts bounded-range integers in linear time.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N+K)",
+    "time_complexity_average": "O(N+K)",
+    "time_complexity_worst": "O(N+K)",
+    "space_complexity": "O(N+K)",
+    "display_order": 115
+  },
+  {
+    "id": "topic-116",
+    "slug": "radix-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Radix Sort",
+    "definition": "Radix sort sorts numbers digit by digit using a stable sort like counting sort for each digit position.",
+    "importance": "It sorts fixed-width integers or strings in linear time.",
+    "prerequisites": [
+      "counting-sort"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N·K)",
+    "time_complexity_average": "O(N·K)",
+    "time_complexity_worst": "O(N·K)",
+    "space_complexity": "O(N+K)",
+    "display_order": 116
+  },
+  {
+    "id": "topic-117",
+    "slug": "bucket-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Bucket Sort",
+    "definition": "Bucket sort distributes elements into buckets, sorts each bucket, then concatenates them.",
+    "importance": "It is fast when input is uniformly distributed.",
+    "prerequisites": [
+      "insertion-sort"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N+K)",
+    "time_complexity_average": "O(N+K)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(N+K)",
+    "display_order": 117
+  },
+  {
+    "id": "topic-118",
+    "slug": "shell-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Shell Sort",
+    "definition": "Shell sort generalizes insertion sort by comparing elements separated by a gap that shrinks each pass.",
+    "importance": "It improves on insertion sort for medium-sized arrays.",
+    "prerequisites": [
+      "insertion-sort"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N^1.25)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(1)",
+    "display_order": 118
+  },
+  {
+    "id": "topic-119",
+    "slug": "comb-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Comb Sort",
+    "definition": "Comb sort improves bubble sort by comparing elements a shrinking gap apart to eliminate small values near the end quickly.",
+    "importance": "It removes \"turtles\" that slow bubble sort.",
+    "prerequisites": [
+      "bubble-sort"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N^2/2^p)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(1)",
+    "display_order": 119
+  },
+  {
+    "id": "topic-120",
+    "slug": "pigeonhole-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Pigeonhole Sort",
+    "definition": "Pigeonhole sort places each element into a hole indexed by its key, then reads the holes in order.",
+    "importance": "It sorts data whose key range is close to the element count.",
+    "prerequisites": [
+      "counting-sort"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N+K)",
+    "time_complexity_average": "O(N+K)",
+    "time_complexity_worst": "O(N+K)",
+    "space_complexity": "O(N+K)",
+    "display_order": 120
+  },
+  {
+    "id": "topic-121",
+    "slug": "cycle-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Cycle Sort",
+    "definition": "Cycle sort minimizes the number of writes by rotating each element directly into its final position along a cycle.",
+    "importance": "It is optimal when write operations are costly.",
+    "prerequisites": [
+      "selection-sort"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N^2)",
+    "time_complexity_average": "O(N^2)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(1)",
+    "display_order": 121
+  },
+  {
+    "id": "topic-122",
+    "slug": "odd-even-sort",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Odd-Even Sort",
+    "definition": "Odd-even (brick) sort repeatedly compares and swaps odd- and even-indexed adjacent pairs, suiting parallel hardware.",
+    "importance": "It is a simple parallelizable variant of bubble sort.",
+    "prerequisites": [
+      "bubble-sort"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N^2)",
+    "time_complexity_worst": "O(N^2)",
+    "space_complexity": "O(1)",
+    "display_order": 122
+  },
+  {
+    "id": "topic-123",
+    "slug": "ternary-search",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Ternary Search",
+    "definition": "Ternary search splits a range into three parts to locate the extremum of a unimodal function.",
+    "importance": "It optimizes unimodal functions where binary search does not apply.",
+    "prerequisites": [
+      "binary-search"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(1)",
+    "display_order": 123
+  },
+  {
+    "id": "topic-124",
+    "slug": "exponential-search",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Exponential Search",
+    "definition": "Exponential search finds a range by doubling an index until it passes the target, then binary searches within that range.",
+    "importance": "It is ideal for unbounded or infinite sorted sequences.",
+    "prerequisites": [
+      "binary-search"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(1)",
+    "display_order": 124
+  },
+  {
+    "id": "topic-125",
+    "slug": "interpolation-search",
+    "category_id": "a87e35b7-7ab6-4c9b-b5b6-7f4144e5904d",
+    "title": "Interpolation Search",
+    "definition": "Interpolation search estimates the target position using linear interpolation on uniformly distributed sorted data.",
+    "importance": "It can beat binary search on evenly spread keys.",
+    "prerequisites": [
+      "binary-search"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(log log N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 125
+  },
+  {
+    "id": "b1tp001-0000-4000-8000-000000000007",
+    "slug": "two-pointers",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Two Pointers",
+    "definition": "The two-pointer technique uses two indices moving through a sequence to solve pair, window, or partition problems in linear time.",
+    "importance": "It turns many O(N^2) array problems into O(N) solutions.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 126
+  },
+  {
+    "id": "b1sw001-0000-4000-8000-000000000006",
+    "slug": "sliding-window",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Sliding Window",
+    "definition": "The sliding-window technique maintains a moving contiguous range and updates an aggregate incrementally as the window shifts.",
+    "importance": "It solves subarray and substring problems in linear time.",
+    "prerequisites": [
+      "two-pointers"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 127
+  },
+  {
+    "id": "topic-128",
+    "slug": "fast-and-slow-pointers",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Fast and Slow Pointers",
+    "definition": "The fast-and-slow-pointer technique advances two pointers at different speeds to detect cycles or find midpoints.",
+    "importance": "It detects linked-list cycles and midpoints in O(1) space (Floyd's algorithm).",
+    "prerequisites": [
+      "linked-list",
+      "two-pointers"
+    ],
+    "difficulty": "Beginner",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(1)",
+    "display_order": 128
+  },
+  {
+    "id": "topic-129",
+    "slug": "backtracking",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Backtracking",
+    "definition": "Backtracking incrementally builds candidate solutions and abandons a branch as soon as it cannot lead to a valid result.",
+    "importance": "It systematically explores combinatorial search spaces like permutations and Sudoku.",
+    "prerequisites": [
+      "recursion-backtracking"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(2^N)",
+    "time_complexity_worst": "O(N!)",
+    "space_complexity": "O(N)",
+    "display_order": 129
+  },
+  {
+    "id": "topic-130",
+    "slug": "divide-and-conquer",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Divide and Conquer",
+    "definition": "Divide and conquer breaks a problem into independent subproblems, solves them recursively, and combines their results.",
+    "importance": "It is the paradigm behind merge sort, quick sort, and many fast algorithms.",
+    "prerequisites": [
+      "recursion-backtracking",
+      "master-theorem"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(log N)",
+    "display_order": 130
+  },
+  {
+    "id": "b1grd01-0000-4000-8000-000000000005",
+    "slug": "greedy-algorithms",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Greedy Algorithms",
+    "definition": "A greedy algorithm makes the locally optimal choice at each step in the hope of reaching a global optimum.",
+    "importance": "It solves scheduling, MST, and coin problems when the greedy-choice property holds.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(1)",
+    "display_order": 131
+  },
+  {
+    "id": "b1dp001-0000-4000-8000-000000000004",
+    "slug": "dynamic-programming",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Dynamic Programming",
+    "definition": "Dynamic programming solves problems by combining solutions to overlapping subproblems, caching results to avoid recomputation.",
+    "importance": "It is one of the most important and heavily tested algorithmic techniques.",
+    "prerequisites": [
+      "recursion-backtracking"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N·M)",
+    "time_complexity_worst": "O(N·M)",
+    "space_complexity": "O(N·M)",
+    "display_order": 132
+  },
+  {
+    "id": "b1hash01-0000-4000-8000-000000000001",
+    "slug": "hash-table",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Hash Table",
+    "definition": "A hash table maps keys to buckets via a hash function, giving average O(1) insertion, deletion, and lookup.",
+    "importance": "It is the go-to structure for fast key-value storage and deduplication.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(1)",
+    "time_complexity_average": "O(1)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 133
+  },
+  {
+    "id": "topic-134",
+    "slug": "bitmask-dp",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Bitmask DP",
+    "definition": "Bitmask DP encodes a set of chosen items as the bits of an integer to iterate over subsets as DP states.",
+    "importance": "It solves problems over small sets like the traveling salesman.",
+    "prerequisites": [
+      "dynamic-programming",
+      "bit-masking"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(2^N·N)",
+    "time_complexity_average": "O(2^N·N)",
+    "time_complexity_worst": "O(2^N·N)",
+    "space_complexity": "O(2^N)",
+    "display_order": 134
+  },
+  {
+    "id": "topic-135",
+    "slug": "digit-dp",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Digit DP",
+    "definition": "Digit DP counts numbers in a range that satisfy digit-based constraints by processing digits with tight/loose state.",
+    "importance": "It answers counting queries over numeric ranges efficiently.",
+    "prerequisites": [
+      "dynamic-programming"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(D·S)",
+    "time_complexity_average": "O(D·S)",
+    "time_complexity_worst": "O(D·S)",
+    "space_complexity": "O(D·S)",
+    "display_order": 135
+  },
+  {
+    "id": "topic-136",
+    "slug": "interval-dp",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Interval DP",
+    "definition": "Interval DP builds answers for larger sub-intervals from smaller ones, often splitting at an internal point.",
+    "importance": "It solves matrix-chain and optimal-BST style problems.",
+    "prerequisites": [
+      "dynamic-programming"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N^2)",
+    "time_complexity_average": "O(N^3)",
+    "time_complexity_worst": "O(N^3)",
+    "space_complexity": "O(N^2)",
+    "display_order": 136
+  },
+  {
+    "id": "topic-137",
+    "slug": "lcs-edit-distance-patterns",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "LCS & Edit Distance Patterns",
+    "definition": "These DP patterns compare two sequences to compute the longest common subsequence or minimum edit distance between them.",
+    "importance": "They power diff tools, spell-checkers, and DNA alignment.",
+    "prerequisites": [
+      "dynamic-programming"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N·M)",
+    "time_complexity_average": "O(N·M)",
+    "time_complexity_worst": "O(N·M)",
+    "space_complexity": "O(N·M)",
+    "display_order": 137
+  },
+  {
+    "id": "topic-138",
+    "slug": "knapsack-01-unbounded",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Knapsack 0/1 & Unbounded",
+    "definition": "Knapsack DP selects items with weights and values to maximize value under a capacity, either using each item once (0/1) or unlimited (unbounded).",
+    "importance": "It is the archetypal resource-allocation DP.",
+    "prerequisites": [
+      "dynamic-programming"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N·W)",
+    "time_complexity_average": "O(N·W)",
+    "time_complexity_worst": "O(N·W)",
+    "space_complexity": "O(W)",
+    "display_order": 138
+  },
+  {
+    "id": "topic-139",
+    "slug": "game-theory-minimax",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Game Theory (Minimax)",
+    "definition": "Minimax evaluates two-player zero-sum games by assuming each player plays optimally, minimizing the maximum possible loss.",
+    "importance": "It underlies AI for board games and adversarial search.",
+    "prerequisites": [
+      "recursion-backtracking"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(B^D)",
+    "time_complexity_average": "O(B^D)",
+    "time_complexity_worst": "O(B^D)",
+    "space_complexity": "O(D)",
+    "display_order": 139
+  },
+  {
+    "id": "topic-140",
+    "slug": "segment-tree-with-lazy-propagation",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Segment Tree with Lazy Propagation",
+    "definition": "Lazy propagation defers range updates in a segment tree until needed, allowing O(log N) range updates and queries.",
+    "importance": "It supports efficient range-update range-query workloads.",
+    "prerequisites": [
+      "segment-tree"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(log N)",
+    "time_complexity_average": "O(log N)",
+    "time_complexity_worst": "O(log N)",
+    "space_complexity": "O(N)",
+    "display_order": 140
+  },
+  {
+    "id": "topic-141",
+    "slug": "meet-in-the-middle",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Meet in the Middle",
+    "definition": "Meet in the middle splits the input in half, enumerates each half, and combines the halves to halve the exponent of brute force.",
+    "importance": "It makes some exponential problems tractable.",
+    "prerequisites": [
+      "divide-and-conquer"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(2^(N/2))",
+    "time_complexity_average": "O(2^(N/2))",
+    "time_complexity_worst": "O(2^(N/2))",
+    "space_complexity": "O(2^(N/2))",
+    "display_order": 141
+  },
+  {
+    "id": "topic-142",
+    "slug": "square-root-decomposition",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Square Root Decomposition",
+    "definition": "Square-root decomposition splits an array into blocks of size √N to answer range queries and updates in O(√N).",
+    "importance": "It is a simple alternative to segment trees for range queries.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(sqrt N)",
+    "time_complexity_average": "O(sqrt N)",
+    "time_complexity_worst": "O(sqrt N)",
+    "space_complexity": "O(N)",
+    "display_order": 142
+  },
+  {
+    "id": "topic-143",
+    "slug": "mos-algorithm",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Mo's Algorithm",
+    "definition": "Mo's algorithm answers offline range queries efficiently by reordering them and moving two pointers to add/remove elements.",
+    "importance": "It handles many range queries without heavy data structures.",
+    "prerequisites": [
+      "square-root-decomposition",
+      "two-pointers"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O((N+Q)·sqrt N)",
+    "time_complexity_average": "O((N+Q)·sqrt N)",
+    "time_complexity_worst": "O((N+Q)·sqrt N)",
+    "space_complexity": "O(N)",
+    "display_order": 143
+  },
+  {
+    "id": "topic-144",
+    "slug": "kmp-string-matching",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "KMP String Matching",
+    "definition": "The Knuth-Morris-Pratt algorithm searches for a pattern in text in linear time using a precomputed prefix-function table.",
+    "importance": "It matches strings without re-examining characters.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N+M)",
+    "time_complexity_average": "O(N+M)",
+    "time_complexity_worst": "O(N+M)",
+    "space_complexity": "O(M)",
+    "display_order": 144
+  },
+  {
+    "id": "topic-145",
+    "slug": "rabin-karp-string-matching",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Rabin-Karp String Matching",
+    "definition": "Rabin-Karp uses rolling hashes to compare a pattern against substrings of the text quickly.",
+    "importance": "It efficiently finds multiple patterns and substrings via hashing.",
+    "prerequisites": [
+      "modular-arithmetic",
+      "hash-table"
+    ],
+    "difficulty": "Intermediate",
+    "time_complexity_best": "O(N+M)",
+    "time_complexity_average": "O(N+M)",
+    "time_complexity_worst": "O(N·M)",
+    "space_complexity": "O(1)",
+    "display_order": 145
+  },
+  {
+    "id": "topic-146",
+    "slug": "z-algorithm",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Z-Algorithm",
+    "definition": "The Z-algorithm computes, for each position, the length of the longest substring matching the prefix, enabling linear pattern search.",
+    "importance": "It is a concise linear-time string-matching tool.",
+    "prerequisites": [
+      "kmp-string-matching"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N+M)",
+    "time_complexity_average": "O(N+M)",
+    "time_complexity_worst": "O(N+M)",
+    "space_complexity": "O(N)",
+    "display_order": 146
+  },
+  {
+    "id": "topic-147",
+    "slug": "aho-corasick-automaton",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Aho-Corasick Automaton",
+    "definition": "Aho-Corasick builds a trie with failure links to match many patterns against a text simultaneously in linear time.",
+    "importance": "It powers multi-keyword search and intrusion detection.",
+    "prerequisites": [
+      "trie-prefix-tree",
+      "kmp-string-matching"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N+M+Z)",
+    "time_complexity_average": "O(N+M+Z)",
+    "time_complexity_worst": "O(N+M+Z)",
+    "space_complexity": "O(M)",
+    "display_order": 147
+  },
+  {
+    "id": "topic-148",
+    "slug": "manachers-algorithm",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Manacher's Algorithm",
+    "definition": "Manacher's algorithm finds the longest palindromic substring in linear time by reusing previously computed palindrome radii.",
+    "importance": "It solves palindrome problems faster than the O(N^2) approach.",
+    "prerequisites": [
+      "array"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N)",
+    "time_complexity_average": "O(N)",
+    "time_complexity_worst": "O(N)",
+    "space_complexity": "O(N)",
+    "display_order": 148
+  },
+  {
+    "id": "topic-149",
+    "slug": "sweep-line-algorithm",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Sweep Line Algorithm",
+    "definition": "A sweep-line algorithm processes geometric events in sorted order as an imaginary line moves across the plane.",
+    "importance": "It solves interval-overlap and segment-intersection problems.",
+    "prerequisites": [
+      "priority-queue"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(N)",
+    "display_order": 149
+  },
+  {
+    "id": "topic-150",
+    "slug": "convex-hull-graham-scan",
+    "category_id": "f8a2c910-4e5b-4d6a-9c1f-2b8e7d3a4f50",
+    "title": "Convex Hull (Graham Scan)",
+    "definition": "Graham scan computes the convex hull of a point set by sorting points by angle and maintaining a stack of hull vertices.",
+    "importance": "It is a foundational computational-geometry algorithm.",
+    "prerequisites": [
+      "stack"
+    ],
+    "difficulty": "Advanced",
+    "time_complexity_best": "O(N log N)",
+    "time_complexity_average": "O(N log N)",
+    "time_complexity_worst": "O(N log N)",
+    "space_complexity": "O(N)",
+    "display_order": 150
+  }
+]
