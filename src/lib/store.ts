@@ -39,6 +39,15 @@ export interface ProfileUpdate {
   weekly_goal_lessons?: number;
 }
 
+export interface SpacedRepetitionItem {
+  id: string;
+  type: 'topic' | 'problem';
+  interval: number;
+  ease: number;
+  repetitions: number;
+  nextReviewDate: string;
+}
+
 interface AppState {
   isOffline: boolean;
   theme: 'light' | 'dark';
@@ -48,6 +57,7 @@ interface AppState {
   bookmarks: string[];        // List of topic slugs bookmarked
   quizAttempts: QuizAttempt[];
   topicNotes: Record<string, string>;
+  spacedRepetition: Record<string, SpacedRepetitionItem>;
   
   // Actions
   initializeStore: () => void;
@@ -69,6 +79,7 @@ interface AppState {
   recordActivity: (points?: number) => void;
   addXp: (amount: number) => void;
   persistProfile: (profile: UserProfile) => void;
+  recordReview: (id: string, type: 'topic' | 'problem', rating: number) => void;
 }
 
 
@@ -90,6 +101,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   bookmarks: [],
   quizAttempts: [],
   topicNotes: {},
+  spacedRepetition: {},
 
   initializeStore: () => {
     // Client-side initialization
@@ -105,6 +117,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const bookmarks = safeParseJson<string[]>(localStorage.getItem('dsa_bookmarks'), []);
     const quizAttempts = safeParseJson<QuizAttempt[]>(localStorage.getItem('dsa_quiz_attempts'), []);
     const topicNotes = safeParseJson<Record<string, string>>(localStorage.getItem('dsa_topic_notes'), {});
+    const spacedRepetition = safeParseJson<Record<string, SpacedRepetitionItem>>(localStorage.getItem('dsa_spaced_repetition'), {});
 
     // Detect if Supabase endpoint variables are available (for UI indicator)
     const hasSupabase = !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -118,6 +131,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       bookmarks,
       quizAttempts,
       topicNotes,
+      spacedRepetition,
     });
 
     // Proactively verify and update user streak on startup
@@ -236,6 +250,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     localStorage.removeItem('dsa_bookmarks');
     localStorage.removeItem('dsa_quiz_attempts');
     localStorage.removeItem('dsa_topic_notes');
+    localStorage.removeItem('dsa_spaced_repetition');
     await clearAuthSessionCookie();
     set({
       profile: null,
@@ -244,6 +259,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       bookmarks: [],
       quizAttempts: [],
       topicNotes: {},
+      spacedRepetition: {},
     });
     if (typeof window !== 'undefined') {
       window.location.href = '/';
@@ -432,12 +448,14 @@ export const useAppStore = create<AppState>((set, get) => ({
     localStorage.setItem('dsa_bookmarks', JSON.stringify([]));
     localStorage.setItem('dsa_quiz_attempts', JSON.stringify([]));
     localStorage.removeItem('dsa_topic_notes');
+    localStorage.removeItem('dsa_spaced_repetition');
     set({
       completedLessons: [],
       completedProblems: [],
       bookmarks: [],
       quizAttempts: [],
       topicNotes: {},
+      spacedRepetition: {},
     });
     const clearedProfile: UserProfile = {
       ...profile,
@@ -513,6 +531,64 @@ export const useAppStore = create<AppState>((set, get) => ({
         streak_count: nextStreak,
         last_activity: updatedProfile.last_activity
       }).eq('id', profile.id).then();
+    }
+  },
+
+  recordReview: (id: string, type: 'topic' | 'problem', rating: number) => {
+    const current = get().spacedRepetition;
+    const item = current[id] || {
+      id,
+      type,
+      interval: 0,
+      ease: 2.5,
+      repetitions: 0,
+      nextReviewDate: new Date().toISOString(),
+    };
+
+    let { interval, ease, repetitions } = item;
+
+    if (rating < 3) {
+      repetitions = 0;
+      interval = 1;
+    } else {
+      if (repetitions === 0) {
+        interval = 1;
+      } else if (repetitions === 1) {
+        interval = 6;
+      } else {
+        interval = Math.round(interval * ease);
+      }
+      repetitions += 1;
+    }
+
+    // SM-2 Ease factor adjustments
+    ease = ease + (0.1 - (5 - rating) * (0.08 + (5 - rating) * 0.02));
+    ease = Math.max(1.3, ease);
+
+    // Calculate next review date
+    const nextDate = new Date();
+    nextDate.setDate(nextDate.getDate() + interval);
+
+    const updatedItem: SpacedRepetitionItem = {
+      id,
+      type,
+      interval,
+      ease,
+      repetitions,
+      nextReviewDate: nextDate.toISOString(),
+    };
+
+    const nextRepetition = {
+      ...current,
+      [id]: updatedItem,
+    };
+
+    localStorage.setItem('dsa_spaced_repetition', JSON.stringify(nextRepetition));
+    set({ spacedRepetition: nextRepetition });
+
+    if (get().profile) {
+      get().addXp(15 * rating); // Reward users for doing reviews!
+      get().recordActivity(1);
     }
   },
 }));

@@ -33,6 +33,7 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
   const [stdout, setStdout] = useState('');
   const [cases, setCases] = useState<CaseResult[]>([]);
   const [summary, setSummary] = useState<RunResult | null>(null);
+  const [customInput, setCustomInput] = useState<string>('5');
   const abortRef = useRef<AbortController | null>(null);
 
   const onSwitchLang = useCallback(
@@ -69,11 +70,32 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
     const controller = new AbortController();
     abortRef.current = controller;
 
+    let runCases = spec.cases;
+    if (spec.isCustomInputOnly) {
+      let parsedArgs: any[] = [];
+      try {
+        parsedArgs = JSON.parse('[' + customInput + ']');
+      } catch (err) {
+        setStatus('Invalid custom input (must be valid JSON, e.g. [1, 2], 3)');
+        setBusy(false);
+        return;
+      }
+      runCases = [
+        {
+          id: 'custom',
+          label: 'Custom Sandbox Run',
+          input: parsedArgs,
+          expected: null,
+          compare: 'deep',
+        },
+      ];
+    }
+
     const result = await runCode({
       lang,
       source,
       entry: spec.entry,
-      cases: spec.cases,
+      cases: runCases,
       signal: controller.signal,
       events: {
         onStatus: (s) => setStatus(s),
@@ -85,20 +107,18 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
 
     setSummary(result);
     setStatus(
-      result.ok
-        ? 'All tests passed'
-        : result.fatalError
-        ? 'Fatal error'
-        : 'Some tests failed',
+      spec.isCustomInputOnly
+        ? (result.fatalError ? 'Fatal error' : 'Execution complete')
+        : (result.ok ? 'All tests passed' : result.fatalError ? 'Fatal error' : 'Some tests failed')
     );
     setBusy(false);
     abortRef.current = null;
-  }, [lang, source, spec.entry, spec.cases]);
+  }, [lang, source, spec.entry, spec.cases, spec.isCustomInputOnly, customInput]);
 
   const passed = useMemo(() => cases.filter((c) => c.passed).length, [cases]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+    <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md text-left">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/20 p-1">
           {(['python', 'javascript'] as RunnerLang[]).map((l) => (
@@ -119,7 +139,7 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
             Wall-clock limit: {RUNNER_TIMEOUT_MS / 1000}s
           </span>
           <span className="rounded-full border border-white/10 bg-black/30 px-2 py-1">
-            {spec.cases.length} test{spec.cases.length === 1 ? '' : 's'}
+            {spec.isCustomInputOnly ? 'Custom Sandbox' : `${spec.cases.length} test${spec.cases.length === 1 ? '' : 's'}`}
           </span>
         </div>
       </header>
@@ -128,25 +148,38 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
         value={source}
         onChange={(e) => setSource(e.target.value)}
         spellCheck={false}
-        rows={16}
+        rows={14}
         className="w-full resize-y rounded-xl border border-white/10 bg-black/40 p-3 font-mono text-sm text-emerald-100 focus:border-emerald-400 focus:outline-none"
       />
+
+      {spec.isCustomInputOnly && (
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[10px] font-bold text-white/50 uppercase tracking-wider block">Custom Arguments (JSON list, comma separated)</label>
+          <input
+            type="text"
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+            placeholder="e.g. [1, 2, 3], 10"
+            className="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2 font-mono text-xs text-white focus:border-emerald-400 focus:outline-none"
+          />
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={onRun}
           disabled={busy}
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-400 disabled:opacity-50 cursor-pointer"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
-          {busy ? 'Running…' : 'Run tests'}
+          {busy ? 'Running…' : spec.isCustomInputOnly ? 'Run Code' : 'Run tests'}
         </button>
         <button
           type="button"
           onClick={onStop}
           disabled={!busy}
-          className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm text-white/80 transition hover:bg-white/10 disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm text-white/80 transition hover:bg-white/10 disabled:opacity-40 cursor-pointer"
         >
           <Square className="h-4 w-4" /> Stop
         </button>
@@ -154,7 +187,7 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
           type="button"
           onClick={onReset}
           disabled={busy}
-          className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm text-white/80 transition hover:bg-white/10 disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm text-white/80 transition hover:bg-white/10 disabled:opacity-40 cursor-pointer"
         >
           <RotateCcw className="h-4 w-4" /> Reset code
         </button>
@@ -164,13 +197,41 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
       {stdout && (
         <div>
           <div className="mb-1 text-xs uppercase tracking-wider text-white/50">stdout</div>
-          <pre className="max-h-40 overflow-auto rounded-xl border border-white/10 bg-black/60 p-3 text-xs text-white/80">
+          <pre className="max-h-40 overflow-auto rounded-xl border border-white/10 bg-black/60 p-3 text-xs text-white/80 font-mono">
             {stdout}
           </pre>
         </div>
       )}
 
-      {cases.length > 0 && (
+      {cases.length > 0 && spec.isCustomInputOnly && (
+        <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-left font-sans">
+          <div className="flex items-center justify-between">
+            <span className="text-xs uppercase tracking-wider text-white/50 font-bold">Execution Output</span>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+              {cases[0].error ? 'CRASHED' : 'SUCCESS'}
+            </span>
+          </div>
+          
+          <div className="flex flex-col gap-2 font-mono text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="p-3 bg-black/40 rounded-lg border border-white/5">
+                <span className="text-[10px] text-white/40 block mb-1 font-sans font-bold">INPUT ARGUMENTS</span>
+                <span className="text-white font-semibold">{fmt(cases[0].input)}</span>
+              </div>
+              <div className="p-3 bg-black/40 rounded-lg border border-white/5">
+                <span className="text-[10px] text-white/40 block mb-1 font-sans font-bold">RETURNED VALUE</span>
+                {cases[0].error ? (
+                  <span className="text-red-400 font-bold whitespace-pre-wrap">{cases[0].error}</span>
+                ) : (
+                  <span className="text-emerald-400 font-bold">{fmt(cases[0].actual)}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {cases.length > 0 && !spec.isCustomInputOnly && (
         <div>
           <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wider text-white/50">
             <span>Test results</span>

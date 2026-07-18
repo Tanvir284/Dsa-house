@@ -59,7 +59,28 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
   const availableLangs = (['python', 'cpp', 'java'] as CodeLanguage[]).filter(
     (lang) => typeof problem.solutions[lang] === 'string' && problem.solutions[lang]!.length > 0
   );
-  const runnerSpec = getProblemTestSpec(problem.id);
+  const runnerSpec = useMemo(() => {
+    const spec = getProblemTestSpec(problem.id);
+    if (spec) return spec;
+
+    // Generate fallback spec for in-browser playground
+    const defaultFuncName = id.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+    const defaultMethodName = id.replace(/-/g, '_');
+    
+    return {
+      problemId: problem.id,
+      entry: {
+        python: { methodName: defaultMethodName },
+        javascript: { fnName: defaultFuncName },
+      },
+      cases: [],
+      starter: {
+        python: `# Write your code here\ndef ${defaultMethodName}(*args):\n    print("Hello from Sandbox!")\n    return args\n`,
+        javascript: `// Write your code here\nfunction ${defaultFuncName}(...args) {\n  console.log("Hello from Sandbox!");\n  return args;\n}\n`,
+      },
+      isCustomInputOnly: true,
+    };
+  }, [id, problem.id]);
 
   return (
     <div className="flex flex-col gap-6 py-4 w-full text-left animate-fade-in">
@@ -203,12 +224,12 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
                     ? 'border-border bg-card text-foreground'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
-                title={runnerSpec ? 'Execute code against test cases' : 'Runnable test harness coming soon for this problem'}
+                title={runnerSpec.isCustomInputOnly ? 'Custom sandbox compiler playground' : 'Execute code against test cases'}
               >
                 <Terminal className="h-3.5 w-3.5" /> Run Code
-                {!runnerSpec && (
-                  <span className="ml-1 rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase text-muted-foreground">
-                    Soon
+                {runnerSpec.isCustomInputOnly && (
+                  <span className="ml-1 rounded-full bg-primary/10 border border-primary/20 text-primary px-1.5 py-0.5 text-[9px] font-bold uppercase">
+                    Sandbox
                   </span>
                 )}
               </button>
@@ -295,20 +316,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
 
             {activeTab === 'runner' && (
               <div className="flex-1 overflow-y-auto p-4">
-                {runnerSpec ? (
-                  <CodeRunner spec={runnerSpec} />
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-center gap-3 text-muted-foreground py-12">
-                    <Terminal className="h-8 w-8" />
-                    <div className="max-w-sm text-xs">
-                      <p className="font-semibold text-foreground mb-1">Runnable harness coming soon.</p>
-                      <p>
-                        A verified test spec has not been authored for <span className="font-mono">{problem.id.toUpperCase()}</span> yet.
-                        You can still study the diagram and copy the reference solution from the Code tab.
-                      </p>
-                    </div>
-                  </div>
-                )}
+                <CodeRunner spec={runnerSpec} />
               </div>
             )}
           </div>

@@ -44,6 +44,7 @@ export interface ProblemTestSpec {
   cases: TestCase[];
   /** Optional starter code shown in the editor per language. */
   starter?: Partial<Record<RunnerLang, string>>;
+  isCustomInputOnly?: boolean;
 }
 
 export interface CaseResult {

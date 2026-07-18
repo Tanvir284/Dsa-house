@@ -28,6 +28,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'DSA House — Learn Data Structures & Algorithms',
   description: 'Master data structures and algorithms with interactive visualizers, multi-language code, structured curriculum, and hands-on practice.',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
