@@ -517,20 +517,8 @@ html {
   -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 
-/* ─── Modern UI utilities ─── */
-.mesh-bg {
-  position: fixed;
-  inset: -10%;
-  z-index: -2;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 45% at 18% 12%, color-mix(in srgb, var(--accent-from) 28%, transparent), transparent 55%),
-    radial-gradient(ellipse 55% 40% at 82% 18%, color-mix(in srgb, var(--accent-to) 24%, transparent), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 50% 100%, color-mix(in srgb, var(--accent-from) 18%, transparent), transparent 60%),
-    linear-gradient(180deg, var(--background) 0%, var(--background-end, var(--background)) 100%);
-  filter: saturate(115%);
-  animation: meshDrift 22s ease-in-out infinite;
-}
+
+
 
 @keyframes meshDrift {
   0%   { transform: translate3d(0,     0,    0) scale(1);    }
