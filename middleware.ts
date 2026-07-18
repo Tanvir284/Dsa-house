@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getAuthSessionCookieName } from './src/lib/auth-session';
 import { verifySessionCookie } from './src/lib/session-signature';
 
-const PROTECTED_PATHS = ['/dashboard', '/bookmarks', '/admin', '/daily', '/practice'];
+const PROTECTED_PATHS = ['/admin'];
 const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/forgot-password'];
 
 export async function middleware(request: NextRequest) {
@@ -31,5 +31,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/bookmarks/:path*', '/admin/:path*', '/daily/:path*', '/practice/:path*', '/auth/login', '/auth/register', '/auth/forgot-password'],
+  matcher: ['/admin/:path*', '/auth/login', '/auth/register', '/auth/forgot-password'],
 };
