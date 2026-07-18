@@ -64,18 +64,38 @@ async function loadPyodide(): Promise<PyodideInterface> {
   if (cachedPyodide) return cachedPyodide;
 
   const PYODIDE_VERSION = '0.28.4';
-  const base = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full`;
+  
+  const sources = [
+    {
+      base: `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`,
+      url: `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/pyodide.mjs`
+    },
+    {
+      base: `https://unpkg.com/pyodide@${PYODIDE_VERSION}/`,
+      url: `https://unpkg.com/pyodide@${PYODIDE_VERSION}/pyodide.mjs`
+    },
+    {
+      base: `https://cdnjs.cloudflare.com/ajax/libs/pyodide/${PYODIDE_VERSION}/`,
+      url: `https://cdnjs.cloudflare.com/ajax/libs/pyodide/${PYODIDE_VERSION}/pyodide.mjs`
+    }
+  ];
 
-  // Dynamic ESM import — this worker runs in module mode, so `importScripts`
-  // is unavailable. Pyodide 0.26+ ships `pyodide.mjs` for exactly this case.
-  // The `/* webpackIgnore */` and `/* @vite-ignore */` hints stop bundlers
-  // from trying to resolve the URL at build time.
-  const mod = await import(
-    /* webpackIgnore: true */ /* @vite-ignore */ `${base}/pyodide.mjs`
-  );
-  const factory = mod.loadPyodide as (opts: unknown) => Promise<PyodideInterface>;
-  cachedPyodide = await factory({ indexURL: `${base}/` });
-  return cachedPyodide!;
+  let lastError: any = null;
+  for (const src of sources) {
+    try {
+      const mod = await import(
+        /* webpackIgnore: true */ /* @vite-ignore */ src.url
+      );
+      const factory = mod.loadPyodide as (opts: unknown) => Promise<PyodideInterface>;
+      cachedPyodide = await factory({ indexURL: src.base });
+      return cachedPyodide!;
+    } catch (err) {
+      console.warn(`Failed to load Pyodide from ${src.url}, trying fallback...`, err);
+      lastError = err;
+    }
+  }
+
+  throw new Error(`Failed to fetch dynamically imported module. All CDNs exhausted. Last error: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
 }
 
 async function runPython(
