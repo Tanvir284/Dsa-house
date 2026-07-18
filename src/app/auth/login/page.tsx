@@ -13,7 +13,7 @@ export default function LoginPage() {
   const loginMockUser = useAppStore((s) => s.loginMockUser);
   const persistProfile = useAppStore((s) => s.persistProfile);
 
-  const [email, setEmail] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,15 +24,34 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      const input = usernameOrEmail.trim();
+      let resolvedEmail = input;
+
       if (!supabase) {
-        // Offline: use mock login with email prefix
-        const username = email.split('@')[0] || 'Guest';
-        await loginMockUser(username);
+        // Offline: use mock login with username or email prefix
+        const username = input.includes('@') ? input.split('@')[0] : input;
+        await loginMockUser(username || 'Guest');
         router.push('/');
         return;
       }
 
-      const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      // If input is a username (doesn't contain '@'), look up their email in Supabase profiles
+      if (!input.includes('@')) {
+        const { data: profileRow, error: lookupError } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('username', input)
+          .maybeSingle();
+
+        if (lookupError || !profileRow?.email) {
+          setError('Username not found. Try signing in with your email.');
+          setLoading(false);
+          return;
+        }
+        resolvedEmail = profileRow.email;
+      }
+
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email: resolvedEmail, password });
       if (authError) {
         setError(authError.message);
         setLoading(false);
@@ -50,8 +69,8 @@ export default function LoginPage() {
       
       // Self-healing: if the user authenticated successfully but has no profile row, create it
       if (!profileData && !profileError) {
-        const uname = email.split('@')[0] || 'Learner';
-        const { error: insertError } = await supabase.from('profiles').upsert({ id: user.id, username: uname });
+        const uname = input.includes('@') ? input.split('@')[0] : input;
+        const { error: insertError } = await supabase.from('profiles').upsert({ id: user.id, username: uname, email: resolvedEmail });
         if (!insertError) {
           const { data: reFetched } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
           if (reFetched) {
@@ -60,7 +79,7 @@ export default function LoginPage() {
         }
       }
 
-      const username = profileData?.username || email.split('@')[0];
+      const username = profileData?.username || resolvedEmail.split('@')[0];
       const profile: UserProfile = {
         id: user.id,
         username,
@@ -94,11 +113,27 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto py-12 px-4">
       <h1 className="text-2xl font-bold mb-4">Sign in</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="input-themed px-3 py-2 rounded" required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="input-themed px-3 py-2 rounded" required />
+        <input 
+          type="text" 
+          placeholder="Username or Email" 
+          value={usernameOrEmail} 
+          onChange={(e) => setUsernameOrEmail(e.target.value)} 
+          className="input-themed px-3 py-2 rounded" 
+          required 
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          className="input-themed px-3 py-2 rounded" 
+          required 
+        />
         {error && <div className="text-rose-400 text-sm">{error}</div>}
         <div className="flex items-center justify-between gap-2">
-          <button type="submit" disabled={loading} className="btn-primary px-4 py-2 rounded">{loading ? 'Signing in...' : 'Sign in'}</button>
+          <button type="submit" disabled={loading} className="btn-primary px-4 py-2 rounded">
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
           <div className="flex flex-col items-end gap-1 text-sm">
             <Link href="/auth/forgot-password" className="text-muted-foreground hover:text-foreground">Forgot password?</Link>
             <Link href="/auth/register" className="text-muted-foreground hover:text-foreground">Create account</Link>

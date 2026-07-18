@@ -47,7 +47,7 @@ export default function RegisterPage() {
 
       const uname = username || email.split('@')[0];
       // Insert a profile row
-      const { error: profileError } = await supabase.from('profiles').upsert({ id: user.id, username: uname });
+      const { error: profileError } = await supabase.from('profiles').upsert({ id: user.id, username: uname, email });
       if (profileError) {
         console.warn('⚠️ Profiles upsert error during registration:', profileError.message);
       }
