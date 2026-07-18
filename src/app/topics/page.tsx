@@ -51,6 +51,7 @@ export default function TopicsPage() {
 
         {/* Category filter */}
         <select
+          aria-label="Filter by category"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"
@@ -63,6 +64,7 @@ export default function TopicsPage() {
 
         {/* Difficulty filter */}
         <select
+          aria-label="Filter by difficulty"
           value={selectedDifficulty}
           onChange={(e) => setSelectedDifficulty(e.target.value)}
           className="px-3 py-2 bg-surface border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer"

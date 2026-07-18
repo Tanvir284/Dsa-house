@@ -116,7 +116,7 @@ function renderInline(text: string): React.ReactNode {
     } else if (full.startsWith('**') && full.endsWith('**')) {
       // Bold
       const inner = full.slice(2, -2);
-      tokens.push(<strong key={key++} className="font-bold text-foreground">{inner}</strong>);
+      tokens.push(<strong key={key++} className="font-bold text-foreground">{renderInline(inner)}</strong>);
     } else if (full.startsWith('`') && full.endsWith('`')) {
       // Inline code
       const code = full.slice(1, -1);

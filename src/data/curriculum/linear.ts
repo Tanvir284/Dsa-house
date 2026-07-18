@@ -61,6 +61,86 @@ This makes accessing the value at any index incredibly fast: $O(1)$.
     `,
     display_order: 3,
   },
+  {
+    id: 'sec-arr-4',
+    topic_id: arrayTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Picture a long shelf in a pharmacy where each slot is numbered from 0 upward. Every slot is the same width, and each holds exactly one pill bottle.
+
+Because the shelf is one straight line of identical slots, the pharmacist never has to search. If a customer asks for the bottle in slot 27, she walks straight to it — she can *calculate* where slot 27 is from slot 0's position and the width of one slot.
+
+But if a new medicine has to be inserted at slot 0, every bottle after it must be nudged one slot to the right so nothing is overwritten. That nudging is exactly what happens in memory when you insert at the front of an array.
+
+If the shelf runs out of slots, the pharmacist has to move to a bigger shelf and carry every bottle over one by one — the same "grow and copy" step a dynamic array performs when it hits capacity.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-arr-5',
+    topic_id: arrayTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's insert the value **9** at index **2** of the array \`[3, 7, 2, 8, 5]\` (size 5, capacity 6).
+
+1. **Check bounds.** Index 2 is between 0 and size (5), so it is valid.
+2. **Make room at the end.** We plan to shift elements right, so we need one free slot after index 4. Capacity 6 gives us that slot.
+3. **Shift right, starting from the tail.** Copy \`arr[4]\` into \`arr[5]\`, then \`arr[3]\` into \`arr[4]\`, then \`arr[2]\` into \`arr[3]\`. Always shift from the back so you don't overwrite values you still need.
+4. **Write the new value.** Place 9 into slot 2.
+5. **Update size.** Increase size from 5 to 6.
+
+\`\`\`
+Start (size=5):
+ index:   0   1   2   3   4   5
+        [ 3 | 7 | 2 | 8 | 5 | _ ]
+
+Step 3a  copy arr[4] -> arr[5]:
+        [ 3 | 7 | 2 | 8 | 5 | 5 ]
+
+Step 3b  copy arr[3] -> arr[4]:
+        [ 3 | 7 | 2 | 8 | 8 | 5 ]
+
+Step 3c  copy arr[2] -> arr[3]:
+        [ 3 | 7 | 2 | 2 | 8 | 5 ]
+
+Step 4   write 9 into arr[2]:
+        [ 3 | 7 | 9 | 2 | 8 | 5 ]
+
+End (size=6)
+\`\`\`
+
+Notice that three elements had to move. In general, inserting at index \`i\` in a size-\`N\` array shifts \`N - i\` elements — the reason middle inserts cost $O(N)$.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-arr-6',
+    topic_id: arrayTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Reading past the end** (\`arr[N]\` when size is \`N\`): valid indices are only \`0\` through \`N - 1\`. Fix: always compare with \`size\`, not \`capacity\`.
+- **Shifting in the wrong direction** during insert: copying left-to-right overwrites values before you read them. Fix: when inserting, shift *right-to-left*; when deleting, shift *left-to-right*.
+- **Forgetting to update \`size\`** after an insert or delete: later reads then miss the new element or read stale garbage. Fix: change \`size\` in the same function that changes the data.
+- **Confusing capacity with size**: capacity is how much room is allocated; size is how many slots are actually used. Fix: only iterate up to \`size\`.
+- **Using \`==\` on floats stored in the array**: floating-point rounding makes equality unreliable. Fix: compare with a small tolerance (e.g., \`abs(a - b) < 1e-9\`).
+- **Holding a pointer into the array across a resize** (C/C++): resizing may move the whole block to a new address, leaving old pointers dangling. Fix: re-fetch the pointer after any operation that can grow the array.
+    `,
+    display_order: 6,
+  },
+  {
+    id: 'sec-arr-7',
+    topic_id: arrayTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Contact list on your phone**: you often jump straight to "the 15th contact" or scroll by index — random access in $O(1)$ is exactly what arrays give you.
+- **Pixel buffer for an image**: a photo is just a rectangle of colored pixels stored row by row; array indexing maps naturally to \`(row, column)\` coordinates.
+- **Leaderboard / high-score table** of fixed length (top 10): size is known in advance and you access by rank, so an array beats fancier structures.
+- **Sensor readings collected every second**: appending to the end and later scanning them in order is the fastest, most cache-friendly workflow.
+- **Lookup tables for constants** (days-per-month, sine values, ASCII codes): the table never changes size and every query is by index.
+- **Backing storage for other structures**: stacks, hash tables, heaps, and dynamic arrays themselves are usually built on top of a raw array because contiguous memory is fast to scan.
+    `,
+    display_order: 7,
+  },
 ];
 
 export const arraySnippets: CodeSnippet[] = [
@@ -371,6 +451,99 @@ Unlike arrays, nodes in a linked list can be scattered anywhere in memory. They 
     `,
     display_order: 3,
   },
+  {
+    id: 'sec-ll-4',
+    topic_id: linkedListTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Think of a treasure hunt where each clue is on a small card. The first card is in your hand — that is the **head**. Every card contains one piece of the treasure story plus a written address telling you where to find the next card.
+
+You cannot skip ahead. To read card number five, you must follow cards one, two, three, and four in turn. That is why finding an element in a linked list is slow: you always start at the head and walk.
+
+But adding a new card at the very front is easy. Write a fresh card, put "go to the old first card" as its address, and hand it over. No other cards need to be rewritten.
+
+If someone tears up the address on one card without first noting where it pointed, every card that came after it is now lost forever — nobody can reach them. That is exactly what a memory leak looks like in a linked list.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-ll-5',
+    topic_id: linkedListTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's delete the node whose value is **2** from the list \`3 -> 7 -> 2 -> 8 -> 5 -> null\`. A **pointer** is just a variable that holds the address of a node.
+
+1. **Check the head.** Head holds 3, not 2, so we won't touch the head reference.
+2. **Set two pointers.** \`prev\` points to the head (3). \`curr\` points to the node after prev (7).
+3. **Walk until \`curr.val == 2\`.** After one step, \`prev\` is at 7 and \`curr\` is at 2. Stop.
+4. **Bypass the target.** Set \`prev.next = curr.next\`. Now the node holding 7 points directly to the node holding 8, skipping over 2.
+5. **Free the removed node.** In C/C++ call \`free\` / \`delete\` on \`curr\`; in Python, JS, Java, C# the garbage collector reclaims it once nothing references it.
+
+\`\`\`
+Start:
+  head
+   |
+   v
+  [3|*] -> [7|*] -> [2|*] -> [8|*] -> [5|/]
+
+Step 2 (prev at 3, curr at 7):
+  prev     curr
+   |        |
+   v        v
+  [3|*] -> [7|*] -> [2|*] -> [8|*] -> [5|/]
+
+Step 3 (walked once, prev at 7, curr at 2):
+           prev     curr
+            |        |
+            v        v
+  [3|*] -> [7|*] -> [2|*] -> [8|*] -> [5|/]
+
+Step 4 (rewire prev.next to curr.next):
+           prev              curr (about to be freed)
+            |                 |
+            v                 v
+  [3|*] -> [7|*] ----------> [8|*] -> [5|/]
+                    \\-- [2|*]  (orphaned)
+
+End:
+  head
+   |
+   v
+  [3|*] -> [7|*] -> [8|*] -> [5|/]
+\`\`\`
+
+Only two pointer writes were needed once we reached the target — the traversal to find it is what makes deletion by value $O(N)$ overall.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-ll-6',
+    topic_id: linkedListTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Forgetting to update the head** when you delete the first node: the list still starts at the old (removed) node. Fix: if \`curr == head\`, do \`head = head.next\` before anything else.
+- **Overwriting \`next\` before saving it**: once \`node.next\` is reassigned, the old link is gone and later nodes are unreachable. Fix: store \`const nextNode = node.next\` first, then rewire.
+- **Dereferencing null**: reading \`curr.next.val\` when \`curr.next\` is null crashes. Fix: guard every step with \`while (curr && curr.next)\`.
+- **Assuming random access is fast**: writing \`list[5]\` won't work, and hand-rolling it is $O(N)$. Fix: if you need indexed access frequently, use an array instead.
+- **Leaking memory in C/C++**: forgetting to \`free\` a removed node keeps its bytes allocated forever. Fix: capture the node in a temporary variable, unlink it, then free.
+- **Creating a cycle by accident**: pointing a tail's \`next\` back into an earlier node makes traversal loop forever. Fix: when appending, make sure the new node's \`next\` is set to \`null\` first.
+    `,
+    display_order: 6,
+  },
+  {
+    id: 'sec-ll-7',
+    topic_id: linkedListTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Music playlist with "next" and "previous" controls**: a doubly linked list lets you insert, remove, or reorder tracks in $O(1)$ once you have the node, without shifting the whole list.
+- **Browser tab list where users close and open tabs constantly**: tabs are inserted and removed anywhere in the sequence, and you rarely jump to "tab number 12" by index.
+- **Undo history that only remembers a few recent actions**: each action links back to the previous one; no random access is needed, only "the one before".
+- **Adjacency lists in a graph**: each vertex owns a linked list of neighbors that grows and shrinks as edges are added or removed.
+- **Memory allocator's free-block list**: the operating system chains together unused chunks of memory; inserting and removing chunks must be cheap and does not require indexing.
+- **Streaming data where you don't know the total size**: a linked list can grow one node at a time without ever asking for a bigger contiguous block.
+    `,
+    display_order: 7,
+  },
 ];
 
 export const linkedListSnippets: CodeSnippet[] = [
@@ -628,6 +801,82 @@ This order is called **LIFO** (Last In, First Out).
     `,
     display_order: 2,
   },
+  {
+    id: 'sec-st-3',
+    topic_id: stackTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Think of a spring-loaded plate dispenser in a cafeteria — the metal tube that holds a column of clean plates. Every clean plate is dropped on top and pushes the older ones down. When you grab a plate, you always take the one on top.
+
+You physically cannot pull a plate out of the middle without lifting off everything above it. The dispenser only exposes one plate at a time: the most recent one placed.
+
+That is exactly how a stack behaves. The last plate in is the first plate out, and any operation — push, pop, or peek — happens at the top and takes constant time because nothing else has to move.
+
+If you keep dropping plates and never take any, the dispenser will overflow onto the floor. That is a **stack overflow** — the same word your language uses when recursion piles up too many function calls.
+    `,
+    display_order: 3,
+  },
+  {
+    id: 'sec-st-4',
+    topic_id: stackTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's trace a stack across a short sequence of operations. Start with an empty stack. We will run: **push 3, push 7, push 2, pop, push 8, push 5, peek**.
+
+1. **push 3.** Top rises to hold 3.
+2. **push 7.** 7 sits on top of 3.
+3. **push 2.** 2 sits on top of 7.
+4. **pop.** The top element (2) is removed and returned; 7 is now on top again.
+5. **push 8.** 8 sits on top of 7.
+6. **push 5.** 5 sits on top of 8.
+7. **peek.** Returns 5 without removing it. The stack is unchanged.
+
+\`\`\`
+Legend: top is on the RIGHT.
+
+Start:            [ ]                        (empty)
+
+Step 1 push 3:    [ 3 ]                      top -> 3
+Step 2 push 7:    [ 3 | 7 ]                  top -> 7
+Step 3 push 2:    [ 3 | 7 | 2 ]              top -> 2
+Step 4 pop  ->2:  [ 3 | 7 ]                  top -> 7
+Step 5 push 8:    [ 3 | 7 | 8 ]              top -> 8
+Step 6 push 5:    [ 3 | 7 | 8 | 5 ]          top -> 5
+Step 7 peek ->5:  [ 3 | 7 | 8 | 5 ]          top -> 5 (unchanged)
+\`\`\`
+
+Every step touches only the top slot, so each operation is $O(1)$ — no matter how tall the stack grows.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-st-5',
+    topic_id: stackTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Popping from an empty stack**: this either returns garbage or throws. Fix: always call \`isEmpty()\` (or check size) before \`pop\` / \`peek\`.
+- **Confusing peek with pop**: peek only reads the top, pop also removes it. Fix: reach for \`peek\` when you just need to inspect, so you don't accidentally shrink the stack.
+- **Trying to access the middle** with something like \`stack[3]\`: this breaks the LIFO contract and defeats the point of using a stack. Fix: if you need indexed access, use an array or deque instead.
+- **Deep recursion causing stack overflow**: each recursive call adds a frame to the language's call stack; too many frames and the program crashes. Fix: rewrite as iteration using your own explicit stack, or add a base case that terminates sooner.
+- **Sharing one stack between threads without locking**: two pushes at once can corrupt the top pointer. Fix: use a thread-safe stack (e.g., \`ConcurrentLinkedDeque\` in Java) or protect it with a mutex.
+- **Fixed-size stacks silently dropping data**: pushing when the array is full is easy to miss. Fix: either throw an "overflow" error or grow the backing array so users notice.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-st-6',
+    topic_id: stackTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Browser back button**: each page you visit is pushed; pressing "back" pops the most recent one — a textbook LIFO flow.
+- **Undo history in a text editor**: the last change made should be the first one undone, which is exactly what a stack of edit operations gives you.
+- **Function call stack**: whenever a function calls another, the return address is pushed; when it returns, the address is popped. This is why runtime errors show a "stack trace".
+- **Matching brackets in a compiler or linter**: push each opening bracket, and when you see a closing one, pop and compare. It works because the most recently opened bracket must close first.
+- **Depth-First Search (DFS) on a graph or tree**: an explicit stack tracks which node to visit next when you want to go deep before wide.
+- **Expression evaluation and conversion** (infix to postfix, evaluating postfix): operators and operands are pushed and popped in an order that naturally matches operator precedence.
+    `,
+    display_order: 6,
+  },
 ];
 
 export const stackSnippets: CodeSnippet[] = [
@@ -862,6 +1111,83 @@ $$\\text{next} = (\\text{index} + 1) \\% \\text{capacity}$$
 which allows reuse of empty slots at the beginning of the array.
     `,
     display_order: 2,
+  },
+  {
+    id: 'sec-qu-3',
+    topic_id: queueTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Imagine the queue at a coffee shop counter. A new customer walks in and joins the back of the line. The barista serves whoever is at the front, and that person leaves.
+
+Nobody cuts. The order of arrival is the order of service — first in, first out. If you are third in line, you know two people will be served before you and everybody after you has to wait for you.
+
+A **circular queue** is like a small revolving diner counter with only six stools. When a stool at the front empties and a new customer arrives at the back, they simply take the next open stool, even if that means the "back" of the queue wraps around to a stool the front once used. No stools ever move — only the labels "front" and "rear" do.
+
+That wrap-around is why circular queues are efficient in fixed-size buffers: you never waste the empty slots left behind by earlier dequeues.
+    `,
+    display_order: 3,
+  },
+  {
+    id: 'sec-qu-4',
+    topic_id: queueTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's run a **circular queue** of capacity 5 through: **enqueue 3, enqueue 7, enqueue 2, dequeue, enqueue 8, enqueue 5, enqueue 4**. Indices wrap using \`(i + 1) % 5\`.
+
+1. **enqueue 3.** front and rear were -1 (empty). Set both to 0 and write 3 at index 0.
+2. **enqueue 7.** rear advances to 1; write 7.
+3. **enqueue 2.** rear advances to 2; write 2.
+4. **dequeue.** Return the value at front (3). Advance front to 1. Index 0 is now free but not shifted.
+5. **enqueue 8.** rear advances to 3; write 8.
+6. **enqueue 5.** rear advances to 4; write 5.
+7. **enqueue 4.** rear was 4, so \`(4 + 1) % 5 = 0\`. Write 4 into index 0 — the slot freed by step 4. This is the wrap-around.
+
+\`\`\`
+Legend: F = front index, R = rear index, . = empty slot.
+
+Start:                index: 0   1   2   3   4
+                            [ . | . | . | . | . ]   F=-1, R=-1
+
+Step 1 enqueue 3:           [ 3 | . | . | . | . ]   F=0,  R=0
+Step 2 enqueue 7:           [ 3 | 7 | . | . | . ]   F=0,  R=1
+Step 3 enqueue 2:           [ 3 | 7 | 2 | . | . ]   F=0,  R=2
+Step 4 dequeue -> 3:        [ . | 7 | 2 | . | . ]   F=1,  R=2
+Step 5 enqueue 8:           [ . | 7 | 2 | 8 | . ]   F=1,  R=3
+Step 6 enqueue 5:           [ . | 7 | 2 | 8 | 5 ]   F=1,  R=4
+Step 7 enqueue 4 (wrap):    [ 4 | 7 | 2 | 8 | 5 ]   F=1,  R=0
+\`\`\`
+
+Front is now index 1 and rear is index 0. Reading the queue in FIFO order means walking from front and wrapping: 7, 2, 8, 5, 4. Every operation touched only one slot, so each is $O(1)$.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-qu-5',
+    topic_id: queueTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Using \`array.shift()\` in JavaScript for dequeue**: it re-indexes every element and is $O(N)$. Fix: use a linked-node queue or a two-index circular buffer.
+- **Confusing "full" and "empty" in a circular queue**: both can look like \`front == rear\`. Fix: track size separately, or leave one slot always empty as a sentinel.
+- **Forgetting to reset front/rear after the last dequeue**: leaving stale indices around causes the next enqueue to write to the wrong place. Fix: when the queue becomes empty, reset \`front = rear = -1\` (or equivalent).
+- **Dequeuing from an empty queue**: returns garbage or throws. Fix: check \`isEmpty()\` first and return an explicit "no item" signal.
+- **Enqueue into a full fixed-size queue that silently drops data**: users don't notice their events are being lost. Fix: raise an overflow error or grow the buffer.
+- **Iterating with \`for i in 0..capacity\`**: reads empty slots and stale values. Fix: iterate from \`front\` and step \`(i + 1) % capacity\` exactly \`size\` times.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-qu-6',
+    topic_id: queueTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Printer job queue**: documents are printed in the order they were sent — the fairest, simplest FIFO policy.
+- **Customer support ticket system**: the ticket that came in earliest should be answered first, so tickets sit in a queue until an agent is free.
+- **Message buffer between producer and consumer** (e.g., a chat app or event stream): messages are queued as they arrive and drained in order.
+- **Breadth-First Search (BFS) on a graph or tree**: a queue tracks which nodes to visit next so the search explores level by level.
+- **CPU task / thread scheduler using round-robin**: each ready thread waits in a queue for its next time slice, keeping fairness across tasks.
+- **Streaming audio or video buffer**: incoming packets are enqueued and played out in arrival order to keep the stream smooth even when the network jitters.
+    `,
+    display_order: 6,
   },
 ];
 

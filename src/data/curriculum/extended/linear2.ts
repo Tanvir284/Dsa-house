@@ -583,7 +583,7 @@ $$L_0:\\ 1 \\to 3 \\to 5 \\to 7 \\to 9$$
         topic_id: 'ext-skip-list',
         title: 'Core Mechanics',
         content: `
-**Search:** Start at the top-left. Move right while the next node's key is $\\le$ target. When you'd overshoot, drop down one level. Repeat until level 0.
+**Search:** Start at the top-left. Move right while the next node's key is $<$ target. When you'd overshoot (the next key is $\\ge$ target), drop down one level. Repeat until level 0, then check whether the node just past \`cur\` has the target key.
 
 **Insert:**
 1. Search, recording the rightmost node visited at each level (the *update* array).

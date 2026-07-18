@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BarChart3, Info } from 'lucide-react';
+import { BarChart3, Info, Check, Minus } from 'lucide-react';
 
 interface AlgoRow {
   name: string;
@@ -58,7 +58,11 @@ function ComplexityTable({ rows, title }: { rows: AlgoRow[]; title: string }) {
                 <td className="p-3 font-mono text-primary">{row.avg}</td>
                 <td className="p-3 font-mono text-hard">{row.worst}</td>
                 <td className="p-3 font-mono">{row.space}</td>
-                <td className="p-3">{row.stable ? '✓' : '—'}</td>
+                <td className="p-3">
+                  {row.stable
+                    ? <Check className="h-4 w-4 text-complete" aria-label="Stable" />
+                    : <Minus className="h-4 w-4 text-muted-foreground" aria-label="Not stable" />}
+                </td>
               </tr>
             ))}
           </tbody>

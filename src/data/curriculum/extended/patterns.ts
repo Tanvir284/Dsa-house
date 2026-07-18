@@ -759,7 +759,7 @@ void mergeSort(vector<int>& arr, int l, int r) {
       time_complexity_best: 'O(2^n * n)',
       time_complexity_average: 'O(2^n * n)',
       time_complexity_worst: 'O(2^n * n^2) for TSP',
-      space_complexity: 'O(2^n)',
+      space_complexity: 'O(2^n * n) with state endpoint (e.g. TSP); O(2^n) for pure subset DP',
       display_order: 603,
     },
     sections: [

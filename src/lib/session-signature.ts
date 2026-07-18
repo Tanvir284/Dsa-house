@@ -28,15 +28,15 @@ function bytesToString(bytes: Uint8Array): string {
 }
 
 function getSecret(): string {
-  // Require an explicit secret in production; fall back to a fixed dev secret
-  // only when NODE_ENV !== 'production' so local dev keeps working without
-  // extra setup.
+  // Require AUTH_SESSION_SECRET in all environments for security
   const secret = process.env.AUTH_SESSION_SECRET;
-  if (secret && secret.length >= 16) return secret;
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('AUTH_SESSION_SECRET must be set (>=16 chars) in production');
+  if (!secret) {
+    throw new Error('AUTH_SESSION_SECRET environment variable must be set');
   }
-  return 'dev-only-insecure-fallback-secret-change-me';
+  if (secret.length < 16) {
+    throw new Error('AUTH_SESSION_SECRET must be at least 16 characters long');
+  }
+  return secret;
 }
 
 async function importKey(secret: string): Promise<CryptoKey> {

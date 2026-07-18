@@ -58,6 +58,87 @@ This is **Binary Search**. With each step, you cut your remaining work in half!
     `,
     display_order: 3,
   },
+  {
+    id: 'sec-bs-4',
+    topic_id: binarySearchTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Picture yourself looking up the word "octopus" in a physical dictionary. You would not start at page 1 and read every entry until you hit "octopus" — that would take forever. Instead, you flip the book open somewhere near the middle.
+
+Say you land on a page starting with "M." You know "octopus" comes after "M" alphabetically, so you completely ignore the entire first half of the dictionary. You then flip to the middle of the *remaining* right-hand half. Maybe you land on "R." "Octopus" comes before "R," so now you throw away the right side of that chunk. Every single flip cuts the remaining search space in half — you home in on the word in only a handful of jumps, even in a 2000-page dictionary.
+
+Binary Search is that dictionary trick, formalized. The "book" is a sorted array, the "flip to the middle" is computing \`mid\`, and "throw away half the book" is moving \`low\` or \`high\` inward. That's why it works in $O(\\log N)$ time: doubling the array size only adds one more flip.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-bs-5',
+    topic_id: binarySearchTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's search for the target \`23\` inside the sorted array \`[3, 8, 12, 19, 23, 34, 41, 55]\` (indices 0–7). We use \`low\`, \`high\`, and \`mid = low + (high - low) / 2\`.
+
+**Step 1** — initial window covers the whole array:
+\`\`\`
+Indices:  0   1   2   3   4   5   6   7
+Array:  [ 3,  8, 12, 19, 23, 34, 41, 55]
+low=0                                high=7
+mid = 0 + (7 - 0)/2 = 3   -> arr[3] = 19
+Compare 19 vs 23:  19 < 23  =>  discard left half.
+low = mid + 1 = 4
+\`\`\`
+
+**Step 2** — window shrinks to indices 4..7:
+\`\`\`
+Indices:                  4   5   6   7
+Window:                 [23, 34, 41, 55]
+                        low=4        high=7
+mid = 4 + (7 - 4)/2 = 5   -> arr[5] = 34
+Compare 34 vs 23:  34 > 23  =>  discard right half.
+high = mid - 1 = 4
+\`\`\`
+
+**Step 3** — window is a single element at index 4:
+\`\`\`
+Indices:                  4
+Window:                 [23]
+                        low=4  high=4
+mid = 4 + (4 - 4)/2 = 4   -> arr[4] = 23
+Compare 23 vs 23:  MATCH! Return index 4.
+\`\`\`
+
+We found the target in just **3 comparisons** on an 8-element array — because $\\log_2 8 = 3$. Notice how each step halved the search window: 8 → 4 → 1.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-bs-6',
+    topic_id: binarySearchTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Running Binary Search on an unsorted array.** The algorithm silently returns wrong answers because "throw away half" is meaningless without order. *Fix:* sort first, or use Linear Search.
+- **Integer overflow in \`(low + high) / 2\`.** In C, C++, or Java with large indices this can overflow \`int\`. *Fix:* use \`mid = low + (high - low) / 2\`.
+- **Off-by-one in the loop condition.** Writing \`while (low < high)\` instead of \`while (low <= high)\` misses the case where \`low == high\` and skips the last candidate. *Fix:* use \`<=\` for the closed-interval template.
+- **Not moving \`low\` or \`high\` past \`mid\`.** Writing \`low = mid\` or \`high = mid\` (instead of \`mid + 1\` / \`mid - 1\`) can cause an infinite loop when the window shrinks to two elements. *Fix:* always exclude \`mid\` after a mismatch.
+- **Assuming Binary Search on floats behaves like on ints.** Floating-point equality is fragile; \`arr[mid] == target\` may never be true. *Fix:* loop while \`high - low > epsilon\`, or search on integer indices.
+- **Confusing "lower bound" with "exact match."** Some libraries return the *insertion point* of a missing element, not \`-1\`. *Fix:* read the docs and check the return-value contract before comparing.
+    `,
+    display_order: 6,
+  },
+  {
+    id: 'sec-bs-7',
+    topic_id: binarySearchTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Number-guessing games ("higher or lower?").** Guessing 50, then 25 or 75, etc., is Binary Search in disguise and finds any number in $[1, 100]$ within 7 guesses.
+- **Database indexes and B-Trees.** Under the hood, sorted database indexes use binary-search-like descent to answer \`WHERE id = ?\` queries in $O(\\log N)$ time.
+- **\`git bisect\` for finding the commit that introduced a bug.** Git treats "good" and "bad" commits as a sorted range and halves the commit history each step until it pinpoints the offender.
+- **Finding the insertion point in a sorted collection.** Functions like Python's \`bisect_left\`, C++'s \`std::lower_bound\`, and Java's \`Collections.binarySearch\` are the workhorse behind sorted inserts, range queries, and set operations.
+- **Answering "smallest \`x\` such that predicate(x) is true"** (a.k.a. binary search on the answer). Used in problems like allocating minimum ship capacity, finding the smallest feasible speed, or the classic "aggressive cows" problem.
+- **Autocomplete and dictionary lookups.** Sorted word lists let editors and search UIs jump to the matching prefix in logarithmic time instead of scanning every entry.
+    `,
+    display_order: 7,
+  },
 ];
 
 export const binarySearchSnippets: CodeSnippet[] = [
@@ -152,8 +233,9 @@ int binary_search(int arr[], int size, int target) {
 #include <iostream>
 
 int binarySearch(const std::vector<int>& arr, int target) {
+    if (arr.empty()) return -1;
     int low = 0;
-    int high = arr.size() - 1;
+    int high = static_cast<int>(arr.size()) - 1;
     
     while (low <= high) {
         int mid = low + (high - low) / 2;

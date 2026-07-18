@@ -362,7 +362,14 @@ export default function DashboardPage() {
                       : 'border-border bg-muted/30 opacity-60 grayscale'
                   }`}
                 >
-                  <span className="text-2xl">{ach.icon}</span>
+                  <span
+                    className={`shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl ${
+                      unlocked ? 'bg-primary/10 text-primary' : 'bg-surface text-muted-foreground'
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <ach.icon className="h-5 w-5" />
+                  </span>
                   <div>
                     <p className="text-sm font-bold text-foreground">{ach.title}</p>
                     <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{ach.description}</p>

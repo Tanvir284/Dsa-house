@@ -1,3 +1,8 @@
+import type { LucideIcon } from 'lucide-react';
+import {
+  Target, Flame, Zap, Crown, PenLine, BadgeCheck, Trophy, TrendingUp,
+  GraduationCap, Bookmark, Star, Sparkles,
+} from 'lucide-react';
 import { CodeLanguage } from '@/types';
 import { categories, topics } from '@/data';
 import { UserProfile } from '@/lib/store';
@@ -10,23 +15,23 @@ export interface AchievementDef {
   id: string;
   title: string;
   description: string;
-  icon: string;
+  icon: LucideIcon;
   xpBonus: number;
 }
 
 export const ACHIEVEMENTS: AchievementDef[] = [
-  { id: 'first_step', title: 'First Step', description: 'Complete your first lesson', icon: '🎯', xpBonus: 50 },
-  { id: 'streak_3', title: 'On Fire', description: 'Reach a 3-day streak', icon: '🔥', xpBonus: 75 },
-  { id: 'streak_7', title: 'Week Warrior', description: 'Reach a 7-day streak', icon: '⚡', xpBonus: 150 },
-  { id: 'streak_30', title: 'Unstoppable', description: 'Reach a 30-day streak', icon: '👑', xpBonus: 500 },
-  { id: 'quiz_rookie', title: 'Quiz Rookie', description: 'Complete your first quiz', icon: '📝', xpBonus: 40 },
-  { id: 'perfect_score', title: 'Perfect Score', description: 'Score 100% on any quiz', icon: '💯', xpBonus: 100 },
-  { id: 'quiz_veteran', title: 'Quiz Veteran', description: 'Complete 5 quizzes', icon: '🏆', xpBonus: 200 },
-  { id: 'halfway', title: 'Halfway There', description: 'Complete 50% of all topics', icon: '📈', xpBonus: 150 },
-  { id: 'master', title: 'DSA Master', description: 'Complete every topic', icon: '🎓', xpBonus: 1000 },
-  { id: 'collector', title: 'Collector', description: 'Bookmark 5 topics', icon: '🔖', xpBonus: 60 },
-  { id: 'xp_1000', title: 'Rising Star', description: 'Earn 1,000 total XP', icon: '⭐', xpBonus: 0 },
-  { id: 'xp_5000', title: 'Algorithm Elite', description: 'Earn 5,000 total XP', icon: '🌟', xpBonus: 0 },
+  { id: 'first_step', title: 'First Step', description: 'Complete your first lesson', icon: Target, xpBonus: 50 },
+  { id: 'streak_3', title: 'On Fire', description: 'Reach a 3-day streak', icon: Flame, xpBonus: 75 },
+  { id: 'streak_7', title: 'Week Warrior', description: 'Reach a 7-day streak', icon: Zap, xpBonus: 150 },
+  { id: 'streak_30', title: 'Unstoppable', description: 'Reach a 30-day streak', icon: Crown, xpBonus: 500 },
+  { id: 'quiz_rookie', title: 'Quiz Rookie', description: 'Complete your first quiz', icon: PenLine, xpBonus: 40 },
+  { id: 'perfect_score', title: 'Perfect Score', description: 'Score 100% on any quiz', icon: BadgeCheck, xpBonus: 100 },
+  { id: 'quiz_veteran', title: 'Quiz Veteran', description: 'Complete 5 quizzes', icon: Trophy, xpBonus: 200 },
+  { id: 'halfway', title: 'Halfway There', description: 'Complete 50% of all topics', icon: TrendingUp, xpBonus: 150 },
+  { id: 'master', title: 'DSA Master', description: 'Complete every topic', icon: GraduationCap, xpBonus: 1000 },
+  { id: 'collector', title: 'Collector', description: 'Bookmark 5 topics', icon: Bookmark, xpBonus: 60 },
+  { id: 'xp_1000', title: 'Rising Star', description: 'Earn 1,000 total XP', icon: Star, xpBonus: 0 },
+  { id: 'xp_5000', title: 'Algorithm Elite', description: 'Earn 5,000 total XP', icon: Sparkles, xpBonus: 0 },
 ];
 
 export const LEVEL_THRESHOLDS = [0, 300, 800, 1500, 2500, 4000, 6000, 9000, 13000, 18000];
