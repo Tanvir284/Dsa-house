@@ -64,7 +64,7 @@ const ROADMAP_META: Record<string, { label: string; icon: LucideIcon; chapter: n
 
   'binary-tree':           { label: 'Binary Trees',      icon: TreeDeciduous,   chapter: 3 },
   'binary-search-tree':    { label: 'BST',               icon: TreePine,        chapter: 3 },
-  'heap-priority-queue':   { label: 'Heap',              icon: Mountain,        chapter: 3 },
+  'heap':                  { label: 'Heap',              icon: Mountain,        chapter: 3 },
   bfs:                     { label: 'BFS',               icon: Globe,           chapter: 3 },
   dfs:                     { label: 'DFS',               icon: Waypoints,       chapter: 3 },
 

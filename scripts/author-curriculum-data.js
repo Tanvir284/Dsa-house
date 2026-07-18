@@ -26,6 +26,7 @@ const DATA_PATH = path.join(__dirname, '../src/data/curriculum_expanded.json');
 // Fix the B-Tree / B+ Tree slug collision: both slugified to "b-tree".
 const SLUG_OVERRIDES = {
   'B+ Tree': 'b-plus-tree',
+  'Heap (Priority Queue)': 'heap',
 };
 
 // Curated content keyed by exact topic title.
@@ -211,7 +212,6 @@ function slugify(title) {
 
 // Convenience aliases: short prerequisite names -> the topic's actual slug.
 const PREREQ_ALIAS = {
-  heap: 'heap-priority-queue',
   trie: 'trie-prefix-tree',
 };
 

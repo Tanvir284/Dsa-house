@@ -2196,7 +2196,7 @@ public:
   {
     topic: {
       id: 'ext-heap-priority-queue',
-      slug: 'heap-priority-queue',
+      slug: 'heap',
       category_id: CATEGORY_IDS.trees,
       title: 'Heap / Priority Queue',
       definition: 'A binary heap is a complete binary tree, usually stored in an array, that satisfies the heap property so the highest-priority element is always at the root; it is the standard implementation of a priority queue supporting logarithmic insertion and extraction.',
@@ -2534,7 +2534,7 @@ public class MinHeap {
       title: 'Max-Heap',
       definition: 'A max-heap is a complete binary tree stored in an array where every parent node is greater than or equal to its children, so the maximum element always resides at the root and can be read in constant time.',
       importance: 'Max-heaps underpin heap sort, top-K maximum queries, and any scheduler or selection problem that repeatedly needs the largest remaining element in logarithmic time.',
-      prerequisites: ['heap-priority-queue'],
+      prerequisites: ['heap'],
       difficulty: 'Intermediate',
       time_complexity_best: 'O(1) peek',
       time_complexity_average: 'O(log n) push/pop',
@@ -2842,7 +2842,7 @@ public:
       title: 'Treap',
       definition: 'A treap is a randomized binary search tree where each node carries both a key (obeying the BST order) and a random priority (obeying the heap order), so the shape mimics a tree built from a random insertion sequence and stays balanced with high probability.',
       importance: 'Treaps deliver expected O(log n) operations with strikingly simple code, and their split/merge primitives make them a favorite for implicit-key sequences, order statistics, and interval problems.',
-      prerequisites: ['binary-search-tree', 'heap-priority-queue'],
+      prerequisites: ['binary-search-tree', 'heap'],
       difficulty: 'Advanced',
       time_complexity_best: 'O(log n)',
       time_complexity_average: 'O(log n)',

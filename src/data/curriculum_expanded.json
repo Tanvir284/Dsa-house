@@ -1142,7 +1142,7 @@
   },
   {
     "id": "b1heap01-0000-4000-8000-000000000002",
-    "slug": "heap-priority-queue",
+    "slug": "heap",
     "category_id": "ba3c9e6d-66e8-46cb-8d0b-60a6cb774bd0",
     "title": "Heap (Priority Queue)",
     "definition": "A binary heap is a complete tree stored in an array where each parent dominates its children, giving O(log N) insert and extract.",
@@ -1167,7 +1167,7 @@
     "definition": "A max heap is a binary heap in which every parent is greater than or equal to its children, so the maximum sits at the root.",
     "importance": "It provides constant-time access to the largest element for scheduling and heap sort.",
     "prerequisites": [
-      "heap-priority-queue"
+      "heap"
     ],
     "difficulty": "Intermediate",
     "time_complexity_best": "O(1)",
@@ -1186,7 +1186,7 @@
     "importance": "It offers simple randomized balancing and supports split/merge.",
     "prerequisites": [
       "binary-search-tree",
-      "heap-priority-queue",
+      "heap",
       "probability-basics"
     ],
     "difficulty": "Advanced",
@@ -1297,7 +1297,7 @@
     "definition": "A binomial heap is a collection of binomial trees that supports efficient merging of two heaps in O(log N).",
     "importance": "It is useful when frequent heap unions are required.",
     "prerequisites": [
-      "heap-priority-queue"
+      "heap"
     ],
     "difficulty": "Advanced",
     "time_complexity_best": "O(1)",
@@ -1335,7 +1335,7 @@
     "importance": "It links range-minimum queries with lowest-common-ancestor problems.",
     "prerequisites": [
       "binary-tree",
-      "heap-priority-queue"
+      "heap"
     ],
     "difficulty": "Advanced",
     "time_complexity_best": "O(N)",
@@ -1408,7 +1408,7 @@
     "definition": "A Huffman coding tree builds an optimal prefix code by repeatedly merging the two least frequent symbols.",
     "importance": "It is a classic greedy algorithm for lossless data compression.",
     "prerequisites": [
-      "heap-priority-queue",
+      "heap",
       "greedy-algorithms"
     ],
     "difficulty": "Intermediate",
@@ -2054,7 +2054,7 @@
     "definition": "Heap sort builds a max heap from the array and repeatedly extracts the maximum to produce a sorted order in place.",
     "importance": "It offers guaranteed O(N log N) time without extra memory.",
     "prerequisites": [
-      "heap-priority-queue"
+      "heap"
     ],
     "difficulty": "Intermediate",
     "time_complexity_best": "O(N log N)",
