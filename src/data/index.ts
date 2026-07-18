@@ -251,7 +251,7 @@ for (const extTopic of topics) {
   // No canonical match: generate placeholders where data is missing
   if (!lessonSections[extTopic.id] || lessonSections[extTopic.id].length === 0) {
     // Create richer placeholder lesson sections
-    const overview = extTopic.definition || `Overview of ${extTopic.title}`;
+    const overview = (extTopic as any).extended_overview || extTopic.definition || `Overview of ${extTopic.title}`;
     const complexity = `Time: ${extTopic.time_complexity_average || 'Varies'}; Space: ${extTopic.space_complexity || 'Varies'}`;
     lessonSections[extTopic.id] = [
       {
