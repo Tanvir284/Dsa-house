@@ -319,7 +319,7 @@ export default function Home() {
                     <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{cat.description}</p>
                   </div>
                   <span className="text-xs font-semibold text-muted-foreground bg-surface px-2.5 py-1 rounded-full shrink-0">
-                    {catCompleted}/{catTopics.length}
+                    {profile ? `${catCompleted}/${catTopics.length}` : `${catTopics.length} topics`}
                   </span>
                 </div>
 
