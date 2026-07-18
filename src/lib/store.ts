@@ -245,6 +245,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       quizAttempts: [],
       topicNotes: {},
     });
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
   },
 
   toggleBookmark: async (topicSlug: string) => {

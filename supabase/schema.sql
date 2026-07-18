@@ -128,6 +128,7 @@ CREATE POLICY "Allow public read quiz_questions" ON public.quiz_questions FOR SE
 -- Setup User Policies for profile, progress, bookmarks, attempts (Strict RLS)
 CREATE POLICY "Allow individual read profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Allow individual update profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Allow individual insert profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
 CREATE POLICY "Allow user bookmarks select" ON public.bookmarks FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Allow user bookmarks insert" ON public.bookmarks FOR INSERT WITH CHECK (auth.uid() = user_id);

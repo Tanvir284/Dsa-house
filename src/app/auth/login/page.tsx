@@ -46,9 +46,18 @@ export default function LoginPage() {
       }
 
       // Fetch profile from public 'profiles' table if available
-      const { data: profileData, error: profileError } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
-      if (profileError) {
-        // ignore
+      let { data: profileData, error: profileError } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      
+      // Self-healing: if the user authenticated successfully but has no profile row, create it
+      if (!profileData && !profileError) {
+        const uname = email.split('@')[0] || 'Learner';
+        const { error: insertError } = await supabase.from('profiles').upsert({ id: user.id, username: uname });
+        if (!insertError) {
+          const { data: reFetched } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+          if (reFetched) {
+            profileData = reFetched;
+          }
+        }
       }
 
       const username = profileData?.username || email.split('@')[0];
