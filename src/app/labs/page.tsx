@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   BarChart3, Info, Check, Minus, Play, RefreshCw, Zap, Binary, Network,
-  Plus, Trash2, HelpCircle, ArrowRight, Layers, Flame, Award
+  Plus, Trash2, HelpCircle, ArrowRight, Layers, Flame, Award, GitFork
 } from 'lucide-react';
 
 // ==========================================
@@ -193,7 +193,7 @@ const runInsertionSort = (arr: number[]) => {
 // ==========================================
 
 export default function LabsPage() {
-  const [activeTab, setActiveTab] = useState<'estimator' | 'sorter' | 'recursion' | 'graph'>('estimator');
+  const [activeTab, setActiveTab] = useState<'estimator' | 'sorter' | 'recursion' | 'graph' | 'traversal' | 'bitwise'>('estimator');
 
   return (
     <div className="flex flex-col gap-6 py-2 w-full animate-fade-in">
@@ -252,6 +252,28 @@ export default function LabsPage() {
           <Network className="h-4 w-4" />
           <span>Graph Builder & Matrix Lab</span>
         </button>
+        <button
+          onClick={() => setActiveTab('traversal')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+            activeTab === 'traversal'
+              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
+              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
+          }`}
+        >
+          <GitFork className="h-4 w-4" />
+          <span>Tree Traversals (BFS/DFS)</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('bitwise')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+            activeTab === 'bitwise'
+              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
+              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
+          }`}
+        >
+          <Layers className="h-4 w-4" />
+          <span>Bitwise Sandbox</span>
+        </button>
       </div>
 
       {/* Render active lab content */}
@@ -260,6 +282,8 @@ export default function LabsPage() {
         {activeTab === 'sorter' && <SortingRaceTab />}
         {activeTab === 'recursion' && <RecursionStackTab />}
         {activeTab === 'graph' && <GraphMatrixTab />}
+        {activeTab === 'traversal' && <TreeTraversalTab />}
+        {activeTab === 'bitwise' && <BitwiseLabTab />}
       </div>
     </div>
   );
@@ -731,7 +755,7 @@ function RecursionStackTab() {
     if (!isVisible) return null;
 
     return (
-      <div key={nodeId} className="flex flex-col items-center select-none">
+      <div key={nodeId} className="flex flex-col items-center select-none animate-scale-in">
         <div
           className={`px-3 py-1.5 rounded-xl border text-xs font-semibold font-mono flex flex-col items-center gap-0.5 transition-all duration-300 ${
             isPopped
@@ -793,7 +817,7 @@ function RecursionStackTab() {
               <input
                 type="number"
                 min={0}
-                max={recType === 'fib' ? 12 : 12} // Cap at 12 to avoid overwhelming tree UI
+                max={recType === 'fib' ? 12 : 12}
                 value={recValue}
                 onChange={(e) => setRecValue(Math.max(0, Math.min(12, Number(e.target.value))))}
                 className="w-full mt-1.5 bg-surface border border-border rounded-lg p-2 text-xs font-semibold font-mono text-foreground focus:outline-none focus:border-primary"
@@ -896,8 +920,8 @@ function GraphMatrixTab() {
   const [toNode, setToNode] = useState('B');
 
   const addNode = () => {
-    const nextChar = String.fromCharCode(65 + nodes.length); // A, B, C, D...
-    if (nodes.length >= 8) return; // limit to 8 for neatness
+    const nextChar = String.fromCharCode(65 + nodes.length);
+    if (nodes.length >= 8) return;
     const newNode = { id: nextChar, label: nextChar };
     setNodes([...nodes, newNode]);
     if (nodes.length > 0) {
@@ -912,7 +936,6 @@ function GraphMatrixTab() {
   };
 
   const addEdge = () => {
-    // Avoid self loops and duplicates
     if (fromNode === toNode) return;
     const exists = edges.some(e => (e.from === fromNode && e.to === toNode) || (e.from === toNode && e.to === fromNode));
     if (exists) return;
@@ -986,7 +1009,6 @@ function GraphMatrixTab() {
     }
   };
 
-  // Generate Adjacency List representation
   const getAdjacencyList = () => {
     const list: Record<string, string[]> = {};
     nodes.forEach(n => {
@@ -994,7 +1016,7 @@ function GraphMatrixTab() {
     });
     edges.forEach(e => {
       if (list[e.from]) list[e.from].push(e.to);
-      if (list[e.to]) list[e.to].push(e.from); // undirected graph representation
+      if (list[e.to]) list[e.to].push(e.from);
     });
     return list;
   };
@@ -1023,7 +1045,6 @@ function GraphMatrixTab() {
           </div>
         </div>
 
-        {/* Nodes & Edges management */}
         <div className="modern-card p-5 border border-border/80 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-foreground">Vertices</h3>
@@ -1080,9 +1101,7 @@ function GraphMatrixTab() {
         </div>
       </div>
 
-      {/* Matrix and Adjacency List output panels */}
       <div className="lg:col-span-2 flex flex-col gap-6">
-        {/* Adjacency Matrix */}
         <div className="modern-card p-6 border border-border/80 flex flex-col gap-4">
           <h3 className="text-sm font-bold text-foreground">Adjacency Matrix Representation</h3>
 
@@ -1127,7 +1146,6 @@ function GraphMatrixTab() {
           </div>
         </div>
 
-        {/* Adjacency List */}
         <div className="modern-card p-6 border border-border/80 flex flex-col gap-4 flex-1">
           <h3 className="text-sm font-bold text-foreground">Adjacency List Representation</h3>
 
@@ -1158,6 +1176,425 @@ function GraphMatrixTab() {
               );
             })}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// 8. TREE TRAVERSALS LAB (BFS vs DFS)
+// ==========================================
+
+interface TraversalStep {
+  visited: string;
+  dataStructure: string[];
+  queueStack: string[];
+  output: string[];
+}
+
+function NodeItem({ value, id, activeVal, visitedVals }: { value: string; id: string; activeVal: string | null; visitedVals: Set<string> }) {
+  const isVisited = visitedVals.has(id);
+  const isActive = activeVal === id;
+
+  return (
+    <div
+      className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold text-xs transition-all duration-300 ${
+        isActive
+          ? 'bg-primary text-white border-primary shadow-glow scale-110 animate-pulse-slow'
+          : isVisited
+          ? 'bg-complete/15 border-complete text-complete'
+          : 'bg-surface border-border text-muted-foreground'
+      }`}
+    >
+      {value}
+    </div>
+  );
+}
+
+function TreeTraversalTab() {
+  const [traversalType, setTraversalType] = useState<'pre' | 'in' | 'post' | 'bfs'>('bfs');
+  const [step, setStep] = useState<number>(-1);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  const getTraversalSteps = (): TraversalStep[] => {
+    if (traversalType === 'bfs') {
+      return [
+        { visited: 'A', dataStructure: ['A'], queueStack: ['B', 'C'], output: ['A'] },
+        { visited: 'B', dataStructure: ['B', 'C'], queueStack: ['C', 'D', 'E'], output: ['A', 'B'] },
+        { visited: 'C', dataStructure: ['C', 'D', 'E'], queueStack: ['D', 'E', 'F', 'G'], output: ['A', 'B', 'C'] },
+        { visited: 'D', dataStructure: ['D', 'E', 'F', 'G'], queueStack: ['E', 'F', 'G'], output: ['A', 'B', 'C', 'D'] },
+        { visited: 'E', dataStructure: ['E', 'F', 'G'], queueStack: ['F', 'G'], output: ['A', 'B', 'C', 'D', 'E'] },
+        { visited: 'F', dataStructure: ['F', 'G'], queueStack: ['G'], output: ['A', 'B', 'C', 'D', 'E', 'F'] },
+        { visited: 'G', dataStructure: ['G'], queueStack: [], output: ['A', 'B', 'C', 'D', 'E', 'F', 'G'] },
+      ];
+    } else if (traversalType === 'pre') {
+      return [
+        { visited: 'A', dataStructure: ['A'], queueStack: ['C', 'B'], output: ['A'] },
+        { visited: 'B', dataStructure: ['B', 'C'], queueStack: ['C', 'E', 'D'], output: ['A', 'B'] },
+        { visited: 'D', dataStructure: ['D', 'E', 'C'], queueStack: ['C', 'E'], output: ['A', 'B', 'D'] },
+        { visited: 'E', dataStructure: ['E', 'C'], queueStack: ['C'], output: ['A', 'B', 'D', 'E'] },
+        { visited: 'C', dataStructure: ['C'], queueStack: ['G', 'F'], output: ['A', 'B', 'D', 'E', 'C'] },
+        { visited: 'F', dataStructure: ['F', 'G'], queueStack: ['G'], output: ['A', 'B', 'D', 'E', 'C', 'F'] },
+        { visited: 'G', dataStructure: ['G'], queueStack: [], output: ['A', 'B', 'D', 'E', 'C', 'F', 'G'] },
+      ];
+    } else if (traversalType === 'in') {
+      return [
+        { visited: 'D', dataStructure: ['A', 'B', 'D'], queueStack: ['A', 'B'], output: ['D'] },
+        { visited: 'B', dataStructure: ['A', 'B'], queueStack: ['A', 'E'], output: ['D', 'B'] },
+        { visited: 'E', dataStructure: ['A', 'E'], queueStack: ['A'], output: ['D', 'B', 'E'] },
+        { visited: 'A', dataStructure: ['A'], queueStack: ['C', 'F'], output: ['D', 'B', 'E', 'A'] },
+        { visited: 'F', dataStructure: ['C', 'F'], queueStack: ['C'], output: ['D', 'B', 'E', 'A', 'F'] },
+        { visited: 'C', dataStructure: ['C'], queueStack: ['G'], output: ['D', 'B', 'E', 'A', 'F', 'C'] },
+        { visited: 'G', dataStructure: ['G'], queueStack: [], output: ['D', 'B', 'E', 'A', 'F', 'C', 'G'] },
+      ];
+    } else {
+      return [
+        { visited: 'D', dataStructure: ['A', 'B', 'D'], queueStack: ['A', 'B'], output: ['D'] },
+        { visited: 'E', dataStructure: ['A', 'B', 'E'], queueStack: ['A', 'B'], output: ['D', 'E'] },
+        { visited: 'B', dataStructure: ['A', 'B'], queueStack: ['A'], output: ['D', 'E', 'B'] },
+        { visited: 'F', dataStructure: ['A', 'C', 'F'], queueStack: ['A', 'C'], output: ['D', 'E', 'B', 'F'] },
+        { visited: 'G', dataStructure: ['A', 'C', 'G'], queueStack: ['A', 'C'], output: ['D', 'E', 'B', 'F', 'G'] },
+        { visited: 'C', dataStructure: ['A', 'C'], queueStack: ['A'], output: ['D', 'E', 'B', 'F', 'G', 'C'] },
+        { visited: 'A', dataStructure: ['A'], queueStack: [], output: ['D', 'E', 'B', 'F', 'G', 'C', 'A'] },
+      ];
+    }
+  };
+
+  const stepsList = getTraversalSteps();
+
+  useEffect(() => {
+    setStep(-1);
+    setIsPlaying(false);
+  }, [traversalType]);
+
+  useEffect(() => {
+    let interval: any;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setStep(prev => {
+          if (prev >= stepsList.length - 1) {
+            setIsPlaying(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+      }, 1200);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, stepsList]);
+
+  const activeNode = step >= 0 ? stepsList[step].visited : null;
+  const visitedNodes = new Set(step >= 0 ? stepsList[step].output : []);
+  const activeDS = step >= 0 ? stepsList[step].dataStructure : [];
+  const activeQueueStack = step >= 0 ? stepsList[step].queueStack : [];
+  const currentOutput = step >= 0 ? stepsList[step].output : [];
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+      {/* Control panel */}
+      <div className="flex flex-col gap-6 lg:col-span-1">
+        <div className="modern-card p-5 border border-border/80 flex flex-col gap-4">
+          <h3 className="text-sm font-bold text-foreground">Select Traversal</h3>
+
+          <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
+            <button
+              onClick={() => setTraversalType('bfs')}
+              className={`px-3 py-2.5 rounded-lg border transition-all cursor-pointer ${
+                traversalType === 'bfs' ? 'bg-primary/15 border-primary/30 text-primary' : 'border-border text-muted-foreground hover:bg-surface'
+              }`}
+            >
+              BFS (Level-Order)
+            </button>
+            <button
+              onClick={() => setTraversalType('pre')}
+              className={`px-3 py-2.5 rounded-lg border transition-all cursor-pointer ${
+                traversalType === 'pre' ? 'bg-primary/15 border-primary/30 text-primary' : 'border-border text-muted-foreground hover:bg-surface'
+              }`}
+            >
+              DFS (Pre-Order)
+            </button>
+            <button
+              onClick={() => setTraversalType('in')}
+              className={`px-3 py-2.5 rounded-lg border transition-all cursor-pointer ${
+                traversalType === 'in' ? 'bg-primary/15 border-primary/30 text-primary' : 'border-border text-muted-foreground hover:bg-surface'
+              }`}
+            >
+              DFS (In-Order)
+            </button>
+            <button
+              onClick={() => setTraversalType('post')}
+              className={`px-3 py-2.5 rounded-lg border transition-all cursor-pointer ${
+                traversalType === 'post' ? 'bg-primary/15 border-primary/30 text-primary' : 'border-border text-muted-foreground hover:bg-surface'
+              }`}
+            >
+              DFS (Post-Order)
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 border-t border-border pt-4 mt-2">
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="flex-1 px-3 py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition cursor-pointer text-center"
+            >
+              {isPlaying ? 'Pause Auto' : 'Play Traversal'}
+            </button>
+            <button
+              onClick={() => { setStep(-1); setIsPlaying(false); }}
+              className="px-3 py-2 bg-surface text-foreground border border-border text-xs font-bold rounded-lg hover:bg-surface-hover transition cursor-pointer"
+            >
+              Reset
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between text-xs font-semibold mt-1">
+            <button
+              onClick={() => { setIsPlaying(false); setStep(prev => Math.max(-1, prev - 1)); }}
+              disabled={step < 0}
+              className="px-2 py-1 bg-surface border border-border rounded disabled:opacity-50 cursor-pointer"
+            >
+              Step Back
+            </button>
+            <span className="text-muted-foreground font-mono">Step {step + 1} of {stepsList.length}</span>
+            <button
+              onClick={() => { setIsPlaying(false); setStep(prev => Math.min(stepsList.length - 1, prev + 1)); }}
+              disabled={step >= stepsList.length - 1}
+              className="px-2 py-1 bg-surface border border-border rounded disabled:opacity-50 cursor-pointer"
+            >
+              Step Forward
+            </button>
+          </div>
+        </div>
+
+        {/* Data Structure debugger */}
+        <div className="modern-card p-5 border border-border/80 flex flex-col gap-3 flex-1">
+          <h3 className="text-xs font-bold text-foreground uppercase tracking-wider text-muted-foreground">
+            {traversalType === 'bfs' ? 'FIFO Queue Status' : 'LIFO Stack Status'}
+          </h3>
+          <div className="flex flex-col gap-1.5 font-mono text-xs mt-2 max-h-[200px] overflow-y-auto">
+            {step < 0 ? (
+              <span className="text-xs text-muted-foreground/60 italic text-center py-6 block">Traversing not started</span>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <div>
+                  <span className="text-[10px] text-muted-foreground block mb-1">CURRENTLY PROCESSING:</span>
+                  <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/25 text-primary font-bold">
+                    Node {activeNode}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground block mb-1">UPCOMING IN {traversalType === 'bfs' ? 'QUEUE' : 'STACK'}:</span>
+                  <div className="flex gap-1.5">
+                    {activeQueueStack.length === 0 ? (
+                      <span className="text-muted-foreground/50 italic text-[11px]">Empty</span>
+                    ) : (
+                      activeQueueStack.map((name, idx) => (
+                        <span key={idx} className="px-2 py-1 rounded bg-surface border border-border text-foreground font-bold">
+                          {name}
+                        </span>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Tree Visualization */}
+      <div className="modern-card p-6 border border-border/80 lg:col-span-2 flex flex-col min-h-[450px]">
+        <h3 className="text-sm font-bold text-foreground border-b border-border/60 pb-3 mb-4">Binary Tree Hierarchy</h3>
+
+        <div className="flex-1 flex items-center justify-center p-6 bg-surface/10 rounded-2xl border border-border/40 relative overflow-hidden">
+          <div className="relative w-80 h-48 mx-auto flex justify-center mt-2">
+            {/* Root Node A */}
+            <div className="absolute top-0 left-[140px]">
+              <NodeItem value="A" id="A" activeVal={activeNode} visitedVals={visitedNodes} />
+            </div>
+            {/* Node B */}
+            <div className="absolute top-16 left-[50px]">
+              <NodeItem value="B" id="B" activeVal={activeNode} visitedVals={visitedNodes} />
+            </div>
+            {/* Node C */}
+            <div className="absolute top-16 left-[230px]">
+              <NodeItem value="C" id="C" activeVal={activeNode} visitedVals={visitedNodes} />
+            </div>
+            {/* Node D */}
+            <div className="absolute top-32 left-[10px]">
+              <NodeItem value="D" id="D" activeVal={activeNode} visitedVals={visitedNodes} />
+            </div>
+            {/* Node E */}
+            <div className="absolute top-32 left-[90px]">
+              <NodeItem value="E" id="E" activeVal={activeNode} visitedVals={visitedNodes} />
+            </div>
+            {/* Node F */}
+            <div className="absolute top-32 left-[190px]">
+              <NodeItem value="F" id="F" activeVal={activeNode} visitedVals={visitedNodes} />
+            </div>
+            {/* Node G */}
+            <div className="absolute top-32 left-[270px]">
+              <NodeItem value="G" id="G" activeVal={activeNode} visitedVals={visitedNodes} />
+            </div>
+
+            {/* SVG Connectors using absolute coordinates */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 text-border" stroke="currentColor" strokeWidth="2" fill="none">
+              {/* A -> B */}
+              <line x1="160" y1="20" x2="70" y2="80" />
+              {/* A -> C */}
+              <line x1="160" y1="20" x2="250" y2="80" />
+              {/* B -> D */}
+              <line x1="70" y1="80" x2="30" y2="140" />
+              {/* B -> E */}
+              <line x1="70" y1="80" x2="110" y2="140" />
+              {/* C -> F */}
+              <line x1="250" y1="80" x2="210" y2="140" />
+              {/* C -> G */}
+              <line x1="250" y1="80" x2="290" y2="140" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Traversal Output log */}
+        <div className="mt-4 border-t border-border/60 pt-4 flex flex-col gap-2">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Visited Output Sequence:</span>
+          <div className="flex gap-2 items-center flex-wrap min-h-[36px] bg-surface/30 border border-border/50 rounded-xl p-3 font-mono text-sm">
+            {currentOutput.length === 0 ? (
+              <span className="text-muted-foreground/45 italic text-xs">No nodes visited yet</span>
+            ) : (
+              currentOutput.map((val, idx) => (
+                <React.Fragment key={idx}>
+                  <span className="px-2.5 py-1 bg-complete/10 border border-complete/30 text-complete font-bold rounded-lg animate-scale-in">
+                    {val}
+                  </span>
+                  {idx < currentOutput.length - 1 && <span className="text-muted-foreground/30">→</span>}
+                </React.Fragment>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// 9. BITWISE OPERATIONS SANDBOX TAB
+// ==========================================
+
+function BitwiseLabTab() {
+  const [valA, setValA] = useState<number>(5);
+  const [valB, setValB] = useState<number>(3);
+
+  const getBits = (val: number): number[] => {
+    const bits: number[] = [];
+    for (let i = 7; i >= 0; i--) {
+      bits.push((val >> i) & 1);
+    }
+    return bits;
+  };
+
+  const toggleBit = (num: 'A' | 'B', index: number) => {
+    const currentVal = num === 'A' ? valA : valB;
+    const bitPos = 7 - index;
+    const newVal = currentVal ^ (1 << bitPos);
+    if (num === 'A') {
+      setValA(newVal);
+    } else {
+      setValB(newVal);
+    }
+  };
+
+  const bitsA = getBits(valA);
+  const bitsB = getBits(valB);
+
+  // Bitwise outputs
+  const andVal = valA & valB;
+  const orVal = valA | valB;
+  const xorVal = valA ^ valB;
+  const notAVal = (~valA) & 255;
+  const leftShiftVal = (valA << 1) & 255;
+  const rightShiftVal = valA >> 1;
+
+  const renderBitRow = (name: string, bits: number[], value: number, onToggle?: (idx: number) => void) => {
+    return (
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-surface/30 border border-border/50 rounded-xl">
+        <div className="w-20 shrink-0 font-bold text-xs text-foreground flex flex-col gap-0.5">
+          <span>{name}</span>
+          <span className="text-[10px] text-muted-foreground font-mono">Dec: {value}</span>
+        </div>
+        <div className="flex gap-1.5 overflow-x-auto py-1">
+          {bits.map((bit, idx) => (
+            <button
+              key={idx}
+              disabled={!onToggle}
+              onClick={() => onToggle && onToggle(idx)}
+              className={`w-9 h-9 rounded-lg border text-xs font-mono font-black flex flex-col items-center justify-center transition-all ${
+                bit === 1
+                  ? 'bg-primary/20 border-primary text-primary shadow-sm hover:bg-primary/35'
+                  : 'bg-surface border-border text-muted-foreground/60 hover:bg-surface-hover'
+              } ${onToggle ? 'cursor-pointer hover:scale-105 active:scale-95' : 'cursor-default'}`}
+            >
+              <span>{bit}</span>
+              <span className="text-[7px] text-muted-foreground/60 opacity-60">2^{7 - idx}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+      {/* Bit Toggles */}
+      <div className="lg:col-span-2 flex flex-col gap-5">
+        <div className="modern-card p-6 border border-border/80 flex flex-col gap-4">
+          <div className="flex justify-between items-center pb-2 border-b border-border/60">
+            <h3 className="text-sm font-bold text-foreground">Interactive Bit Inputs</h3>
+            <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Click bits to toggle</span>
+          </div>
+
+          {renderBitRow('Input A', bitsA, valA, (idx) => toggleBit('A', idx))}
+          {renderBitRow('Input B', bitsB, valB, (idx) => toggleBit('B', idx))}
+        </div>
+
+        {/* Operational outputs */}
+        <div className="modern-card p-6 border border-border/80 flex flex-col gap-4">
+          <h3 className="text-sm font-bold text-foreground border-b border-border/60 pb-2">Bitwise Logical Operations</h3>
+
+          <div className="flex flex-col gap-3">
+            {renderBitRow('A & B (AND)', getBits(andVal), andVal)}
+            {renderBitRow('A | B (OR)', getBits(orVal), orVal)}
+            {renderBitRow('A ^ B (XOR)', getBits(xorVal), xorVal)}
+            {renderBitRow('~A (NOT)', getBits(notAVal), notAVal)}
+          </div>
+        </div>
+      </div>
+
+      {/* Bit shift & explanatory panel */}
+      <div className="flex flex-col gap-6 lg:col-span-1">
+        <div className="modern-card p-5 border border-border/80 flex flex-col gap-4">
+          <h3 className="text-sm font-bold text-foreground border-b border-border/60 pb-2">Shift Operations</h3>
+
+          <div className="flex flex-col gap-3">
+            {renderBitRow('A << 1 (Left)', getBits(leftShiftVal), leftShiftVal)}
+            {renderBitRow('A >> 1 (Right)', getBits(rightShiftVal), rightShiftVal)}
+          </div>
+        </div>
+
+        <div className="modern-card p-5 border border-border/80 flex flex-col gap-3 bg-primary/5 border-primary/20">
+          <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Bitwise Explanation</h3>
+          <p className="text-[11.5px] text-muted-foreground leading-relaxed">
+            Computers store numbers as binary digits (bits). Bitwise operations manipulate these bits directly, making them incredibly fast (often running in a single CPU clock cycle).
+          </p>
+          <ul className="text-[11px] text-muted-foreground space-y-1.5 list-disc pl-4 mt-1 leading-relaxed">
+            <li><strong>AND (&):</strong> Yields 1 only if BOTH bits are 1.</li>
+            <li><strong>OR (|):</strong> Yields 1 if EITHER bit is 1.</li>
+            <li><strong>XOR (^):</strong> Yields 1 if the bits are DIFFERENT.</li>
+            <li><strong>NOT (~):</strong> Flips all bits (0 → 1, 1 → 0).</li>
+            <li><strong>Left Shift (&lt;&lt;):</strong> Shifts bits left, doubling the value (multiplying by 2).</li>
+            <li><strong>Right Shift (&gt;&gt;):</strong> Shifts bits right, halving the value (dividing by 2).</li>
+          </ul>
         </div>
       </div>
     </div>
