@@ -14,6 +14,9 @@ import {
 import { useAppStore } from '@/lib/store';
 import { categories, topics } from '@/data';
 
+const MotionLink = motion(Link);
+
+
 interface SkillNode {
   slug: string;
   label: string;
@@ -735,16 +738,21 @@ function MilestoneCard({
   const topic = topics.find((t) => t.slug === node.slug);
   const NodeIcon = node.icon;
 
+  const Wrapper = isLocked ? motion.div : MotionLink;
+  const wrapperProps = isLocked
+    ? {}
+    : { href: `/topics/${node.slug}` };
+
   return (
-    <motion.button
-      type="button"
+    <Wrapper
+      {...(wrapperProps as any)}
       onClick={onSelect}
       initial={reduceMotion ? undefined : { opacity: 0, x: initialX, y: 12 }}
       whileInView={reduceMotion ? undefined : { opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, amount: 0.4 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       whileHover={reduceMotion ? undefined : { y: -4 }}
-      className={`glass-card w-full p-5 text-${side === 'left' ? 'right' : 'left'} cursor-pointer transition-all`}
+      className={`glass-card group w-full p-5 text-${side === 'left' ? 'right' : 'left'} cursor-pointer transition-all block`}
       style={{
         borderColor: isSelected
           ? 'var(--accent)'
@@ -756,8 +764,7 @@ function MilestoneCard({
           : undefined,
         opacity: isLocked ? 0.65 : 1,
       }}
-      aria-label={`Open ${node.label} milestone`}
-      aria-pressed={isSelected}
+      aria-label={`${isLocked ? 'Locked:' : 'Go to'} ${node.label} milestone`}
     >
       <div className={`flex items-center gap-3 ${side === 'left' ? 'sm:flex-row-reverse' : ''}`}>
         <span
@@ -777,6 +784,9 @@ function MilestoneCard({
             {topic?.difficulty ?? 'Foundational'}
           </p>
         </div>
+        {!isLocked && (
+          <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+        )}
       </div>
 
       {topic?.definition && (
@@ -807,6 +817,6 @@ function MilestoneCard({
           </span>
         )}
       </div>
-    </motion.button>
+    </Wrapper>
   );
 }
