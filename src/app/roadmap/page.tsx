@@ -735,6 +735,8 @@ function MilestoneCard({
   initialX: number;
 }) {
   const router = useRouter();
+  const topic = topics.find((t) => t.slug === node.slug);
+  const NodeIcon = node.icon;
 
   return (
     <motion.div
