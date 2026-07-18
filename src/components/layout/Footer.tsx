@@ -1,30 +1,119 @@
 import React from 'react';
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { Heart, Globe, MessageSquare, Terminal } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border mt-auto py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center text-white text-[10px] font-bold">D</div>
-          <span className="text-sm font-semibold text-foreground">DSA <span className="text-primary">House</span></span>
-        </Link>
+    <footer className="border-t border-border/60 bg-muted/15 w-full mt-auto py-12 transition-colors duration-300">
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12 mx-auto">
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10">
+          
+          {/* Column 1: Brand & Tagline */}
+          <div className="flex flex-col gap-4 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-primary/10 to-accent/10 border border-primary/20 group-hover:scale-105 transition-all duration-300">
+                <svg viewBox="0 0 32 32" className="w-5 h-5 relative z-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="footerLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="var(--primary)" />
+                      <stop offset="100%" stopColor="var(--accent)" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M16 8 L9 20 M16 8 L23 20" stroke="url(#footerLogoGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9 20 L23 20" stroke="url(#footerLogoGrad)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3 3" opacity="0.6" />
+                  <circle cx="16" cy="8" r="4.5" fill="var(--background)" stroke="url(#footerLogoGrad)" strokeWidth="3" />
+                  <circle cx="9" cy="20" r="3.5" fill="var(--background)" stroke="url(#footerLogoGrad)" strokeWidth="2.5" />
+                  <circle cx="23" cy="20" r="3.5" fill="var(--background)" stroke="url(#footerLogoGrad)" strokeWidth="2.5" />
+                </svg>
+              </div>
+              <span className="text-base font-bold tracking-tight text-foreground flex items-center gap-1">
+                <span>DSA</span>
+                <span className="bg-gradient-to-r from-primary via-[#60a5fa] to-accent bg-clip-text text-transparent font-extrabold">House</span>
+              </span>
+            </Link>
 
-        <p className="text-xs text-muted-foreground flex items-center gap-1">
-          Made with <Heart className="h-3 w-3 text-red-500 fill-red-500" /> for CS learners © {new Date().getFullYear()}
-        </p>
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-[260px]">
+              Master data structures and algorithms with interactive visualizers, structured roadmaps, and hands-on coding challenges.
+            </p>
 
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-          <Link href="/topics" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Topics</Link>
-          <Link href="/patterns" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Patterns</Link>
-          <Link href="/daily" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Daily</Link>
-          <Link href="/labs" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Labs</Link>
-          <Link href="/interview-prep" className="text-xs text-muted-foreground hover:text-foreground transition-colors">Interview</Link>
-          <Link href="/about" className="text-xs text-muted-foreground hover:text-foreground transition-colors">About</Link>
-          <a href="https://github.com/Tanvir284/MD-Tanvir-Islam" target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            GitHub
-          </a>
+            {/* Social Badges */}
+            <div className="flex gap-2 mt-2">
+              <a
+                href="https://github.com/Tanvir284/Dsa-house"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-surface hover:bg-surface-hover border border-border/80 hover:border-border text-muted-foreground hover:text-foreground rounded-xl transition-all"
+                title="GitHub Repository"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                  <path d="M9 18c-4.51 2-5-2-7-2" />
+                </svg>
+              </a>
+              <a
+                href="#"
+                className="p-2 bg-surface hover:bg-surface-hover border border-border/80 hover:border-border text-muted-foreground hover:text-foreground rounded-xl transition-all"
+                title="Discord Community"
+              >
+                <MessageSquare className="h-4 w-4" />
+              </a>
+              <a
+                href="#"
+                className="p-2 bg-surface hover:bg-surface-hover border border-border/80 hover:border-border text-muted-foreground hover:text-foreground rounded-xl transition-all"
+                title="SaaS Status"
+              >
+                <Terminal className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Column 2: Curriculum Links */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-[10px] font-bold text-foreground uppercase tracking-widest">Curriculum</h4>
+            <div className="flex flex-col gap-2.5 text-xs text-muted-foreground font-medium">
+              <Link href="/roadmap" className="hover:text-foreground transition-colors">Interactive Roadmap</Link>
+              <Link href="/topics" className="hover:text-foreground transition-colors">Topics Catalogue</Link>
+              <Link href="/problems" className="hover:text-foreground transition-colors">Coding Arena</Link>
+              <Link href="/patterns" className="hover:text-foreground transition-colors">Algorithm Patterns</Link>
+            </div>
+          </div>
+
+          {/* Column 3: Labs & Extras */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-[10px] font-bold text-foreground uppercase tracking-widest">Labs & Extras</h4>
+            <div className="flex flex-col gap-2.5 text-xs text-muted-foreground font-medium">
+              <Link href="/labs" className="hover:text-foreground transition-colors">Labs Sandbox</Link>
+              <Link href="/daily" className="hover:text-foreground transition-colors">Daily Challenge</Link>
+              <Link href="/interview-prep" className="hover:text-foreground transition-colors">Interview Prep</Link>
+              <Link href="/bookmarks" className="hover:text-foreground transition-colors">Bookmarks</Link>
+            </div>
+          </div>
+
+          {/* Column 4: System Status & Portal */}
+          <div className="flex flex-col gap-3">
+            <h4 className="text-[10px] font-bold text-foreground uppercase tracking-widest">Platform</h4>
+            <div className="flex flex-col gap-2.5 text-xs text-muted-foreground font-medium">
+              <Link href="/about" className="hover:text-foreground transition-colors">About Us</Link>
+              <Link href="/auth/register" className="hover:text-foreground transition-colors">Join Community</Link>
+              <div className="flex items-center gap-1.5 mt-1 text-[11px] font-semibold text-complete">
+                <span className="h-1.5 w-1.5 rounded-full bg-complete animate-pulse" />
+                <span>All Systems Operational</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Bottom copyright row */}
+        <div className="border-t border-border/60 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-muted-foreground font-medium">
+          <div className="flex items-center gap-1">
+            <span>© {new Date().getFullYear()} DSA House. All rights reserved.</span>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-muted-foreground/80">
+            <span>Helping you optimize your mental algorithms and accelerate your career. ⚡</span>
+          </div>
         </div>
       </div>
     </footer>
