@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -733,82 +734,85 @@ function MilestoneCard({
   onSelect: () => void;
   initialX: number;
 }) {
-  const topic = topics.find((t) => t.slug === node.slug);
-  const NodeIcon = node.icon;
+  const router = useRouter();
 
   return (
-    <Link href={`/topics/${node.slug}`} className="block w-full">
-      <motion.div
-        onClick={onSelect}
-        initial={reduceMotion ? undefined : { opacity: 0, x: initialX, y: 12 }}
-        whileInView={reduceMotion ? undefined : { opacity: 1, x: 0, y: 0 }}
-        viewport={{ once: true, amount: 0.4 }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        whileHover={reduceMotion ? undefined : { y: -4 }}
-        className={`glass-card group w-full p-5 text-${side === 'left' ? 'right' : 'left'} cursor-pointer transition-all block`}
-        style={{
-          borderColor: isSelected
-            ? 'var(--accent)'
-            : isDone
-            ? `color-mix(in srgb, ${chapter.accent} 55%, var(--glass-border))`
-            : 'var(--glass-border)',
-          boxShadow: isSelected
-            ? `var(--shadow-lg), 0 0 30px ${chapter.accent}55`
-            : undefined,
-          opacity: isLocked ? 0.65 : 1,
-        }}
-        aria-label={`${isLocked ? 'Locked:' : 'Go to'} ${node.label} milestone`}
-      >
-        <div className={`flex items-center gap-3 ${side === 'left' ? 'sm:flex-row-reverse' : ''}`}>
-          <span
-            className="w-11 h-11 rounded-xl inline-flex items-center justify-center text-xl shrink-0"
-            style={{
-              background: isLocked ? 'var(--muted)' : chapter.gradient,
-              boxShadow: isLocked ? 'none' : `0 4px 14px ${chapter.accent}55`,
-            }}
-          >
-            {isLocked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <NodeIcon className="h-5 w-5 text-white" />}
-          </span>
-          <div className={`flex-1 ${side === 'left' ? 'sm:text-right' : 'text-left'}`}>
-            <h3 className="text-base font-black text-foreground leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-              {node.label}
-            </h3>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              {topic?.difficulty ?? 'Foundational'}
-            </p>
-          </div>
-          <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
-        </div>
-
-        {topic?.definition && (
-          <p className="mt-3 text-xs text-muted-foreground leading-relaxed line-clamp-2 text-left">
-            {topic.definition}
+    <motion.div
+      onClick={onSelect}
+      onDoubleClick={() => {
+        if (!isLocked) {
+          router.push(`/topics/${node.slug}`);
+        }
+      }}
+      initial={reduceMotion ? undefined : { opacity: 0, x: initialX, y: 12 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={reduceMotion ? undefined : { y: -4 }}
+      className={`glass-card group w-full p-5 text-${side === 'left' ? 'right' : 'left'} cursor-pointer transition-all block`}
+      style={{
+        borderColor: isSelected
+          ? 'var(--accent)'
+          : isDone
+          ? `color-mix(in srgb, ${chapter.accent} 55%, var(--glass-border))`
+          : 'var(--glass-border)',
+        boxShadow: isSelected
+          ? `var(--shadow-lg), 0 0 30px ${chapter.accent}55`
+          : undefined,
+        opacity: isLocked ? 0.65 : 1,
+      }}
+      aria-label={`${isLocked ? 'Locked:' : 'Go to'} ${node.label} milestone`}
+      title={isLocked ? 'Locked' : 'Click to select, double-click to visit topic'}
+    >
+      <div className={`flex items-center gap-3 ${side === 'left' ? 'sm:flex-row-reverse' : ''}`}>
+        <span
+          className="w-11 h-11 rounded-xl inline-flex items-center justify-center text-xl shrink-0"
+          style={{
+            background: isLocked ? 'var(--muted)' : chapter.gradient,
+            boxShadow: isLocked ? 'none' : `0 4px 14px ${chapter.accent}55`,
+          }}
+        >
+          {isLocked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <NodeIcon className="h-5 w-5 text-white" />}
+        </span>
+        <div className={`flex-1 ${side === 'left' ? 'sm:text-right' : 'text-left'}`}>
+          <h3 className="text-base font-black text-foreground leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+            {node.label}
+          </h3>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            {topic?.difficulty ?? 'Foundational'}
           </p>
-        )}
-
-        <div className={`mt-4 flex items-center gap-2 flex-wrap ${side === 'left' ? 'sm:justify-end' : 'justify-start'}`}>
-          {isDone && (
-            <span className="badge badge-complete">
-              <Check className="h-3 w-3" /> Conquered
-            </span>
-          )}
-          {isAvailable && (
-            <span className="badge badge-primary">
-              <Sparkles className="h-3 w-3" /> Ready
-            </span>
-          )}
-          {isLocked && (
-            <span className="badge bg-surface text-muted-foreground">
-              <Lock className="h-3 w-3" /> Locked
-            </span>
-          )}
-          {topic?.time_complexity_average && (
-            <span className="badge bg-surface text-muted-foreground font-mono">
-              {topic.time_complexity_average}
-            </span>
-          )}
         </div>
-      </motion.div>
-    </Link>
+        <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+      </div>
+
+      {topic?.definition && (
+        <p className="mt-3 text-xs text-muted-foreground leading-relaxed line-clamp-2 text-left">
+          {topic.definition}
+        </p>
+      )}
+
+      <div className={`mt-4 flex items-center gap-2 flex-wrap ${side === 'left' ? 'sm:justify-end' : 'justify-start'}`}>
+        {isDone && (
+          <span className="badge badge-complete">
+            <Check className="h-3 w-3" /> Conquered
+          </span>
+        )}
+        {isAvailable && (
+          <span className="badge badge-primary">
+            <Sparkles className="h-3 w-3" /> Ready
+          </span>
+        )}
+        {isLocked && (
+          <span className="badge bg-surface text-muted-foreground">
+            <Lock className="h-3 w-3" /> Locked
+          </span>
+        )}
+        {topic?.time_complexity_average && (
+          <span className="badge bg-surface text-muted-foreground font-mono">
+            {topic.time_complexity_average}
+          </span>
+        )}
+      </div>
+    </motion.div>
   );
 }
