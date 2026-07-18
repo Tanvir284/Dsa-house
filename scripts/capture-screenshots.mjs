@@ -96,7 +96,9 @@ async function capture(page, mod, file, path, waitMs = 600) {
       return false;
     }
     // Give the page time to hydrate, animate, and load data
-    await page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => {});
+    await page.waitForLoadState('networkidle', { timeout: 15_000 }).catch((err) => {
+      console.warn(`Network idle timeout for ${path}: ${err.message}`);
+    });
     await sleep(waitMs);
     await page.screenshot({ path: outFile, fullPage: true });
     console.log(`ok`);
