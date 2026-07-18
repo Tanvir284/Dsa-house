@@ -40,15 +40,19 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/70 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
+      <header className="sticky top-0 z-50 w-full pt-3 pb-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="glass-navbar rounded-2xl h-14 px-3 sm:px-4 flex items-center justify-between gap-3">
 
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white font-black text-sm shadow-md group-hover:scale-105 transition-transform">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md group-hover:scale-105 transition-transform"
+              style={{ background: 'var(--accent-gradient)', boxShadow: '0 4px 14px rgba(79,157,255,0.35)' }}
+            >
               D
             </div>
             <span className="text-base font-bold text-foreground tracking-tight hidden sm:block">
-              DSA <span className="text-primary">House</span>
+              DSA <span className="gradient-text">House</span>
             </span>
           </Link>
 
@@ -60,10 +64,11 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-semibold rounded-lg transition-colors ${
+                  data-active={active}
+                  className={`nav-pill flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-lg transition-colors ${
                     active
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-surface'
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -78,8 +83,9 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 text-[12px] font-semibold rounded-lg transition-colors ${
-                    active ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:text-foreground hover:bg-surface'
+                  data-active={active}
+                  className={`nav-pill flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-lg transition-colors ${
+                    active ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -161,10 +167,11 @@ export default function Navbar() {
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
+          </div>
         </div>
 
         {mobileMenuOpen && (
-          <div className="xl:hidden border-t border-border bg-card/95 backdrop-blur-lg px-4 py-3 flex flex-col gap-1 max-h-[70vh] overflow-y-auto">
+          <div className="xl:hidden mt-2 mx-4 sm:mx-6 lg:mx-8 rounded-2xl glass-navbar px-4 py-3 flex flex-col gap-1 max-h-[70vh] overflow-y-auto">
             <button
               type="button"
               onClick={() => { setMobileSearch(true); setMobileMenuOpen(false); }}
@@ -195,7 +202,10 @@ export default function Navbar() {
                 <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-surface">
                   <Image src={profile.avatar_url} alt="" width={24} height={24} className="h-6 w-6 rounded-lg" unoptimized />
                   {profile.username}
-                  <span className="ml-auto text-[11px] text-primary">🔥 {profile.streak_count}</span>
+                  <span className="ml-auto inline-flex items-center gap-1 text-[11px] text-primary">
+                    <Flame className="h-3.5 w-3.5" aria-hidden="true" /> {profile.streak_count}
+                    <span className="sr-only">day streak</span>
+                  </span>
                 </Link>
                 <button type="button" onClick={() => { logoutUser(); setMobileMenuOpen(false); }} className="text-left px-3 py-2 text-sm text-hard">
                   Sign Out

@@ -751,7 +751,7 @@ The current-edge pointer is essential: it ensures each edge is examined a bounde
         content: `There are at most $V$ phases because the shortest $s$–$t$ distance strictly increases after each blocking flow. Each phase computes a blocking flow in $O(VE)$ time using the current-edge optimization, giving:
 $$O(V^2 \\cdot E)\\ \\text{time}$$
 
-On **unit-capacity** networks (as in bipartite matching) the number of phases is only $O(\\sqrt{E})$ and each phase is $O(E)$, improving the bound to:
+On **unit-capacity** networks (as in bipartite matching) the number of phases is only $O(\\sqrt{V})$ and each phase is $O(E)$, improving the bound to:
 $$O(E \\sqrt{V})$$
 
 This is why Hopcroft–Karp (a specialization of these ideas) matches bipartite graphs so efficiently.`,
@@ -1646,11 +1646,11 @@ public class Johnson {
       {
         id: 'q-johnsons-algorithm-3',
         quiz_id: 'quiz-ext-johnsons-algorithm',
-        question_text: 'What is the time complexity of Johnson\'s algorithm with a binary-heap Dijkstra?',
+        question_text: 'What is the time complexity of Johnson\'s algorithm with a Fibonacci-heap Dijkstra?',
         question_type: 'COMPLEXITY',
         options: ['O(V^3)', 'O(V * E + V^2 * log V)', 'O(E * log V)', 'O(V * E)'],
         correct_option_index: 1,
-        explanation: 'One Bellman–Ford (O(VE)) plus V Dijkstra runs (O(E log V) each) gives O(VE + V^2 log V).',
+        explanation: 'One Bellman–Ford (O(VE)) plus V Fibonacci-heap Dijkstra runs (O(E + V log V) each) gives O(VE + V^2 log V).',
       },
     ],
   },

@@ -1511,7 +1511,7 @@ Each vertex is enqueued once and each edge relaxed once, hence $O(V + E)$.`,
         content: `- **Time:** $O(V + E)$ — computing indegrees scans all edges, and the main loop processes each vertex and edge once.
 - **Space:** $O(V)$ for the indegree array and queue (plus the input adjacency list).
 
-Using a min-heap instead of a plain queue yields the **lexicographically smallest** topological order at a cost of $O(V + E \\log V)$.`,
+Using a min-heap instead of a plain queue yields the **lexicographically smallest** topological order at a cost of $O(V \\log V + E)$.`,
         display_order: 3,
       },
       {

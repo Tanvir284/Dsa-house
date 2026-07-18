@@ -42,6 +42,92 @@ This optimizes the best-case time complexity to $O(N)$.
     `,
     display_order: 2,
   },
+  {
+    id: 'sec-bbs-3',
+    topic_id: bubbleSortTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Picture a queue of people at a photo booth who need to line up from shortest to tallest. Nobody has a bird's-eye view, so they use a simple rule: each person only talks to the neighbor directly in front of them. If the person in front is taller, they politely swap places. If not, they stay put.
+
+The queue does one full front-to-back sweep. After the sweep, the tallest person in the whole line has definitely reached the very back — because every taller-than-neighbor comparison pushed them one step further. Nobody knew the tallest person's identity in advance; the process just "floated" them to the end.
+
+Now the back position is locked in, and the queue repeats the same rule on the shorter prefix. Round after round, one more tall person settles into their final spot at the back. That is exactly what Bubble Sort does: each outer pass "bubbles" the next-largest unsorted value to its final resting place.
+    `,
+    display_order: 3,
+  },
+  {
+    id: 'sec-bbs-4',
+    topic_id: bubbleSortTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's sort the array \`[5, 2, 9, 1, 5]\` using optimized Bubble Sort. We compare each adjacent pair (\`arr[j]\` vs \`arr[j+1]\`) and swap if the left is larger.
+
+**Pass 1** — compare positions (0,1), (1,2), (2,3), (3,4):
+\`\`\`
+Start:    [5, 2, 9, 1, 5]
+j=0: 5>2  [2, 5, 9, 1, 5]   swap
+j=1: 5<9  [2, 5, 9, 1, 5]   no swap
+j=2: 9>1  [2, 5, 1, 9, 5]   swap
+j=3: 9>5  [2, 5, 1, 5, 9]   swap  <- 9 has bubbled to the end
+End P1:   [2, 5, 1, 5, 9]   swapped=true
+\`\`\`
+
+**Pass 2** — the last slot is locked; compare (0,1), (1,2), (2,3):
+\`\`\`
+Start:    [2, 5, 1, 5, 9]
+j=0: 2<5  [2, 5, 1, 5, 9]   no swap
+j=1: 5>1  [2, 1, 5, 5, 9]   swap
+j=2: 5=5  [2, 1, 5, 5, 9]   no swap (not strictly greater)
+End P2:   [2, 1, 5, 5, 9]   swapped=true
+\`\`\`
+
+**Pass 3** — last two slots locked; compare (0,1), (1,2):
+\`\`\`
+Start:    [2, 1, 5, 5, 9]
+j=0: 2>1  [1, 2, 5, 5, 9]   swap
+j=1: 2<5  [1, 2, 5, 5, 9]   no swap
+End P3:   [1, 2, 5, 5, 9]   swapped=true
+\`\`\`
+
+**Pass 4** — compare (0,1):
+\`\`\`
+Start:    [1, 2, 5, 5, 9]
+j=0: 1<2  [1, 2, 5, 5, 9]   no swap
+End P4:   [1, 2, 5, 5, 9]   swapped=false  -> EARLY EXIT
+\`\`\`
+
+Because no swap happened in Pass 4, the array is confirmed sorted and we break out of the outer loop.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-bbs-5',
+    topic_id: bubbleSortTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Forgetting the early-exit \`swapped\` flag.** Without it, the algorithm always runs $O(N^2)$ passes, even on an already-sorted input. *Fix:* reset \`swapped = false\` at the top of every outer pass and \`break\` when it stays false.
+- **Off-by-one in the inner loop bound.** Writing \`for j in range(n)\` instead of \`range(n - i - 1)\` causes an out-of-bounds access at \`arr[j+1]\`. *Fix:* the inner loop must stop at \`n - i - 1\` because the last \`i\` slots are already sorted.
+- **Using \`>=\` instead of \`>\` in the comparison.** \`arr[j] >= arr[j+1]\` swaps equal elements, which is wasted work and destroys stability. *Fix:* always use strict \`>\`.
+- **Sorting in the wrong direction by accident.** Swapping when \`arr[j] < arr[j+1]\` produces a descending sort. *Fix:* double-check the comparison sign matches the intended order.
+- **Swapping with a broken temp variable.** In languages without tuple assignment, writing \`arr[j] = arr[j+1]; arr[j+1] = arr[j];\` loses the original value. *Fix:* use a proper \`temp\` variable or a language-level swap primitive.
+- **Assuming Bubble Sort scales.** Running it on an array of a million integers will freeze your program. *Fix:* for anything beyond teaching examples or tiny near-sorted inputs, reach for Merge Sort, Quick Sort, or the standard library sort.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-bbs-6',
+    topic_id: bubbleSortTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Teaching sorting fundamentals.** Its adjacent-swap model is the easiest way to introduce loops, invariants, and worst-case analysis in a first algorithms course.
+- **Tiny arrays (roughly $N < 20$).** For very small inputs the constant factor of a simple loop can beat the overhead of a recursive divide-and-conquer sort.
+- **Nearly-sorted data with occasional out-of-place items.** With the early-exit flag, Bubble Sort finishes in nearly $O(N)$ time when only a handful of neighbors are out of order — e.g. a live leaderboard that just received one new score.
+- **Detecting whether an array is already sorted.** A single pass of Bubble Sort that never swaps is a cheap "is this list sorted?" check.
+- **Constrained embedded environments.** When code size matters more than speed (tiny microcontrollers, bootloaders), Bubble Sort's few lines of logic and $O(1)$ extra memory make it attractive.
+- **Visualizations and animations.** Its predictable, step-by-step swaps make it a favorite for sorting animations and interactive teaching demos.
+    `,
+    display_order: 6,
+  },
 ];
 
 export const bubbleSortSnippets: CodeSnippet[] = [
@@ -249,6 +335,95 @@ $$\\text{Total Time} = O(N \\log N)$$
     `,
     display_order: 2,
   },
+  {
+    id: 'sec-mgs-3',
+    topic_id: mergeSortTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Imagine you and a friend are each holding a stack of playing cards that is already sorted from low to high. Your job is to combine both stacks into one final sorted deck. You do not shuffle everything together and re-sort — that would waste all the work you already did.
+
+Instead, you both hold up your top card. Whichever card is smaller gets placed face-down on the shared output pile, and the winner draws their next card. You repeat this until one player runs out; then the other player just drops their remaining cards straight onto the pile. This "compare-the-tops" step is exactly the *merge* routine, and it runs in linear time.
+
+Now zoom out. Where did those two pre-sorted stacks come from? They came from the same trick applied to smaller stacks: two people each merging two even smaller sorted stacks, and so on, all the way down to stacks of size one (which are sorted by default). Merge Sort is that recursive dance: **split until trivial, then merge back up**.
+    `,
+    display_order: 3,
+  },
+  {
+    id: 'sec-mgs-4',
+    topic_id: mergeSortTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's sort \`[5, 2, 9, 1, 5]\` with Merge Sort. First we recursively split the array in half until each piece has one element (the "divide" phase), then we merge sorted pieces back up (the "conquer" phase).
+
+**Divide phase (recursion tree, splitting):**
+\`\`\`
+                 [5, 2, 9, 1, 5]
+                /              \\
+         [5, 2]                [9, 1, 5]
+         /    \\                /       \\
+       [5]   [2]            [9]       [1, 5]
+                                       /   \\
+                                     [1]   [5]
+\`\`\`
+
+**Conquer phase (merging back up), numbered:**
+
+**Step 1** — merge \`[5]\` and \`[2]\` → compare 5 vs 2, pick 2 then 5:
+\`\`\`
+[5] + [2]  ->  [2, 5]
+\`\`\`
+
+**Step 2** — merge \`[1]\` and \`[5]\` → compare 1 vs 5, pick 1 then 5:
+\`\`\`
+[1] + [5]  ->  [1, 5]
+\`\`\`
+
+**Step 3** — merge \`[9]\` and \`[1, 5]\` → compare 9 vs 1 (pick 1), 9 vs 5 (pick 5), drain 9:
+\`\`\`
+[9] + [1, 5]  ->  [1, 5, 9]
+\`\`\`
+
+**Step 4** — merge \`[2, 5]\` and \`[1, 5, 9]\`:
+\`\`\`
+left=[2,5]  right=[1,5,9]
+  i=0,j=0: 2 vs 1 -> take 1, j=1     output: [1]
+  i=0,j=1: 2 vs 5 -> take 2, i=1     output: [1, 2]
+  i=1,j=1: 5 vs 5 -> take 5 (left, stable), i=2  output: [1, 2, 5]
+  i=2 exhausted, drain right: 5, 9              output: [1, 2, 5, 5, 9]
+\`\`\`
+
+Final sorted result: \`[1, 2, 5, 5, 9]\`. Notice that at each level of the tree we do at most $O(N)$ work, and the tree has $\\log_2 N$ levels, giving $O(N \\log N)$.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-mgs-5',
+    topic_id: mergeSortTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Forgetting the base case.** If the recursion doesn't stop at length 0 or 1, it recurses forever and blows the call stack. *Fix:* return early when \`length <= 1\`.
+- **Wrong midpoint formula.** Writing \`mid = (low + high) / 2\` can overflow when \`low\` and \`high\` are near \`INT_MAX\` in C/C++/Java. *Fix:* use \`mid = low + (high - low) / 2\`.
+- **Off-by-one in the recursive halves.** Passing \`(l, m)\` and \`(m, r)\` instead of \`(l, m)\` and \`(m + 1, r)\` will either duplicate the middle element or infinite-loop. *Fix:* one half ends at \`m\`, the other starts at \`m + 1\`.
+- **Losing stability by using \`<\` instead of \`<=\`.** In the merge step, \`if (L[i] < R[j])\` puts equal right-side elements first, breaking Merge Sort's stability guarantee. *Fix:* use \`if (L[i] <= R[j])\`.
+- **Forgetting to drain the remaining half.** After the main while-loop exits, one of \`L\` or \`R\` still has leftovers; skipping the drain leaves garbage in the output. *Fix:* always run both trailing while-loops (or a \`concat\`/\`arraycopy\` of the remainder).
+- **Ignoring the $O(N)$ auxiliary memory.** On huge arrays or embedded systems, allocating a full copy every merge is fatal. *Fix:* use a single reusable buffer or switch to an in-place algorithm.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-mgs-6',
+    topic_id: mergeSortTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **External sorting of huge files.** When data is too big to fit in RAM, Merge Sort's ability to merge already-sorted runs from disk (or tape) is the classic solution — this is how databases sort terabyte-sized tables.
+- **Sorting linked lists.** Merge Sort works naturally on linked lists in $O(N \\log N)$ time and $O(\\log N)$ stack space, without the random-access pain that hurts Quick Sort here.
+- **Stable sort requirements.** Whenever equal keys must keep their original relative order (e.g. sorting a table by "date" while preserving the previous "name" order), Merge Sort is a safe default.
+- **Parallel and distributed sorting.** Independent sub-arrays can be sorted on different cores or machines and merged, making Merge Sort a great fit for map-reduce-style pipelines.
+- **Predictable worst-case performance.** Real-time or safety-critical systems that cannot tolerate Quick Sort's $O(N^2)$ worst case pick Merge Sort for its guaranteed $O(N \\log N)$.
+- **Counting inversions or related divide-and-conquer problems.** Many competitive-programming problems (inversion count, closest pair, skyline) are solved by piggy-backing on Merge Sort's merge step.
+    `,
+    display_order: 6,
+  },
 ];
 
 export const mergeSortSnippets: CodeSnippet[] = [
@@ -329,6 +504,7 @@ void merge(int arr[], int l, int m, int r) {
     
     int* L = (int*)malloc(n1 * sizeof(int));
     int* R = (int*)malloc(n2 * sizeof(int));
+    if (L == NULL || R == NULL) { free(L); free(R); return; }
     
     for (i = 0; i < n1; i++) L[i] = arr[l + i];
     for (j = 0; j < n2; j++) R[j] = arr[m + 1 + j];
@@ -499,7 +675,7 @@ export const quickSortTopic: Topic = {
   time_complexity_best: 'O(N log N)',
   time_complexity_average: 'O(N log N)',
   time_complexity_worst: 'O(N^2) (When pivot selection is poor on sorted data)',
-  space_complexity: 'O(log N) (Recursion call stack)',
+  space_complexity: 'O(log N) average / O(N) worst (Recursion call stack)',
   display_order: 8,
 };
 
@@ -530,6 +706,108 @@ The core of Quick Sort is the partition step. The two most common schemes are:
 To avoid the worst-case $O(N^2)$ (which occurs when the array is already sorted and we naive-select the last element as the pivot), we can select the pivot randomly or choose the **median of three** elements (first, middle, last).
     `,
     display_order: 2,
+  },
+  {
+    id: 'sec-qks-3',
+    topic_id: quickSortTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Imagine a teacher organizing a room full of students by exam score. She grabs one student at random and calls them the "pivot." Then she gives a single instruction: "Everyone with a score lower than the pivot, please move to the left side of the room. Everyone higher, move to the right." After a bit of shuffling, the pivot student is standing in the exact position they would occupy in a fully sorted line — even though the two crowds around them are still messy.
+
+Now the teacher forgets about the pivot (they're locked in) and repeats the same trick on each side of the room independently: pick a new pivot in the left crowd, partition it; pick a new pivot in the right crowd, partition it. Each round shrinks the disorderly groups and locks in one more student's final position.
+
+The magic is that no giant merged pile is ever needed — every rearrangement happens in place, right where the students are standing. That's why Quick Sort is so fast in practice: partitioning is a simple scan-and-swap, and picking a good pivot means each round chops the remaining work roughly in half.
+    `,
+    display_order: 3,
+  },
+  {
+    id: 'sec-qks-4',
+    topic_id: quickSortTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Let's sort \`[5, 2, 9, 1, 5]\` using Lomuto partitioning with the **last element as pivot**. We track \`i\` = "boundary of the ≤ pivot region" and scan \`j\` from \`low\` to \`high - 1\`.
+
+**Call 1** — quickSort(arr, low=0, high=4), pivot = arr[4] = 5. Start with i = -1.
+\`\`\`
+Array: [5, 2, 9, 1, 5]   pivot=5
+j=0: arr[0]=5, 5<=5 -> i=0, swap arr[0]&arr[0]  [5, 2, 9, 1, 5]
+j=1: arr[1]=2, 2<=5 -> i=1, swap arr[1]&arr[1]  [5, 2, 9, 1, 5]
+j=2: arr[2]=9, 9>5  -> skip                     [5, 2, 9, 1, 5]
+j=3: arr[3]=1, 1<=5 -> i=2, swap arr[2]&arr[3]  [5, 2, 1, 9, 5]
+Place pivot: swap arr[i+1=3] & arr[4]           [5, 2, 1, 5, 9]
+Pivot index returned: 3  (the 5 at index 3 is now locked)
+\`\`\`
+
+Recursion tree so far:
+\`\`\`
+                 qs(0,4) pivot=5 -> partition idx 3
+                 /                    \\
+           qs(0,2)                 qs(4,4)  base case (empty)
+\`\`\`
+
+**Call 2** — quickSort(arr, low=0, high=2) on \`[5, 2, 1, _, _]\`, pivot = arr[2] = 1. Start i = -1.
+\`\`\`
+Array: [5, 2, 1, 5, 9]   pivot=1  (scanning indices 0..1)
+j=0: arr[0]=5, 5>1  -> skip                     [5, 2, 1, 5, 9]
+j=1: arr[1]=2, 2>1  -> skip                     [5, 2, 1, 5, 9]
+Place pivot: swap arr[i+1=0] & arr[2]           [1, 2, 5, 5, 9]
+Pivot index returned: 0  (the 1 is locked)
+\`\`\`
+
+**Call 3** — quickSort(arr, low=-1, high=-1): base case (low >= high), return.
+
+**Call 4** — quickSort(arr, low=1, high=2) on \`[_, 2, 5, _, _]\`, pivot = arr[2] = 5. i = 0.
+\`\`\`
+Array: [1, 2, 5, 5, 9]   pivot=5  (scanning index 1)
+j=1: arr[1]=2, 2<=5 -> i=1, swap arr[1]&arr[1]  [1, 2, 5, 5, 9]
+Place pivot: swap arr[i+1=2] & arr[2]           [1, 2, 5, 5, 9]
+Pivot index returned: 2
+\`\`\`
+
+Remaining sub-calls (\`qs(1,1)\` and \`qs(3,2)\`) are all base cases.
+
+Final sorted array: \`[1, 2, 5, 5, 9]\`.
+
+Full recursion tree:
+\`\`\`
+                     qs(0,4) pivot=5 @ idx3
+                    /                    \\
+              qs(0,2) pivot=1 @ idx0     qs(4,4) base
+             /                \\
+        qs(-1,-1) base    qs(1,2) pivot=5 @ idx2
+                          /             \\
+                    qs(1,1) base    qs(3,2) base
+\`\`\`
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-qks-5',
+    topic_id: quickSortTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+- **Always picking the first or last element as the pivot.** On sorted or reverse-sorted input this creates one empty partition and one of size $N-1$, degrading to $O(N^2)$. *Fix:* pick a random pivot, or use median-of-three.
+- **Missing the base case.** Forgetting \`if (low < high)\` sends the recursion into negative indices and stack overflow. *Fix:* always guard the recursive call.
+- **Recursing on the pivot itself.** Calling \`sort(arr, low, pi)\` and \`sort(arr, pi, high)\` (instead of \`pi - 1\` / \`pi + 1\`) infinite-loops because the pivot is already in its final place. *Fix:* exclude the pivot from both halves.
+- **Not handling duplicates.** With Lomuto and many equal keys, one partition stays huge and degrades to $O(N^2)$. *Fix:* switch to three-way (Dutch national flag) partitioning when duplicates are common.
+- **Deep recursion on the larger side first.** Recursing on the bigger partition can push the call stack past $O(\\log N)$. *Fix:* recurse on the smaller partition and loop on the larger one (tail-call trick).
+- **Assuming Quick Sort is stable.** The partitioning step swaps elements over long distances and can reorder equal keys. *Fix:* if stability matters (e.g. multi-key sort), use Merge Sort instead.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-qks-6',
+    topic_id: quickSortTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **General-purpose in-memory sorting.** With randomized pivots, Quick Sort is the go-to sort for arrays that fit in RAM, thanks to its low constant factor and excellent CPU cache behavior.
+- **Standard library implementations.** Real-world library sorts (like C's \`qsort\`, C++'s \`std::sort\` via introsort, or Java's primitive sort) are built on Quick Sort with fallbacks — a strong endorsement of its practical speed.
+- **Memory-constrained environments.** Because Quick Sort sorts in place with only $O(\\log N)$ average stack space, it fits on devices that cannot afford Merge Sort's $O(N)$ buffer.
+- **Selection / quickselect problems.** Partitioning is the heart of Quickselect, which finds the k-th smallest element in expected $O(N)$ time — used in medians, percentiles, and top-K queries.
+- **Randomized algorithms and streaming approximations.** The random-pivot idea makes Quick Sort a natural teaching example — and building block — for probabilistic algorithms.
+- **Anywhere worst-case guarantees are NOT required.** When average-case throughput matters more than worst-case latency (batch jobs, offline analytics), Quick Sort typically wins races against Merge Sort and Heap Sort.
+    `,
+    display_order: 6,
   },
 ];
 
@@ -606,7 +884,7 @@ int partition(int arr[], int low, int high) {
     int pivot = arr[high];
     int i = (low - 1);
     for (int j = low; j <= high - 1; j++) {
-        if (arr[j] < pivot) {
+        if (arr[j] <= pivot) {
             i++;
             swap(&arr[i], &arr[j]);
         }

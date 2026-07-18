@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { 
   ChevronLeft, CheckCircle2, Circle, Copy, Check, FileText, 
-  Sparkles, AlertCircle, Code 
+  Sparkles, AlertCircle, Code, Terminal 
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { problems } from '@/data';
+import { getProblemTestSpec } from '@/data/problem-tests';
+import { CodeRunner } from '@/components/runner/CodeRunner';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -21,7 +23,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
 
   const { completedProblems, toggleProblemCompletion } = useAppStore();
 
-  const [activeTab, setActiveTab] = useState<'diagram' | 'code'>('diagram');
+  const [activeTab, setActiveTab] = useState<'diagram' | 'code' | 'runner'>('diagram');
   const [activeLang, setActiveLang] = useState<CodeLanguage>('python');
   const [copied, setCopied] = useState(false);
 
@@ -57,6 +59,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
   const availableLangs = (['python', 'cpp', 'java'] as CodeLanguage[]).filter(
     (lang) => typeof problem.solutions[lang] === 'string' && problem.solutions[lang]!.length > 0
   );
+  const runnerSpec = getProblemTestSpec(problem.id);
 
   return (
     <div className="flex flex-col gap-6 py-4 w-full text-left animate-fade-in">
@@ -192,6 +195,23 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
               >
                 <Code className="h-3.5 w-3.5" /> Code Solution
               </button>
+
+              <button
+                onClick={() => setActiveTab('runner')}
+                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl border-t border-x transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeTab === 'runner'
+                    ? 'border-border bg-card text-foreground'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+                title={runnerSpec ? 'Execute code against test cases' : 'Runnable test harness coming soon for this problem'}
+              >
+                <Terminal className="h-3.5 w-3.5" /> Run Code
+                {!runnerSpec && (
+                  <span className="ml-1 rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase text-muted-foreground">
+                    Soon
+                  </span>
+                )}
+              </button>
             </div>
 
             {/* Language switcher for Code Tab */}
@@ -216,19 +236,21 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
 
           {/* Interactive Workspace Contents */}
           <div className="flex-1 overflow-hidden flex flex-col relative code-editor-bg">
-            {/* Copy button */}
-            <div className="absolute top-3 right-3 z-10">
-              <button
-                onClick={() => handleCopyCode(activeTab === 'diagram' ? problem.diagram : codeValue)}
-                className="p-2 rounded-lg border border-border bg-card hover:bg-surface-hover text-muted-foreground hover:text-foreground transition-all cursor-pointer"
-                title={`Copy ${activeTab}`}
-              >
-                {copied ? <Check className="h-4 w-4 text-complete" /> : <Copy className="h-4 w-4" />}
-              </button>
-            </div>
+            {/* Copy button — hidden on the runner tab */}
+            {activeTab !== 'runner' && (
+              <div className="absolute top-3 right-3 z-10">
+                <button
+                  onClick={() => handleCopyCode(activeTab === 'diagram' ? problem.diagram : codeValue)}
+                  className="p-2 rounded-lg border border-border bg-card hover:bg-surface-hover text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                  title={`Copy ${activeTab}`}
+                >
+                  {copied ? <Check className="h-4 w-4 text-complete" /> : <Copy className="h-4 w-4" />}
+                </button>
+              </div>
+            )}
 
             {/* Diagram Pane */}
-            {activeTab === 'diagram' ? (
+            {activeTab === 'diagram' && (
               <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
                 <div className="flex-1 flex items-center justify-center p-4 bg-background/55 border border-border/60 rounded-xl font-mono text-xs leading-relaxed text-foreground select-all min-h-[300px] overflow-x-auto whitespace-pre">
                   {problem.diagram}
@@ -240,7 +262,9 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
                   {problem.solutions.explanation}
                 </div>
               </div>
-            ) : (
+            )}
+
+            {activeTab === 'code' && (
               /* Multilingual solution block */
               <div className="flex-1 flex flex-col overflow-hidden">
                 <div className="flex-1 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed text-foreground/95 select-text text-left">
@@ -266,6 +290,25 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'runner' && (
+              <div className="flex-1 overflow-y-auto p-4">
+                {runnerSpec ? (
+                  <CodeRunner spec={runnerSpec} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full text-center gap-3 text-muted-foreground py-12">
+                    <Terminal className="h-8 w-8" />
+                    <div className="max-w-sm text-xs">
+                      <p className="font-semibold text-foreground mb-1">Runnable harness coming soon.</p>
+                      <p>
+                        A verified test spec has not been authored for <span className="font-mono">{problem.id.toUpperCase()}</span> yet.
+                        You can still study the diagram and copy the reference solution from the Code tab.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

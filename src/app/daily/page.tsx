@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Calendar, Flame, Lightbulb, CheckCircle2, ArrowRight, Zap, User } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { getTodaysChallenge, type DailyChallenge } from '@/lib/daily-challenges';
+import { getTodaysChallenge } from '@/lib/daily-challenges';
 import { todayKey } from '@/lib/profile-utils';
 
 export default function DailyChallengePage() {
@@ -13,17 +13,18 @@ export default function DailyChallengePage() {
   // Compute the daily challenge and formatted date on the client only to avoid
   // SSR/CSR hydration mismatches when the server and client are in different
   // timezones or cross the midnight boundary at different times.
-  const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
-  const [todayLabel, setTodayLabel] = useState<string>('');
-  const [today, setToday] = useState<string>('');
+  const [mounted, setMounted] = useState(false);
+  
+  // Use useMemo to compute challenge once during initial render
+  const challenge = useMemo(() => getTodaysChallenge(), []);
 
   useEffect(() => {
-    setChallenge(getTodaysChallenge());
-    setTodayLabel(
-      new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })
-    );
-    setToday(todayKey());
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
   }, []);
+
+  const todayLabel = mounted ? new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }) : '';
+  const today = mounted ? todayKey() : '';
 
   const completedToday = useMemo(() => {
     if (!profile || !challenge || !today) return false;

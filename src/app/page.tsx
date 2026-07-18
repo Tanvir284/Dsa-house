@@ -215,7 +215,7 @@ export default function Home() {
             <div className="surface p-4 rounded-xl flex flex-col gap-2">
               <span className="text-xs font-medium text-muted-foreground">Continue Learning</span>
               <p className="text-sm font-semibold text-foreground">
-                {topics.find(t => !completedLessons.includes(t.slug))?.title || 'All done! 🎉'}
+                {topics.find(t => !completedLessons.includes(t.slug))?.title || 'All done!'}
               </p>
               {topics.find(t => !completedLessons.includes(t.slug)) && (
                 <Link
@@ -336,7 +336,7 @@ export default function Home() {
                             : 'bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover'
                         }`}
                       >
-                        {done && '✓ '}{top.title}
+                        {done && <CheckCircle2 className="h-3 w-3 inline-block mr-1 -mt-0.5" aria-hidden="true" />}{top.title}
                       </Link>
                     );
                   })}

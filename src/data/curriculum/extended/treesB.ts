@@ -1951,7 +1951,7 @@ Common mistakes:
         self.right_thread = False  # True if right points to successor
 
 def leftmost(node):
-    while node and not node.right_thread and node.left:
+    while node and node.left:
         node = node.left
     return node
 

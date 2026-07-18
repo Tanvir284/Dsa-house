@@ -34,7 +34,7 @@ export default function AdminPanelPage() {
 
     const catId = categories.find(c => c.slug === categorySlug)?.id || categories[0].id;
     const newTopic: Topic = {
-      id: Math.random().toString(),
+      id: crypto.randomUUID(),
       slug: slug.toLowerCase().trim(),
       category_id: catId,
       title: title.trim(),

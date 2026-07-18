@@ -100,7 +100,7 @@ export default function ActiveQuizPage({ params }: PageProps) {
         <div className="flex flex-col gap-2">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Quiz Completed</span>
           <h1 className="text-3xl font-black text-foreground">
-            {isPerfect ? 'Perfect Score! 🌟' : isPass ? 'Good Job! 👍' : 'Keep Practicing! 📚'}
+            {isPerfect ? 'Perfect Score!' : isPass ? 'Good Job!' : 'Keep Practicing!'}
           </h1>
           <p className="text-sm text-muted-foreground">
             You finished the conceptual quiz for <span className="font-bold text-foreground">{topic.title}</span>.

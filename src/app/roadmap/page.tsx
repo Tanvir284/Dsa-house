@@ -2,17 +2,22 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Map, BookOpen, Check, Lock, AlertCircle, ArrowRight, Sparkles, Compass, Flag, Trophy } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring } from 'framer-motion';
+import type { LucideIcon } from 'lucide-react';
+import {
+  BookOpen, Check, Lock, AlertCircle, ArrowRight, Sparkles, Compass, Flag, Trophy,
+  Rocket, ChevronDown, Navigation,
+  BarChart3, Link2, ArrowDownToLine, ArrowUpFromLine, Search, Pointer, Droplets, FolderTree,
+  RotateCw, Shuffle, Zap, GalleryVertical, TreeDeciduous, TreePine, Mountain, Globe, Waypoints,
+  Type, Target, Puzzle,
+} from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { categories, topics } from '@/data';
 
 interface SkillNode {
   slug: string;
-  x: number;
-  y: number;
   label: string;
-  emoji: string;
+  icon: LucideIcon;
   chapter: number;
   prereqs: string[];
 }
@@ -22,99 +27,74 @@ interface Chapter {
   title: string;
   tagline: string;
   accent: string;
+  gradient: string;
 }
 
 /**
- * The journey is told in five "chapters". Nodes are laid out along a single
- * winding path (left → right, gently rising and falling) so learners read it
- * as one continuous adventure rather than a flat grid.
+ * The journey is told in five "chapters" that flow top-down.
+ * Nodes inside each chapter alternate sides of a central spine so the eye
+ * naturally zigzags from the strategic top down to the advanced bottom.
  */
 const CHAPTERS: Chapter[] = [
-  { id: 0, title: 'The Foundations', tagline: 'Where every journey begins — the building blocks of data.', accent: '#22c55e' },
-  { id: 1, title: 'Order & Search', tagline: 'Learn to arrange and find things with purpose.', accent: '#00f2ff' },
-  { id: 2, title: 'Divide & Conquer', tagline: 'Break big problems into smaller, solvable ones.', accent: '#f97316' },
-  { id: 3, title: 'Trees & Graphs', tagline: 'Explore branching worlds and connected networks.', accent: '#a855f7' },
-  { id: 4, title: 'The Advanced Arts', tagline: 'Master the techniques that crack the hardest problems.', accent: '#f43f5e' },
+  { id: 0, title: 'The Foundations', tagline: 'Where every journey begins — the building blocks of data.', accent: '#22c55e', gradient: 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)' },
+  { id: 1, title: 'Order & Search',  tagline: 'Learn to arrange and find things with purpose.',            accent: '#06b6d4', gradient: 'linear-gradient(135deg, #06b6d4 0%, #4f9dff 100%)' },
+  { id: 2, title: 'Divide & Conquer', tagline: 'Break big problems into smaller, solvable ones.',          accent: '#4f9dff', gradient: 'linear-gradient(135deg, #4f9dff 0%, #8b5cf6 100%)' },
+  { id: 3, title: 'Trees & Graphs',  tagline: 'Explore branching worlds and connected networks.',          accent: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)' },
+  { id: 4, title: 'The Advanced Arts', tagline: 'Master the techniques that crack the hardest problems.',  accent: '#ec4899', gradient: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)' },
 ];
 
-/** Visual layout only — prerequisites come from curriculum `topics`. */
-const ROADMAP_LAYOUT: Record<string, { x: number; y: number; label: string; emoji: string; chapter: number }> = {
-  array: { x: 140, y: 260, label: 'Arrays', emoji: '📊', chapter: 0 },
-  'linked-list': { x: 300, y: 140, label: 'Linked Lists', emoji: '🔗', chapter: 0 },
-  stack: { x: 300, y: 380, label: 'Stacks', emoji: '📥', chapter: 0 },
-  queue: { x: 460, y: 260, label: 'Queues', emoji: '📤', chapter: 0 },
+/** Visual metadata only — prerequisites come from curriculum `topics`. */
+const ROADMAP_META: Record<string, { label: string; icon: LucideIcon; chapter: number }> = {
+  array:                   { label: 'Arrays',            icon: BarChart3,       chapter: 0 },
+  'linked-list':           { label: 'Linked Lists',      icon: Link2,           chapter: 0 },
+  stack:                   { label: 'Stacks',            icon: ArrowDownToLine, chapter: 0 },
+  queue:                   { label: 'Queues',            icon: ArrowUpFromLine, chapter: 0 },
 
-  'binary-search': { x: 640, y: 150, label: 'Binary Search', emoji: '🔍', chapter: 1 },
-  'two-pointers': { x: 640, y: 380, label: 'Two Pointers', emoji: '👆', chapter: 1 },
-  'bubble-sort': { x: 800, y: 260, label: 'Bubble Sort', emoji: '🫧', chapter: 1 },
-  'hash-table': { x: 800, y: 420, label: 'Hash Table', emoji: '🗂️', chapter: 1 },
+  'binary-search':         { label: 'Binary Search',     icon: Search,          chapter: 1 },
+  'two-pointers':          { label: 'Two Pointers',      icon: Pointer,         chapter: 1 },
+  'bubble-sort':           { label: 'Bubble Sort',       icon: Droplets,        chapter: 1 },
+  'hash-table':            { label: 'Hash Table',        icon: FolderTree,      chapter: 1 },
 
-  'recursion-backtracking': { x: 980, y: 150, label: 'Recursion', emoji: '🔄', chapter: 2 },
-  'merge-sort': { x: 1140, y: 260, label: 'Merge Sort', emoji: '🔀', chapter: 2 },
-  'quick-sort': { x: 1140, y: 420, label: 'Quick Sort', emoji: '⚡', chapter: 2 },
-  'sliding-window': { x: 980, y: 400, label: 'Sliding Window', emoji: '🪟', chapter: 2 },
+  'recursion-backtracking': { label: 'Recursion',        icon: RotateCw,        chapter: 2 },
+  'merge-sort':            { label: 'Merge Sort',        icon: Shuffle,         chapter: 2 },
+  'quick-sort':            { label: 'Quick Sort',        icon: Zap,             chapter: 2 },
+  'sliding-window':        { label: 'Sliding Window',    icon: GalleryVertical, chapter: 2 },
 
-  'binary-tree': { x: 1320, y: 150, label: 'Binary Trees', emoji: '🌳', chapter: 3 },
-  'binary-search-tree': { x: 1480, y: 260, label: 'BST', emoji: '🌲', chapter: 3 },
-  'heap-priority-queue': { x: 1320, y: 400, label: 'Heap', emoji: '⛰️', chapter: 3 },
-  bfs: { x: 1640, y: 150, label: 'BFS', emoji: '🌐', chapter: 3 },
-  dfs: { x: 1640, y: 380, label: 'DFS', emoji: '🕸️', chapter: 3 },
+  'binary-tree':           { label: 'Binary Trees',      icon: TreeDeciduous,   chapter: 3 },
+  'binary-search-tree':    { label: 'BST',               icon: TreePine,        chapter: 3 },
+  'heap-priority-queue':   { label: 'Heap',              icon: Mountain,        chapter: 3 },
+  bfs:                     { label: 'BFS',               icon: Globe,           chapter: 3 },
+  dfs:                     { label: 'DFS',               icon: Waypoints,       chapter: 3 },
 
-  'trie-prefix-tree': { x: 1820, y: 150, label: 'Trie', emoji: '🔤', chapter: 4 },
-  'greedy-algorithms': { x: 1820, y: 380, label: 'Greedy', emoji: '🎯', chapter: 4 },
-  'dynamic-programming': { x: 1980, y: 260, label: 'DP', emoji: '🧩', chapter: 4 },
+  'trie-prefix-tree':      { label: 'Trie',              icon: Type,            chapter: 4 },
+  'greedy-algorithms':     { label: 'Greedy',            icon: Target,          chapter: 4 },
+  'dynamic-programming':   { label: 'DP',                icon: Puzzle,          chapter: 4 },
 };
 
-const ROADMAP_SLUG_ORDER = Object.keys(ROADMAP_LAYOUT);
+const ROADMAP_SLUG_ORDER = Object.keys(ROADMAP_META);
 
 function buildRoadmapGraph() {
   const skillNodes: SkillNode[] = ROADMAP_SLUG_ORDER.map((slug) => {
     const topic = topics.find((t) => t.slug === slug);
-    const layout = ROADMAP_LAYOUT[slug];
+    const meta = ROADMAP_META[slug];
     return {
       slug,
-      x: layout.x,
-      y: layout.y,
-      label: layout.label,
-      emoji: layout.emoji,
-      chapter: layout.chapter,
-      prereqs: (topic?.prerequisites ?? []).filter((p) => ROADMAP_LAYOUT[p] !== undefined),
+      label: meta.label,
+      icon: meta.icon,
+      chapter: meta.chapter,
+      prereqs: (topic?.prerequisites ?? []).filter((p) => ROADMAP_META[p] !== undefined),
     };
   });
 
-  const skillConnections = skillNodes.flatMap((node) =>
-    node.prereqs.map((prereq) => ({ from: prereq, to: node.slug }))
-  );
-
-  return { skillNodes, skillConnections };
+  return { skillNodes };
 }
 
-const { skillNodes, skillConnections } = buildRoadmapGraph();
+const { skillNodes } = buildRoadmapGraph();
 
-const getBezierPath = (x1: number, y1: number, x2: number, y2: number) => {
-  const dx = Math.abs(x2 - x1);
-  const cx1 = x1 + dx * 0.4;
-  const cx2 = x2 - dx * 0.4;
-  return `M ${x1} ${y1} C ${cx1} ${y1}, ${cx2} ${y2}, ${x2} ${y2}`;
-};
-
-/** The main winding "trail" that threads through every milestone in order. */
-const journeyOrder = [...skillNodes].sort((a, b) => a.chapter - b.chapter || a.x - b.x);
-const buildTrail = () => {
-  if (journeyOrder.length === 0) return '';
-  let d = `M ${journeyOrder[0].x} ${journeyOrder[0].y}`;
-  for (let i = 1; i < journeyOrder.length; i++) {
-    const prev = journeyOrder[i - 1];
-    const cur = journeyOrder[i];
-    const midX = (prev.x + cur.x) / 2;
-    d += ` C ${midX} ${prev.y}, ${midX} ${cur.y}, ${cur.x} ${cur.y}`;
-  }
-  return d;
-};
-const TRAIL_PATH = buildTrail();
-
-const MAP_W = 2120;
-const MAP_H = 520;
+/** Journey order for the traveller (chapter, then original layout order). */
+const journeyOrder = [...skillNodes].sort(
+  (a, b) => a.chapter - b.chapter || ROADMAP_SLUG_ORDER.indexOf(a.slug) - ROADMAP_SLUG_ORDER.indexOf(b.slug)
+);
 
 export default function RoadmapPage() {
   const { completedLessons } = useAppStore();
@@ -159,226 +139,239 @@ export default function RoadmapPage() {
   const completedNodes = skillNodes.filter((n) => completedLessons.includes(n.slug)).length;
   const progressPct = totalNodes ? Math.round((completedNodes / totalNodes) * 100) : 0;
 
-  // Where is the traveller? The last completed node in journey order (or the start).
   const travellerNode = useMemo(() => {
     const done = journeyOrder.filter((n) => completedLessons.includes(n.slug));
     return done.length > 0 ? done[done.length - 1] : journeyOrder[0];
   }, [completedLessons]);
 
-  return (
-    <div className="flex flex-col gap-8 py-4 w-full animate-fade-in">
+  const nextMilestone = useMemo(
+    () =>
+      journeyOrder.find(
+        (n) => !completedLessons.includes(n.slug) && !isNodeLocked(n)
+      ) ?? null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [completedLessons]
+  );
 
-      {/* Hero header with narrative + progress */}
-      <div className="relative overflow-hidden rounded-2xl border border-border chapter-band bg-card/60 p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 text-primary">
-              <Compass className="h-5 w-5" />
-              <span className="text-xs font-black uppercase tracking-widest">Your DSA Expedition</span>
+  // Scroll-linked animated spine progress
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: timelineRef,
+    offset: ['start 40%', 'end 60%'],
+  });
+  const spineProgress = useSpring(scrollYProgress, { stiffness: 80, damping: 20, mass: 0.4 });
+
+  // Group nodes by chapter for the vertical layout
+  const chaptersWithNodes = useMemo(
+    () =>
+      CHAPTERS.map((chapter) => ({
+        ...chapter,
+        nodes: skillNodes.filter((n) => n.chapter === chapter.id),
+      })),
+    []
+  );
+
+  return (
+    <div className="flex flex-col gap-10 py-4 w-full">
+
+      {/* ================================================================
+         HERO — strategic overview (top of the vertical hierarchy)
+      ================================================================ */}
+      <motion.section
+        initial={reduceMotion ? undefined : { opacity: 0, y: 24 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="relative overflow-hidden rounded-3xl glass-card blob-glow p-6 sm:p-10"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          <div className="lg:col-span-7 flex flex-col gap-4">
+            <div className="inline-flex items-center gap-2 self-start rounded-full border border-glass-border px-3 py-1.5"
+                 style={{ background: 'color-mix(in srgb, var(--primary) 10%, transparent)' }}>
+              <Compass className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] gradient-text">Your DSA Expedition</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-foreground mt-2">The Learning Journey</h1>
-            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-              Set out from the shores of the <span className="text-foreground font-semibold">Foundations</span> and journey across
-              five chapters toward mastery of the <span className="text-foreground font-semibold">Advanced Arts</span>.
-              Complete a milestone to light the trail and unlock what lies ahead.
+
+            <h1 className="font-black leading-[1.05]" style={{ fontSize: 'clamp(2rem, 4vw + 1rem, 3.5rem)' }}>
+              The <span className="gradient-text text-glow">Learning Journey</span>
+            </h1>
+
+            <p className="text-[15px] text-muted-foreground max-w-xl leading-relaxed">
+              Scroll from the shores of the <span className="text-foreground font-semibold">Foundations</span> down through five chapters
+              toward mastery of the <span className="text-foreground font-semibold">Advanced Arts</span>. Every milestone you conquer lights
+              the trail below.
             </p>
+
+            <div className="flex flex-wrap items-center gap-3 mt-2">
+              {nextMilestone ? (
+                <button
+                  onClick={() => {
+                    setSelectedSlug(nextMilestone.slug);
+                    document.getElementById(`milestone-${nextMilestone.slug}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                  className="btn-primary px-5 py-2.5 text-sm inline-flex items-center gap-2 cursor-pointer"
+                >
+                  <Rocket className="h-4 w-4" /> Continue with {nextMilestone.label}
+                </button>
+              ) : completedNodes === totalNodes ? (
+                <span className="btn-primary px-5 py-2.5 text-sm inline-flex items-center gap-2">
+                  <Trophy className="h-4 w-4" /> Journey Complete
+                </span>
+              ) : null}
+              <a
+                href="#timeline"
+                className="btn-secondary px-5 py-2.5 text-sm inline-flex items-center gap-2 cursor-pointer"
+              >
+                Explore the map <ChevronDown className="h-4 w-4" />
+              </a>
+            </div>
           </div>
 
-          {/* Circular progress emblem */}
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="relative h-20 w-20">
-              <svg viewBox="0 0 80 80" className="-rotate-90 h-20 w-20">
-                <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border)" strokeWidth="7" />
+          {/* Circular progress emblem + stats */}
+          <div className="lg:col-span-5 flex items-center justify-center lg:justify-end gap-6">
+            <div className="relative h-32 w-32 sm:h-36 sm:w-36">
+              <svg viewBox="0 0 100 100" className="-rotate-90 h-full w-full">
+                <defs>
+                  <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="var(--accent-from)" />
+                    <stop offset="100%" stopColor="var(--accent-to)" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border-strong, var(--border))" strokeWidth="8" />
                 <motion.circle
-                  cx="40" cy="40" r="34" fill="none" stroke="var(--primary)" strokeWidth="7" strokeLinecap="round"
+                  cx="50" cy="50" r="42" fill="none" stroke="url(#progressGradient)" strokeWidth="8" strokeLinecap="round"
                   pathLength={1}
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: totalNodes ? completedNodes / totalNodes : 0 }}
                   transition={{ type: 'spring', stiffness: 60, damping: 18 }}
+                  style={{ filter: 'drop-shadow(0 0 8px color-mix(in srgb, var(--primary) 45%, transparent))' }}
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-lg font-black text-foreground leading-none">{progressPct}%</span>
-                <span className="text-[9px] font-bold text-muted-foreground uppercase">Done</span>
+                <span className="text-3xl sm:text-4xl font-black gradient-text leading-none">{progressPct}%</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Conquered</span>
               </div>
             </div>
-            <div className="text-xs font-medium text-muted-foreground">
-              <div className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-complete" /> {completedNodes}/{totalNodes} milestones</div>
-              <div className="flex items-center gap-1.5 mt-1.5"><Flag className="h-3.5 w-3.5 text-primary" /> Chapter {travellerNode.chapter + 1} of {CHAPTERS.length}</div>
+
+            <div className="flex flex-col gap-2 text-xs font-medium text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-complete" />
+                <span><span className="text-foreground font-bold">{completedNodes}</span>/{totalNodes} milestones</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Flag className="h-4 w-4 text-primary" />
+                <span>Chapter <span className="text-foreground font-bold">{travellerNode.chapter + 1}</span>/{CHAPTERS.length}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-accent" />
+                <span>{skillNodes.filter((n) => !isNodeLocked(n) && !completedLessons.includes(n.slug)).length} ready to explore</span>
+              </div>
             </div>
           </div>
         </div>
+      </motion.section>
 
-        {/* Legend */}
-        <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground mt-6 pt-5 border-t border-border/60">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-complete" /> Conquered</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" /> Ready to explore</span>
-          <span className="flex items-center gap-1.5"><Lock className="h-3 w-3" /> Locked</span>
+      {/* ================================================================
+         LEGEND — sticky secondary nav
+      ================================================================ */}
+      <div className="sticky top-20 z-30 -mx-2 px-2">
+        <div className="glass-panel rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-4 text-[11px] font-semibold text-muted-foreground">
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-complete" /> Conquered</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" /> Ready</span>
+            <span className="flex items-center gap-1.5"><Lock className="h-3 w-3" /> Locked</span>
+          </div>
+          <div className="hidden sm:flex items-center gap-2 text-[11px] font-semibold text-muted-foreground">
+            <span>Scroll to descend</span>
+            <ChevronDown className="h-3.5 w-3.5 animate-bounce" />
+          </div>
         </div>
       </div>
 
-      {/* Main Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+      {/* ================================================================
+         MAIN LAYOUT — vertical timeline (left) + sticky detail (right)
+      ================================================================ */}
+      <div id="timeline" className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-        {/* Adventure Map (3 cols) */}
-        <div className="lg:col-span-3 card overflow-hidden">
-          <div className="px-5 py-3 border-b border-border flex items-center gap-2">
-            <Map className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold text-muted-foreground">Adventure Map — scroll to explore the trail</span>
-          </div>
+        {/* ------- VERTICAL TIMELINE ------- */}
+        <div ref={timelineRef} className="lg:col-span-2 relative">
 
-          <div className="w-full overflow-x-auto map-bg">
-            <svg
-              width={MAP_W}
-              height={MAP_H}
-              viewBox={`0 0 ${MAP_W} ${MAP_H}`}
-              className="mx-auto select-none block"
-            >
-              <defs>
-                <linearGradient id="journeyGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#22c55e" />
-                  <stop offset="45%" stopColor="#00f2ff" />
-                  <stop offset="75%" stopColor="#f97316" />
-                  <stop offset="100%" stopColor="#f43f5e" />
-                </linearGradient>
-              </defs>
+          {/* Central spine — track + animated fill driven by scroll */}
+          <div className="absolute left-8 sm:left-1/2 top-0 bottom-0 w-1 -translate-x-1/2 rounded-full pointer-events-none"
+               style={{ background: 'color-mix(in srgb, var(--foreground) 8%, transparent)' }} aria-hidden />
+          <motion.div
+            className="absolute left-8 sm:left-1/2 top-0 w-1 -translate-x-1/2 rounded-full pointer-events-none origin-top"
+            style={{
+              background: 'linear-gradient(180deg, #22c55e 0%, #06b6d4 25%, #4f9dff 50%, #8b5cf6 75%, #ec4899 100%)',
+              boxShadow: '0 0 16px color-mix(in srgb, var(--primary) 45%, transparent)',
+              scaleY: reduceMotion ? 1 : spineProgress,
+              height: '100%',
+            }}
+            aria-hidden
+          />
 
-              {/* Chapter zone bands + titles */}
-              {CHAPTERS.map((ch) => {
-                const chNodes = skillNodes.filter((n) => n.chapter === ch.id);
-                if (chNodes.length === 0) return null;
-                const minX = Math.min(...chNodes.map((n) => n.x)) - 70;
-                const maxX = Math.max(...chNodes.map((n) => n.x)) + 70;
-                return (
-                  <g key={ch.id}>
-                    <rect
-                      x={minX} y={20} width={maxX - minX} height={MAP_H - 40} rx={22}
-                      fill={`color-mix(in srgb, ${ch.accent} 6%, transparent)`}
-                      stroke={`color-mix(in srgb, ${ch.accent} 22%, transparent)`}
-                      strokeWidth={1} strokeDasharray="6 8"
+          {chaptersWithNodes.map((chapter, chIdx) => (
+            <div key={chapter.id} className="relative pb-16">
+              {/* Chapter waypoint */}
+              <ChapterWaypoint chapter={chapter} index={chIdx} reduceMotion={!!reduceMotion} />
+
+              <ol className="flex flex-col gap-14 mt-10" role="list">
+                {chapter.nodes.map((node, nodeIdx) => {
+                  const isDone = completedLessons.includes(node.slug);
+                  const isLocked = isNodeLocked(node);
+                  const isSelected = selectedSlug === node.slug;
+                  const isAvailable = !isDone && !isLocked;
+                  const showUnlock = justUnlocked.has(node.slug) && !reduceMotion;
+                  const side: 'left' | 'right' = nodeIdx % 2 === 0 ? 'left' : 'right';
+                  const isTraveller = travellerNode.slug === node.slug;
+
+                  return (
+                    <MilestoneRow
+                      key={node.slug}
+                      id={`milestone-${node.slug}`}
+                      node={node}
+                      chapter={chapter}
+                      side={side}
+                      isDone={isDone}
+                      isLocked={isLocked}
+                      isSelected={isSelected}
+                      isAvailable={isAvailable}
+                      isTraveller={isTraveller}
+                      showUnlock={showUnlock}
+                      reduceMotion={!!reduceMotion}
+                      onSelect={() => setSelectedSlug(node.slug)}
                     />
-                    <text x={(minX + maxX) / 2} y={46} textAnchor="middle" fontSize="13" fontWeight="800" fill={ch.accent}>
-                      {`Ch. ${ch.id + 1} · ${ch.title}`}
-                    </text>
-                  </g>
-                );
-              })}
+                  );
+                })}
+              </ol>
+            </div>
+          ))}
 
-              {/* The winding journey trail (base + dashed + completed overlay + flow) */}
-              <path d={TRAIL_PATH} className="journey-path" />
-              <path d={TRAIL_PATH} className="journey-path-inner" />
-              {(() => {
-                // Draw the completed portion up to the traveller node.
-                const idx = journeyOrder.findIndex((n) => n.slug === travellerNode.slug);
-                const doneSlice = journeyOrder.slice(0, Math.max(1, idx + 1));
-                if (doneSlice.length < 2) return null;
-                let d = `M ${doneSlice[0].x} ${doneSlice[0].y}`;
-                for (let i = 1; i < doneSlice.length; i++) {
-                  const prev = doneSlice[i - 1];
-                  const cur = doneSlice[i];
-                  const midX = (prev.x + cur.x) / 2;
-                  d += ` C ${midX} ${prev.y}, ${midX} ${cur.y}, ${cur.x} ${cur.y}`;
-                }
-                return (
-                  <>
-                    <path d={d} className="journey-path-completed" />
-                    {!reduceMotion && <path d={d} className="journey-path-flow" />}
-                  </>
-                );
-              })()}
-
-              {/* Prerequisite connectors (subtle) */}
-              {skillConnections.map((conn) => {
-                const fromNode = skillNodes.find((n) => n.slug === conn.from)!;
-                const toNode = skillNodes.find((n) => n.slug === conn.to)!;
-                const fromDone = completedLessons.includes(conn.from);
-                let cls = 'bezier-link';
-                if (fromDone && completedLessons.includes(conn.to)) cls = 'bezier-link bezier-link-completed';
-                else if (fromDone) cls = 'bezier-link bezier-link-active';
-                return (
-                  <path
-                    key={`${conn.from}-${conn.to}`}
-                    d={getBezierPath(fromNode.x, fromNode.y, toNode.x, toNode.y)}
-                    className={cls}
-                    opacity={0.55}
-                  />
-                );
-              })}
-
-              {/* Milestone nodes */}
-              {skillNodes.map((node) => {
-                const isDone = completedLessons.includes(node.slug);
-                const isLocked = isNodeLocked(node);
-                const isSelected = selectedSlug === node.slug;
-                const isAvailable = !isDone && !isLocked;
-                const showUnlock = justUnlocked.has(node.slug) && !reduceMotion;
-
-                let fill = 'var(--roadmap-node-fill)';
-                let stroke = 'var(--roadmap-node-stroke)';
-                let sw = 2;
-                if (isDone) { fill = 'var(--roadmap-node-done-fill)'; stroke = 'var(--complete)'; sw = 2.5; }
-                else if (isAvailable) { fill = 'var(--roadmap-node-active-fill)'; stroke = 'var(--primary)'; sw = 2.5; }
-                if (isSelected) { stroke = 'var(--accent)'; sw = 3.5; }
-
-                return (
-                  <g
-                    key={node.slug}
-                    onClick={() => setSelectedSlug(node.slug)}
-                    className={`cursor-pointer ${isAvailable && !reduceMotion ? 'milestone-bob' : ''}`}
-                    role="button"
-                    aria-label={`${node.label}${isDone ? ' (completed)' : isLocked ? ' (locked)' : ' (available)'}`}
-                  >
-                    {/* One-shot unlock burst */}
-                    {showUnlock && (
-                      <circle cx={node.x} cy={node.y} r="30" fill="none" stroke="var(--primary)" strokeWidth="3" className="unlock-ring" />
-                    )}
-                    {/* Selection halo */}
-                    {isSelected && (
-                      <circle cx={node.x} cy={node.y} r="38" fill="none" stroke="var(--accent)" strokeWidth="1.5" opacity="0.5" className={reduceMotion ? '' : 'animate-ping'} />
-                    )}
-                    {/* Ambient glow for available milestones */}
-                    <circle cx={node.x} cy={node.y} r="30" fill={fill} stroke={stroke} strokeWidth={sw} className={isAvailable && !reduceMotion ? 'milestone-glow' : ''} />
-                    <text x={node.x} y={node.y + 7} textAnchor="middle" fontSize="20" opacity={isLocked ? 0.4 : 1}>
-                      {isLocked ? '🔒' : node.emoji}
-                    </text>
-                    {/* Completed check badge */}
-                    {isDone && (
-                      <g>
-                        <circle cx={node.x + 20} cy={node.y - 20} r="9" fill="var(--complete)" />
-                        <text x={node.x + 20} y={node.y - 16} textAnchor="middle" fontSize="11" fill="#fff" fontWeight="900">✓</text>
-                      </g>
-                    )}
-                    <text
-                      x={node.x}
-                      y={node.y + 52}
-                      textAnchor="middle"
-                      fontSize="12"
-                      fontWeight="700"
-                      fill={isSelected ? 'var(--accent)' : isDone ? 'var(--complete)' : isLocked ? 'var(--roadmap-label)' : 'var(--foreground)'}
-                    >
-                      {node.label}
-                    </text>
-                  </g>
-                );
-              })}
-
-              {/* Traveller marker riding the trail */}
-              <g>
-                <circle cx={travellerNode.x} cy={travellerNode.y - 44} r="13" fill="var(--primary)" opacity="0.95" />
-                <text x={travellerNode.x} y={travellerNode.y - 39} textAnchor="middle" fontSize="14">🧭</text>
-              </g>
-            </svg>
+          {/* Journey's-end flag */}
+          <div className="relative flex justify-center pb-6">
+            <div className="absolute left-8 sm:left-1/2 -translate-x-1/2 -top-4 w-8 h-8 rounded-full flex items-center justify-center"
+                 style={{ background: 'var(--accent-gradient)', boxShadow: 'var(--shadow-glow)' }}>
+              <Trophy className="h-4 w-4 text-white" />
+            </div>
+            <div className="mt-6 ml-16 sm:ml-0 text-center">
+              <p className="text-xs font-black uppercase tracking-widest gradient-text">Journey&apos;s End</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {completedNodes === totalNodes ? 'You have mastered the arts.' : `${totalNodes - completedNodes} milestones remain.`}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Detail Panel (1 col) */}
-        <div className="card flex flex-col">
-          <div className="px-5 py-3 border-b border-border flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-primary" />
-            <span className="text-xs font-semibold text-muted-foreground">Milestone Details</span>
-          </div>
+        {/* ------- STICKY DETAIL PANEL (desktop) / inline (mobile) ------- */}
+        <div className="lg:sticky lg:top-40 self-start">
+          <motion.div
+            layout
+            className="glass-card p-5 flex flex-col gap-5"
+          >
+            <div className="flex items-center gap-2 pb-3 border-b border-glass-border">
+              <BookOpen className="h-4 w-4 text-primary" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Milestone Details</span>
+            </div>
 
-          <div className="p-5 flex flex-col gap-5 flex-1 text-sm">
             <AnimatePresence mode="wait">
               {selectedTopic ? (
                 <motion.div
@@ -387,17 +380,24 @@ export default function RoadmapPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.22 }}
-                  className="flex flex-col gap-5 flex-1"
+                  className="flex flex-col gap-5"
                 >
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: CHAPTERS[selectedNode.chapter]?.accent }}>
+                    <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: CHAPTERS[selectedNode.chapter]?.accent }}>
                       {`Chapter ${selectedNode.chapter + 1} · ${CHAPTERS[selectedNode.chapter]?.title}`}
                     </span>
-                    <h2 className="text-lg font-black text-foreground mt-1 flex items-center gap-2">
-                      <span className="text-2xl">{selectedNode.emoji}</span> {selectedTopic.title}
+                    <h2 className="text-xl font-black text-foreground mt-1 flex items-center gap-2">
+                      <span
+                        className="w-10 h-10 rounded-xl inline-flex items-center justify-center text-white"
+                        style={{ background: CHAPTERS[selectedNode.chapter]?.gradient, boxShadow: '0 4px 14px rgba(0,0,0,0.25)' }}
+                        aria-hidden="true"
+                      >
+                        <selectedNode.icon className="h-5 w-5" />
+                      </span>
+                      {selectedTopic.title}
                     </h2>
                     <p className="text-[11px] text-muted-foreground italic mt-1">{topicCategory?.title}</p>
-                    <div className="flex items-center gap-2 mt-2.5">
+                    <div className="flex items-center gap-2 mt-3">
                       <span className={`badge ${
                         selectedTopic.difficulty === 'Beginner' ? 'badge-easy' :
                         selectedTopic.difficulty === 'Intermediate' ? 'badge-medium' : 'badge-hard'
@@ -419,13 +419,13 @@ export default function RoadmapPage() {
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-border">
-                    <span className="text-xs font-medium text-muted-foreground">About this milestone</span>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{selectedTopic.definition}</p>
+                  <div className="pt-4 border-t border-glass-border">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">About this milestone</span>
+                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{selectedTopic.definition}</p>
                   </div>
 
-                  <div className="pt-4 border-t border-border">
-                    <span className="text-xs font-medium text-muted-foreground">Complexity</span>
+                  <div className="pt-4 border-t border-glass-border">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Complexity</span>
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       <div className="surface p-2.5 rounded-lg">
                         <span className="text-[10px] text-muted-foreground">Time</span>
@@ -439,8 +439,8 @@ export default function RoadmapPage() {
                   </div>
 
                   {selectedNode.prereqs.length > 0 && (
-                    <div className="pt-4 border-t border-border">
-                      <span className="text-xs font-medium text-muted-foreground">Trail requires</span>
+                    <div className="pt-4 border-t border-glass-border">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Trail requires</span>
                       <div className="flex flex-col gap-2 mt-2">
                         {selectedNode.prereqs.map((p) => {
                           const done = completedLessons.includes(p);
@@ -450,7 +450,9 @@ export default function RoadmapPage() {
                               done ? 'bg-complete/5 text-complete' : 'bg-hard/5 text-hard'
                             }`}>
                               <span className="font-medium">{pTopic?.title || p}</span>
-                              <span className="text-[10px]">{done ? '✓ Done' : '✗ Required'}</span>
+                              <span className="inline-flex items-center gap-1 text-[10px]">
+                                {done ? <><Check className="h-3 w-3" /> Done</> : <><AlertCircle className="h-3 w-3" /> Required</>}
+                              </span>
                             </div>
                           );
                         })}
@@ -458,7 +460,7 @@ export default function RoadmapPage() {
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-border mt-auto">
+                  <div className="pt-4 border-t border-glass-border">
                     {isSelectedLocked ? (
                       <div className="p-3 rounded-lg bg-hard/5 text-hard text-xs flex gap-2">
                         <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
@@ -476,13 +478,335 @@ export default function RoadmapPage() {
                 </motion.div>
               ) : (
                 <div className="h-full flex items-center justify-center text-center text-muted-foreground p-4">
-                  <p className="text-sm">Tap a milestone on the map to see its story.</p>
+                  <p className="text-sm">Tap a milestone on the trail to see its story.</p>
                 </div>
               )}
             </AnimatePresence>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
+  );
+}
+
+/* ==================================================================
+   ChapterWaypoint — full-width banner marking each chapter boundary
+================================================================== */
+function ChapterWaypoint({
+  chapter,
+  index,
+  reduceMotion,
+}: {
+  chapter: Chapter & { nodes: SkillNode[] };
+  index: number;
+  reduceMotion: boolean;
+}) {
+  return (
+    <motion.div
+      initial={reduceMotion ? undefined : { opacity: 0, y: 20 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative pl-20 sm:pl-0 sm:text-center"
+    >
+      {/* Big chapter marker on the spine */}
+      <div className="absolute left-8 sm:left-1/2 -translate-x-1/2 top-1 z-10">
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-black text-xl border-2 border-white/20"
+          style={{
+            background: chapter.gradient,
+            boxShadow: `0 8px 30px ${chapter.accent}55, 0 0 40px ${chapter.accent}33`,
+          }}
+        >
+          {index + 1}
+        </div>
+      </div>
+
+      {/* Chapter title band */}
+      <div className="pt-2 sm:pt-20">
+        <span className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: chapter.accent }}>
+          Chapter {chapter.id + 1}
+        </span>
+        <h2 className="text-2xl sm:text-3xl font-black text-foreground mt-1"
+            style={{ fontFamily: 'var(--font-heading)' }}>
+          {chapter.title}
+        </h2>
+        <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">{chapter.tagline}</p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ==================================================================
+   MilestoneRow — one row of the vertical timeline
+================================================================== */
+function MilestoneRow({
+  id,
+  node,
+  chapter,
+  side,
+  isDone,
+  isLocked,
+  isSelected,
+  isAvailable,
+  isTraveller,
+  showUnlock,
+  reduceMotion,
+  onSelect,
+}: {
+  id: string;
+  node: SkillNode;
+  chapter: Chapter;
+  side: 'left' | 'right';
+  isDone: boolean;
+  isLocked: boolean;
+  isSelected: boolean;
+  isAvailable: boolean;
+  isTraveller: boolean;
+  showUnlock: boolean;
+  reduceMotion: boolean;
+  onSelect: () => void;
+}) {
+  const initialX = reduceMotion ? 0 : side === 'left' ? -40 : 40;
+  const NodeIcon = node.icon;
+
+  return (
+    <li id={id} className="relative">
+      <div className="grid grid-cols-[64px_1fr] sm:grid-cols-2 gap-4 sm:gap-8 items-center">
+
+        {/* Card slot — left side */}
+        <div className={`hidden sm:block ${side === 'left' ? 'sm:col-start-1 sm:pr-10 sm:text-right' : 'sm:col-start-2 sm:col-end-3 sm:invisible'}`}>
+          {side === 'left' && (
+            <MilestoneCard
+              node={node}
+              chapter={chapter}
+              side="left"
+              isDone={isDone}
+              isLocked={isLocked}
+              isSelected={isSelected}
+              isAvailable={isAvailable}
+              reduceMotion={reduceMotion}
+              onSelect={onSelect}
+              initialX={initialX}
+            />
+          )}
+        </div>
+
+        {/* Spine node */}
+        <div className="col-start-1 sm:col-start-1 sm:col-end-3 flex justify-start sm:justify-center relative">
+          <div className="absolute left-8 sm:left-1/2 -translate-x-1/2 flex items-center justify-center">
+            {/* Connector line to card (desktop) */}
+            <div
+              className="hidden sm:block absolute top-1/2 h-0.5"
+              style={{
+                width: '3rem',
+                background: `linear-gradient(${side === 'left' ? '-90deg' : '90deg'}, ${chapter.accent}88, transparent)`,
+                [side === 'left' ? 'right' : 'left']: '100%',
+              }}
+              aria-hidden
+            />
+
+            {/* Unlock burst */}
+            {showUnlock && (
+              <motion.span
+                initial={{ scale: 0.4, opacity: 0.9 }}
+                animate={{ scale: 2.2, opacity: 0 }}
+                transition={{ duration: 1.1, ease: 'easeOut' }}
+                className="absolute inset-0 rounded-full border-2 pointer-events-none"
+                style={{ borderColor: chapter.accent }}
+              />
+            )}
+
+            <motion.button
+              type="button"
+              onClick={onSelect}
+              whileHover={reduceMotion ? undefined : { scale: 1.1 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+              className="relative w-14 h-14 rounded-full flex items-center justify-center text-2xl cursor-pointer transition-shadow"
+              style={{
+                background: isDone
+                  ? `linear-gradient(135deg, ${chapter.accent}, color-mix(in srgb, ${chapter.accent} 60%, #22c55e))`
+                  : isAvailable
+                  ? 'var(--card)'
+                  : 'var(--muted)',
+                border: `2px solid ${
+                  isSelected ? 'var(--accent)' : isDone ? chapter.accent : isAvailable ? chapter.accent : 'var(--border)'
+                }`,
+                boxShadow: isDone
+                  ? `0 0 24px ${chapter.accent}66`
+                  : isAvailable
+                  ? `0 0 20px ${chapter.accent}44`
+                  : 'var(--shadow-sm)',
+                opacity: isLocked ? 0.55 : 1,
+              }}
+              aria-label={`${node.label}${isDone ? ' (completed)' : isLocked ? ' (locked)' : ' (available)'}`}
+              aria-pressed={isSelected}
+            >
+              <span className={`${isAvailable && !reduceMotion ? 'milestone-bob' : ''} ${isDone ? 'text-white' : 'text-foreground'}`} aria-hidden="true">
+                {isLocked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <NodeIcon className="h-6 w-6" />}
+              </span>
+              {isDone && (
+                <span
+                  className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center bg-complete text-white"
+                  style={{ boxShadow: '0 2px 6px rgba(0,0,0,0.3)' }}
+                  aria-hidden="true"
+                >
+                  <Check className="h-3 w-3" strokeWidth={3} />
+                </span>
+              )}
+              {isTraveller && !isDone && (
+                <motion.span
+                  initial={{ y: -8, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  className="absolute -top-8 left-1/2 -translate-x-1/2 text-primary"
+                  aria-hidden="true"
+                >
+                  <Navigation className="h-5 w-5" />
+                </motion.span>
+              )}
+            </motion.button>
+          </div>
+        </div>
+
+        {/* Card slot — right side (desktop) */}
+        <div className={`hidden sm:block ${side === 'right' ? 'sm:col-start-2 sm:pl-10' : 'sm:col-start-1 sm:invisible'}`}>
+          {side === 'right' && (
+            <MilestoneCard
+              node={node}
+              chapter={chapter}
+              side="right"
+              isDone={isDone}
+              isLocked={isLocked}
+              isSelected={isSelected}
+              isAvailable={isAvailable}
+              reduceMotion={reduceMotion}
+              onSelect={onSelect}
+              initialX={initialX}
+            />
+          )}
+        </div>
+
+        {/* Mobile: card always to the right of the spine */}
+        <div className="sm:hidden col-start-2 pl-4">
+          <MilestoneCard
+            node={node}
+            chapter={chapter}
+            side="right"
+            isDone={isDone}
+            isLocked={isLocked}
+            isSelected={isSelected}
+            isAvailable={isAvailable}
+            reduceMotion={reduceMotion}
+            onSelect={onSelect}
+            initialX={0}
+          />
+        </div>
+      </div>
+    </li>
+  );
+}
+
+/* ==================================================================
+   MilestoneCard — the glass card at each timeline node
+================================================================== */
+function MilestoneCard({
+  node,
+  chapter,
+  side,
+  isDone,
+  isLocked,
+  isSelected,
+  isAvailable,
+  reduceMotion,
+  onSelect,
+  initialX,
+}: {
+  node: SkillNode;
+  chapter: Chapter;
+  side: 'left' | 'right';
+  isDone: boolean;
+  isLocked: boolean;
+  isSelected: boolean;
+  isAvailable: boolean;
+  reduceMotion: boolean;
+  onSelect: () => void;
+  initialX: number;
+}) {
+  const topic = topics.find((t) => t.slug === node.slug);
+  const NodeIcon = node.icon;
+
+  return (
+    <motion.button
+      type="button"
+      onClick={onSelect}
+      initial={reduceMotion ? undefined : { opacity: 0, x: initialX, y: 12 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={reduceMotion ? undefined : { y: -4 }}
+      className={`glass-card w-full p-5 text-${side === 'left' ? 'right' : 'left'} cursor-pointer transition-all`}
+      style={{
+        borderColor: isSelected
+          ? 'var(--accent)'
+          : isDone
+          ? `color-mix(in srgb, ${chapter.accent} 55%, var(--glass-border))`
+          : 'var(--glass-border)',
+        boxShadow: isSelected
+          ? `var(--shadow-lg), 0 0 30px ${chapter.accent}55`
+          : undefined,
+        opacity: isLocked ? 0.65 : 1,
+      }}
+      aria-label={`Open ${node.label} milestone`}
+      aria-pressed={isSelected}
+    >
+      <div className={`flex items-center gap-3 ${side === 'left' ? 'sm:flex-row-reverse' : ''}`}>
+        <span
+          className="w-11 h-11 rounded-xl inline-flex items-center justify-center text-xl shrink-0"
+          style={{
+            background: isLocked ? 'var(--muted)' : chapter.gradient,
+            boxShadow: isLocked ? 'none' : `0 4px 14px ${chapter.accent}55`,
+          }}
+        >
+          {isLocked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <NodeIcon className="h-5 w-5 text-white" />}
+        </span>
+        <div className={`flex-1 ${side === 'left' ? 'sm:text-right' : 'text-left'}`}>
+          <h3 className="text-base font-black text-foreground leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+            {node.label}
+          </h3>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            {topic?.difficulty ?? 'Foundational'}
+          </p>
+        </div>
+      </div>
+
+      {topic?.definition && (
+        <p className="mt-3 text-xs text-muted-foreground leading-relaxed line-clamp-2 text-left">
+          {topic.definition}
+        </p>
+      )}
+
+      <div className={`mt-4 flex items-center gap-2 flex-wrap ${side === 'left' ? 'sm:justify-end' : 'justify-start'}`}>
+        {isDone && (
+          <span className="badge badge-complete">
+            <Check className="h-3 w-3" /> Conquered
+          </span>
+        )}
+        {isAvailable && (
+          <span className="badge badge-primary">
+            <Sparkles className="h-3 w-3" /> Ready
+          </span>
+        )}
+        {isLocked && (
+          <span className="badge bg-surface text-muted-foreground">
+            <Lock className="h-3 w-3" /> Locked
+          </span>
+        )}
+        {topic?.time_complexity_average && (
+          <span className="badge bg-surface text-muted-foreground font-mono">
+            {topic.time_complexity_average}
+          </span>
+        )}
+      </div>
+    </motion.button>
   );
 }

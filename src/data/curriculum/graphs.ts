@@ -41,6 +41,87 @@ Because BFS explores the graph layer by layer, the first time you reach a node $
     `,
     display_order: 2,
   },
+  {
+    id: 'sec-bfs-3',
+    topic_id: bfsTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Drop a small stone into a still pond. A ring of ripples spreads out first, then a second wider ring, then a third — each ring reaches every point at the same distance from where the stone landed before moving on.
+
+**BFS** is that ripple. From the starting node, it visits every direct neighbor (distance 1) before touching any node at distance 2. Then it visits everyone at distance 2 before moving to distance 3, and so on.
+
+A more concrete example: on a social network, "friends of friends of friends" is a BFS at depth 3. The queue guarantees you finish greeting every friend before you start on their friends, which is exactly why BFS naturally computes shortest paths in unweighted graphs.
+    `,
+    display_order: 3,
+  },
+  {
+    id: 'sec-bfs-4',
+    topic_id: bfsTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Consider this 6-node undirected graph, stored as an adjacency list:
+
+\`\`\`
+Adjacency list:
+1 → [2, 3]
+2 → [1, 4, 5]
+3 → [1, 6]
+4 → [2]
+5 → [2, 6]
+6 → [3, 5]
+
+Picture:
+        1
+       / \\
+      2   3
+     /|   |
+    4 5---6
+\`\`\`
+
+Run BFS starting from node **1**. We track two things: the **queue** (front on the left) and the **visited** set. When we pop a node, we push each unvisited neighbor (in list order) and mark it visited immediately.
+
+| Step | Action                              | Queue (front → back) | Visited              | Output |
+| ---- | ----------------------------------- | -------------------- | -------------------- | ------ |
+| 0    | Enqueue source 1                    | [1]                  | {1}                  | —      |
+| 1    | Pop 1; enqueue neighbors 2, 3       | [2, 3]               | {1, 2, 3}            | 1      |
+| 2    | Pop 2; 1 already visited; enqueue 4, 5 | [3, 4, 5]         | {1, 2, 3, 4, 5}      | 1 2    |
+| 3    | Pop 3; 1 visited; enqueue 6         | [4, 5, 6]            | {1, 2, 3, 4, 5, 6}   | 1 2 3  |
+| 4    | Pop 4; 2 visited; nothing new       | [5, 6]               | {1, 2, 3, 4, 5, 6}   | 1 2 3 4|
+| 5    | Pop 5; 2, 6 visited; nothing new    | [6]                  | {1, 2, 3, 4, 5, 6}   | 1 2 3 4 5 |
+| 6    | Pop 6; 3, 5 visited; nothing new    | []                   | {1, 2, 3, 4, 5, 6}   | 1 2 3 4 5 6 |
+
+**BFS order**: \`1, 2, 3, 4, 5, 6\`. Note how nodes at distance 1 from source (2, 3) came out before nodes at distance 2 (4, 5, 6). The shortest path from 1 to 6 is \`1 → 3 → 6\`, length 2 — exactly what BFS discovered.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-bfs-5',
+    topic_id: bfsTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+1. **Forgetting the visited set.** On any graph with a cycle, an unmarked BFS re-enqueues nodes forever and hangs your program.
+2. **Marking a node visited when you *pop* it, not when you *enqueue* it.** Doing it on pop lets the same node be enqueued many times through different neighbors, wasting memory and work.
+3. **Using a plain array with \`.shift()\` as the queue** in JavaScript. \`shift\` is $O(N)$ — for large graphs, use a deque, a linked list, or index-based dequeue to keep BFS truly $O(V+E)$.
+4. **Confusing BFS with DFS.** BFS uses a **queue** (FIFO) and explores level-by-level; DFS uses a **stack** (or recursion) and dives deep first.
+5. **Trusting BFS for shortest path on *weighted* graphs.** BFS finds shortest paths only when every edge has weight 1. For weighted edges use Dijkstra's algorithm.
+6. **Forgetting disconnected components.** A single BFS reaches only nodes in the source's component; iterate over unvisited nodes and restart BFS from each to cover the whole graph.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-bfs-6',
+    topic_id: bfsTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Shortest path in unweighted graphs** — mazes, grid puzzles, "how many moves for a knight to reach a square?" all reduce to BFS.
+- **Social-network degrees of separation** — "how many friend hops from Alice to Bob?" is a BFS on the friendship graph.
+- **Web crawlers** — starting from a seed URL, visit all pages one link away, then two links away, and so on; BFS naturally bounds crawl depth.
+- **Broadcast and peer-to-peer network flooding** — deliver a packet to every reachable node in the fewest hops.
+- **Level-order tree traversal** — printing a binary tree row by row, or building a heap layer by layer.
+- **Bipartite-graph checking and 2-coloring** — a BFS colors alternating layers; if two adjacent nodes ever share a color, the graph isn't bipartite.
+    `,
+    display_order: 6,
+  },
 ];
 
 export const bfsSnippets: CodeSnippet[] = [
@@ -277,6 +358,91 @@ DFS uses a **Stack** (either the system recursion call stack or an explicit stac
 - **Iterative DFS**: Replaces recursion with an explicit \`Stack\` object, avoiding stack-overflow bugs on extremely deep graphs.
     `,
     display_order: 2,
+  },
+  {
+    id: 'sec-dfs-3',
+    topic_id: dfsTopic.id,
+    title: 'Real-World Analogy',
+    content: `
+Picture yourself lost inside a hedge maze. A classic trick is the **right-hand rule**: keep your right hand touching the wall and just keep walking. You follow a corridor as far as it goes, and only when you hit a dead end do you back up to the last junction and try a different corridor.
+
+That is **DFS** in one sentence: pick a path, go as deep as possible, and only backtrack when you must. The role of your right hand is played by the **stack** — either the CPU's call stack when you use recursion, or an explicit stack when you write it iteratively.
+
+The visited set is your breadcrumbs: without it, you'd walk in circles forever the first time the maze had a loop.
+    `,
+    display_order: 3,
+  },
+  {
+    id: 'sec-dfs-4',
+    topic_id: dfsTopic.id,
+    title: 'Step-by-Step Walkthrough',
+    content: `
+Use the same 6-node undirected graph as the BFS lesson:
+
+\`\`\`
+Adjacency list:
+1 → [2, 3]
+2 → [1, 4, 5]
+3 → [1, 6]
+4 → [2]
+5 → [2, 6]
+6 → [3, 5]
+
+Picture:
+        1
+       / \\
+      2   3
+     /|   |
+    4 5---6
+\`\`\`
+
+Run **iterative DFS** from node **1** using an explicit stack. Push the source, then repeatedly pop the top; when a node is popped for the first time, mark it visited, output it, and push its unvisited neighbors **in reverse list order** so the leftmost neighbor is explored first.
+
+| Step | Action                                       | Stack (top → right) | Visited              | Output |
+| ---- | -------------------------------------------- | ------------------- | -------------------- | ------ |
+| 0    | Push source 1                                | [1]                 | {}                   | —      |
+| 1    | Pop 1; visit; push neighbors reversed → 3, 2 | [3, 2]              | {1}                  | 1      |
+| 2    | Pop 2; visit; push reversed(1,4,5) → 5, 4, 1 | [3, 5, 4, 1]        | {1, 2}               | 1 2    |
+| 3    | Pop 1; already visited; skip                 | [3, 5, 4]           | {1, 2}               | 1 2    |
+| 4    | Pop 4; visit; push reversed(2) → 2           | [3, 5, 2]           | {1, 2, 4}            | 1 2 4  |
+| 5    | Pop 2; already visited; skip                 | [3, 5]              | {1, 2, 4}            | 1 2 4  |
+| 6    | Pop 5; visit; push reversed(2,6) → 6, 2      | [3, 6, 2]           | {1, 2, 4, 5}         | 1 2 4 5 |
+| 7    | Pop 2; already visited; skip                 | [3, 6]              | {1, 2, 4, 5}         | 1 2 4 5 |
+| 8    | Pop 6; visit; push reversed(3,5) → 5, 3      | [3, 5, 3]           | {1, 2, 4, 5, 6}      | 1 2 4 5 6 |
+| 9    | Pop 3; visit; push reversed(1,6) → 6, 1      | [3, 5, 6, 1]        | {1, 2, 3, 4, 5, 6}   | 1 2 4 5 6 3 |
+| 10   | Pop 1, 6, 5, 3 — all already visited; skip   | []                  | {1, 2, 3, 4, 5, 6}   | 1 2 4 5 6 3 |
+
+**DFS order**: \`1, 2, 4, 5, 6, 3\`. Compare with BFS on the same graph (\`1, 2, 3, 4, 5, 6\`) — DFS dove deep down the branch through 2 before ever touching 3.
+    `,
+    display_order: 4,
+  },
+  {
+    id: 'sec-dfs-5',
+    topic_id: dfsTopic.id,
+    title: 'Common Pitfalls for Beginners',
+    content: `
+1. **Forgetting the visited set.** DFS on a cyclic graph without one recurses forever and blows the stack — or in iterative form, endlessly re-pushes the same nodes.
+2. **Confusing DFS output with BFS output.** DFS explores one branch deeply first; the order is *not* level-by-level.
+3. **Stack overflow on deep graphs** with recursive DFS. If your graph can have chains of tens of thousands of nodes, switch to an iterative stack-based version.
+4. **Pushing neighbors in the "natural" order** in iterative DFS. Because a stack is LIFO, the *last* neighbor pushed is explored *first*. Push in reverse if you need left-to-right traversal.
+5. **Mixing up "visited" and "on the current path"** for cycle detection in *directed* graphs. You need three states — unvisited, in-progress, done — not just a boolean.
+6. **Assuming DFS finds shortest paths.** It does not. Use BFS (unweighted) or Dijkstra (weighted) for shortest paths.
+    `,
+    display_order: 5,
+  },
+  {
+    id: 'sec-dfs-6',
+    topic_id: dfsTopic.id,
+    title: 'When to Use It (Practical Cases)',
+    content: `
+- **Topological sort** of a DAG (build systems, task scheduling, course prerequisites) — DFS post-order gives a valid order in $O(V+E)$.
+- **Finding connected components** in an undirected graph — one DFS per unvisited node labels each component.
+- **Cycle detection** — DFS with a recursion-stack marker catches back-edges in both directed and undirected graphs.
+- **Maze and puzzle solving with backtracking** — Sudoku, N-Queens, word-search, Hamiltonian paths.
+- **Strongly Connected Components** via Kosaraju's or Tarjan's algorithm — both are DFS at their core.
+- **Bridge- and articulation-point discovery** in network reliability analysis, using DFS discovery/low-link times.
+    `,
+    display_order: 6,
   },
 ];
 

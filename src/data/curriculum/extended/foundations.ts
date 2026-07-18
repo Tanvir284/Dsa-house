@@ -50,7 +50,7 @@ Nested loops multiply ($O(n) \\times O(n) = O(n^2)$); sequential blocks add ($O(
         id: 'sec-big-o-notation-3',
         topic_id: 'ext-big-o-notation',
         title: 'Common Growth Classes',
-        content: `Ordered from fastest to slowest growth:
+        content: `Ordered from slowest to fastest growth:
 
 - $O(1)$ — constant (hash lookup)
 - $O(\\log n)$ — logarithmic (binary search)
@@ -2545,7 +2545,7 @@ Coloring odd entries reveals the **Sierpinski triangle** fractal.`,
         content: `Building $n$ rows costs $O(n^2)$ time and $O(n^2)$ space (or $O(n)$ if you only keep the current row).
 
 > [!WARNING]
-> Entries grow quickly — the center of row 34 already exceeds 64-bit range. Use big integers or a modulus for large $n$.`,
+> Entries grow quickly — the center of row 34 already exceeds 32-bit signed range, and the center of row 67 exceeds 64-bit signed range. Use big integers or a modulus for large $n$.`,
         display_order: 4,
       },
     ],
