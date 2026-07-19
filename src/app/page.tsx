@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   BookOpen, Map, User, Code, ArrowRight, CheckCircle2, Flame, Sparkles, ChevronRight, Zap,
-  Layers, Calendar, BarChart3, Search, Trophy,
+  Layers, Calendar, BarChart3, Search, Trophy, Database, Network, Share2, Cpu,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { categories, topics, problems } from '@/data';
@@ -306,37 +306,108 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {categories.map((cat) => {
             const catTopics = topics.filter(t => t.category_id === cat.id);
             const catCompleted = catTopics.filter(t => completedLessons.includes(t.slug)).length;
 
+            const categoryConfigs: Record<string, {
+              colorClass: string;
+              borderHover: string;
+              bgTint: string;
+              badgeStyle: string;
+              icon: React.ComponentType<{ className?: string }>;
+            }> = {
+              linear: {
+                colorClass: 'text-primary',
+                borderHover: 'hover:border-primary/45 hover:shadow-primary/5',
+                bgTint: 'bg-primary/10 border-primary/20 text-primary',
+                badgeStyle: 'bg-primary/10 text-primary border border-primary/25',
+                icon: Database,
+              },
+              trees: {
+                colorClass: 'text-accent',
+                borderHover: 'hover:border-accent/45 hover:shadow-accent/5',
+                bgTint: 'bg-accent/10 border-accent/20 text-accent',
+                badgeStyle: 'bg-accent/10 text-accent border border-accent/25',
+                icon: Network,
+              },
+              graphs: {
+                colorClass: 'text-emerald-400',
+                borderHover: 'hover:border-emerald-500/45 hover:shadow-emerald-500/5',
+                bgTint: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+                badgeStyle: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25',
+                icon: Share2,
+              },
+              algorithms: {
+                colorClass: 'text-rose-400',
+                borderHover: 'hover:border-rose-500/45 hover:shadow-rose-500/5',
+                bgTint: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
+                badgeStyle: 'bg-rose-500/10 text-rose-400 border border-rose-500/25',
+                icon: Cpu,
+              },
+              patterns: {
+                colorClass: 'text-amber-400',
+                borderHover: 'hover:border-amber-500/45 hover:shadow-amber-500/5',
+                bgTint: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
+                badgeStyle: 'bg-amber-500/10 text-amber-400 border border-amber-500/25',
+                icon: Sparkles,
+              },
+            };
+
+            const config = categoryConfigs[cat.slug] || {
+              colorClass: 'text-primary',
+              borderHover: 'hover:border-primary/45 hover:shadow-primary/5',
+              bgTint: 'bg-primary/10 border-primary/20 text-primary',
+              badgeStyle: 'bg-primary/10 text-primary border border-primary/25',
+              icon: BookOpen,
+            };
+
+            const CatIcon = config.icon;
+
             return (
-              <div key={cat.id} className="card p-5 flex flex-col gap-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-base font-bold text-foreground">{cat.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{cat.description}</p>
+              <div 
+                key={cat.id} 
+                className={`card p-5 flex flex-col gap-4 bg-[#161b26]/30 backdrop-blur-md border border-white/5 hover:shadow-lg transition-all duration-300 ${config.borderHover}`}
+              >
+                <div className="flex items-start gap-3.5 text-left">
+                  <div className={`p-2.5 rounded-xl border shrink-0 ${config.bgTint}`}>
+                    <CatIcon className="h-5 w-5" />
                   </div>
-                  <span className="text-xs font-semibold text-muted-foreground bg-surface px-2.5 py-1 rounded-full shrink-0">
-                    {profile ? `${catCompleted}/${catTopics.length}` : `${catTopics.length} topics`}
-                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="text-sm font-bold text-foreground truncate">{cat.title}</h3>
+                      <span className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-full shrink-0 ${config.badgeStyle}`}>
+                        {profile ? `${catCompleted}/${catTopics.length} done` : `${catTopics.length} topics`}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">
+                      {cat.description}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1.5 mt-1">
                   {catTopics.map((top) => {
                     const done = completedLessons.includes(top.slug);
                     return (
                       <Link
                         key={top.id}
                         href={`/topics/${top.slug}`}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors ${
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold border transition-all duration-200 ${
                           done
-                            ? 'bg-complete/10 text-complete hover:bg-complete/15'
-                            : 'bg-surface text-muted-foreground hover:text-foreground hover:bg-surface-hover'
+                            ? 'bg-complete/10 border-complete/20 text-complete hover:bg-complete/15'
+                            : 'bg-surface/40 border-border/40 text-muted-foreground/90 hover:border-muted hover:text-foreground hover:bg-surface-hover/80'
                         }`}
                       >
-                        {done && <CheckCircle2 className="h-3 w-3 inline-block mr-1 -mt-0.5" aria-hidden="true" />}{top.title}
+                        {done ? (
+                          <span className="flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" />
+                            {top.title}
+                          </span>
+                        ) : (
+                          top.title
+                        )}
                       </Link>
                     );
                   })}
