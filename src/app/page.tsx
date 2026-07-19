@@ -69,10 +69,10 @@ export default function Home() {
     { icon: BookOpen, title: `${totalLessons} Deep Topics`, desc: 'Arrays to dynamic programming — theory, complexity, and interview patterns.', href: '/topics', span: 'col-span-12 md:col-span-6' },
     { icon: Sparkles, title: `${VISUALIZER_COUNT} Visualizers`, desc: 'Step-through sandboxes for sorts, graphs, trees, and more.', href: '/visualizer', span: 'col-span-12 md:col-span-6' },
     { icon: Trophy, title: `${problems.length} Coding Problems`, desc: 'Challenge yourself with LeetCode and Codeforces tasks inside the Coding Arena.', href: '/problems', span: 'col-span-12 md:col-span-6' },
-    { icon: Calendar, title: 'Daily Challenge', desc: 'One curated problem per day with XP rewards.', href: '/daily', span: 'col-span-6 md:col-span-3' },
-    { icon: Layers, title: 'Pattern Library', desc: 'Structured paths from foundations to advanced patterns.', href: '/patterns', span: 'col-span-6 md:col-span-3' },
-    { icon: BarChart3, title: 'Complexity Lab', desc: 'Compare Big-O across algorithms with live estimators.', href: '/labs', span: 'col-span-6 md:col-span-3' },
-    { icon: Search, title: '⌘K Command Palette', desc: 'Instant search across every topic, visualizer, and page.', href: '/topics', span: 'col-span-6 md:col-span-3' },
+    { icon: Calendar, title: 'Daily Challenge', desc: 'One curated problem per day with XP rewards.', href: '/daily', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
+    { icon: Layers, title: 'Pattern Library', desc: 'Structured paths from foundations to advanced patterns.', href: '/patterns', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
+    { icon: BarChart3, title: 'Complexity Lab', desc: 'Compare Big-O across algorithms with live estimators.', href: '/labs', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
+    { icon: Search, title: '⌘K Command Palette', desc: 'Instant search across every topic, visualizer, and page.', href: '/topics', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
   ];
 
   return (
@@ -98,23 +98,23 @@ export default function Home() {
             Stop watching passive tutorials. Visualize every step, trace every pointer, and build real understanding of data structures and algorithms.
           </p>
 
-          <div className="flex flex-wrap gap-3.5 mt-2">
+          <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full sm:w-auto">
             <Link
               href="/roadmap"
-              className="btn-premium-primary px-6 py-3 cursor-pointer shadow-lg shadow-primary/10"
+              className="btn-premium-primary px-6 py-3 cursor-pointer shadow-lg shadow-primary/10 w-full sm:w-auto"
             >
               <Map className="h-4 w-4 mr-2" /> Start Learning <ArrowRight className="h-4 w-4 ml-1.5" />
             </Link>
             <Link
               href="/problems"
-              className="btn-premium-secondary px-6 py-3 cursor-pointer"
+              className="btn-premium-secondary px-6 py-3 cursor-pointer w-full sm:w-auto"
             >
               <Trophy className="h-4 w-4 mr-2 text-primary" /> Coding Arena
             </Link>
           </div>
 
           {/* Quick stats */}
-          <div className="flex items-center gap-6 mt-4 text-xs text-muted-foreground font-semibold">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-xs text-muted-foreground font-semibold">
             <span className="flex items-center gap-1.5">
               <BookOpen className="h-4 w-4 text-primary" />
               <strong className="text-foreground">{totalLessons}</strong> topics

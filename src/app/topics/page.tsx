@@ -109,7 +109,7 @@ export default function TopicsPage() {
               <Link
                 key={topic.id}
                 href={`/topics/${topic.slug}`}
-                className="topic-card group h-56"
+                className="topic-card group min-h-[14rem] h-full"
               >
                 <div className="flex flex-col gap-3">
                   {/* Top row: category + badges */}
