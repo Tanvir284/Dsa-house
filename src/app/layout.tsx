@@ -1,29 +1,9 @@
 import type { Metadata } from 'next';
-import { Inter, Poppins, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import StoreInitializer from '@/components/layout/StoreInitializer';
 import ThemeScript from '@/components/layout/ThemeScript';
-
-const inter = Inter({
-  variable: '--font-sans',
-  subsets: ['latin'],
-  display: 'swap',
-});
-
-const poppins = Poppins({
-  variable: '--font-heading',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-mono',
-  subsets: ['latin'],
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'DSA House — Learn Data Structures & Algorithms',
@@ -40,7 +20,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${poppins.variable} ${geistMono.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <head>
         <ThemeScript />
