@@ -8,7 +8,7 @@ import {
   Layers, Calendar, BarChart3, Search, Trophy,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { categories, topics } from '@/data';
+import { categories, topics, problems } from '@/data';
 import { VISUALIZER_COUNT } from '@/data/visualizers';
 
 export default function Home() {
@@ -68,7 +68,7 @@ export default function Home() {
   const features = [
     { icon: BookOpen, title: `${totalLessons} Deep Topics`, desc: 'Arrays to dynamic programming — theory, complexity, and interview patterns.', href: '/topics', span: 'col-span-12 md:col-span-6' },
     { icon: Sparkles, title: `${VISUALIZER_COUNT} Visualizers`, desc: 'Step-through sandboxes for sorts, graphs, trees, and more.', href: '/visualizer', span: 'col-span-12 md:col-span-6' },
-    { icon: Trophy, title: '500 Coding Problems', desc: 'Challenge yourself with LeetCode and Codeforces tasks inside the Coding Arena.', href: '/problems', span: 'col-span-12 md:col-span-6' },
+    { icon: Trophy, title: `${problems.length} Coding Problems`, desc: 'Challenge yourself with LeetCode and Codeforces tasks inside the Coding Arena.', href: '/problems', span: 'col-span-12 md:col-span-6' },
     { icon: Calendar, title: 'Daily Challenge', desc: 'One curated problem per day with XP rewards.', href: '/daily', span: 'col-span-6 md:col-span-3' },
     { icon: Layers, title: 'Pattern Library', desc: 'Structured paths from foundations to advanced patterns.', href: '/patterns', span: 'col-span-6 md:col-span-3' },
     { icon: BarChart3, title: 'Complexity Lab', desc: 'Compare Big-O across algorithms with live estimators.', href: '/labs', span: 'col-span-6 md:col-span-3' },
@@ -119,7 +119,7 @@ export default function Home() {
             </span>
             <span className="flex items-center gap-1.5">
               <Trophy className="h-4 w-4 text-primary" />
-              <strong className="text-foreground">500</strong> problems
+              <strong className="text-foreground">{problems.length}</strong> problems
             </span>
             <span className="flex items-center gap-1.5">
               <Code className="h-4 w-4 text-primary" />
