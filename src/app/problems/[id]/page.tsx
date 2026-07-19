@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { 
   ChevronLeft, CheckCircle2, Circle, Copy, Check, FileText, 
-  Sparkles, AlertCircle, Code, Terminal 
+  AlertCircle, Code, Terminal 
 } from 'lucide-react';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { useAppStore } from '@/lib/store';
 import { problems } from '@/data';
 import { getProblemTestSpec } from '@/data/problem-tests';
@@ -23,7 +24,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
 
   const { completedProblems, toggleProblemCompletion } = useAppStore();
 
-  const [activeTab, setActiveTab] = useState<'diagram' | 'code' | 'runner'>('diagram');
+  const [activeTab, setActiveTab] = useState<'code' | 'runner'>('code');
   const [activeLang, setActiveLang] = useState<CodeLanguage>('python');
   const [copied, setCopied] = useState(false);
 
@@ -148,10 +149,8 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
           <div className="p-5 overflow-y-auto flex-1 flex flex-col gap-6 text-sm">
             {/* Description details */}
             <div className="flex flex-col gap-2">
-              <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-wider">Statement</h3>
-              <p className="text-foreground leading-relaxed font-medium">
-                {problem.description}
-              </p>
+              <h3 className="text-xs font-bold font-mono text-muted-foreground uppercase tracking-wider mb-1">Statement</h3>
+              <MarkdownRenderer content={problem.description} />
             </div>
 
             {/* Constraints */}
@@ -182,7 +181,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
               <div className="p-3 bg-muted/40 border border-border/60 rounded-xl text-xs text-muted-foreground leading-relaxed flex items-start gap-2.5">
                 <AlertCircle className="h-4 w-4 shrink-0 text-primary mt-0.5" />
                 <p className="font-semibold">
-                  Study the monospaced visual diagram on the right to understand the algorithm&apos;s runtime state execution, then copy the solution boilerplate for your platform submissions.
+                  Compile and test your solution in-browser using the Run Code workspace, then copy the solution boilerplate for your platform submissions.
                 </p>
               </div>
             </div>
@@ -195,16 +194,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
           {/* Tab switches */}
           <div className="px-3 border-b border-border flex justify-between items-center bg-card select-none">
             <div className="flex gap-1 pt-2">
-              <button
-                onClick={() => setActiveTab('diagram')}
-                className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl border-t border-x transition-all flex items-center gap-1.5 cursor-pointer ${
-                  activeTab === 'diagram'
-                    ? 'border-border bg-card text-foreground'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Sparkles className="h-3.5 w-3.5" /> Visualization Diagram
-              </button>
+
 
               <button
                 onClick={() => setActiveTab('code')}
@@ -261,7 +251,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
             {activeTab !== 'runner' && (
               <div className="absolute top-3 right-3 z-10">
                 <button
-                  onClick={() => handleCopyCode(activeTab === 'diagram' ? problem.diagram : codeValue)}
+                  onClick={() => handleCopyCode(codeValue)}
                   className="p-2 rounded-lg border border-border bg-card hover:bg-surface-hover text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                   title={`Copy ${activeTab}`}
                 >
@@ -270,20 +260,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
               </div>
             )}
 
-            {/* Diagram Pane */}
-            {activeTab === 'diagram' && (
-              <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4">
-                <div className="flex-1 flex items-center justify-center p-4 bg-background/55 border border-border/60 rounded-xl font-mono text-xs leading-relaxed text-foreground select-all min-h-[300px] overflow-x-auto whitespace-pre">
-                  {problem.diagram}
-                </div>
-                
-                {/* Text Explanation block */}
-                <div className="p-4 border border-border bg-muted/20 rounded-xl text-xs text-muted-foreground leading-relaxed text-left">
-                  <span className="font-bold text-foreground block mb-1">Algorithmic Explanation</span>
-                  {problem.solutions.explanation}
-                </div>
-              </div>
-            )}
+
 
             {activeTab === 'code' && (
               /* Multilingual solution block */
