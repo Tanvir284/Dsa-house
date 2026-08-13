@@ -151,9 +151,12 @@ export const generateBinarySearchSteps = (inputArray: number[], target: number):
     } else if (arr[mid] < target) {
       low = mid + 1;
       steps.push({
+        // Dim everything outside the *current* [low, high] window. Dimming only
+        // one side dropped the previously-discarded region back to 'default',
+        // so the search window appeared to grow again as it narrowed.
         elements: arr.map((val, idx) => {
           let state: 'default' | 'compare' | 'swap' | 'sorted' = 'default';
-          if (idx <= mid) state = 'sorted'; // Discard left half
+          if (idx < low || idx > high) state = 'sorted';
           return { val, state };
         }),
         highlights: [],
@@ -167,7 +170,7 @@ export const generateBinarySearchSteps = (inputArray: number[], target: number):
       steps.push({
         elements: arr.map((val, idx) => {
           let state: 'default' | 'compare' | 'swap' | 'sorted' = 'default';
-          if (idx >= mid) state = 'sorted'; // Discard right half
+          if (idx < low || idx > high) state = 'sorted';
           return { val, state };
         }),
         highlights: [],
@@ -375,6 +378,10 @@ export const generateQuickSortSteps = (inputArray: number[]): VisualizerStep[] =
 
       if (arr[j] <= pivot) {
         i++;
+        // Capture the pre-swap values so the narration describes what was
+        // swapped rather than reading back the already-swapped array.
+        const movedValue = arr[j];
+        const displacedValue = arr[i];
         const temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
@@ -387,7 +394,7 @@ export const generateQuickSortSteps = (inputArray: number[]): VisualizerStep[] =
           }),
           highlights: [i, j],
           markers: { low, high, scan: j, boundary: i },
-          explanation: `Since ${arr[i]} <= ${pivot}, increment boundary index to ${i} and swap arr[${i}] (${arr[i]}) with arr[${j}] (${arr[j]}).`,
+          explanation: `Since ${movedValue} <= ${pivot}, increment boundary index to ${i} and swap arr[${i}] (${displacedValue}) with arr[${j}] (${movedValue}).`,
           codeLine: 4,
           status: 'swap',
         });
@@ -395,6 +402,7 @@ export const generateQuickSortSteps = (inputArray: number[]): VisualizerStep[] =
     }
 
     // Place pivot in correct position
+    const displacedByPivot = arr[i + 1];
     const temp = arr[i + 1];
     arr[i + 1] = arr[high];
     arr[high] = temp;
@@ -407,7 +415,7 @@ export const generateQuickSortSteps = (inputArray: number[]): VisualizerStep[] =
       }),
       highlights: [i + 1, high],
       markers: { low, high, finalPivotIdx: i + 1 },
-      explanation: `Placing pivot ${pivot} into its correct sorted position by swapping arr[${i + 1}] (${arr[i + 1]}) with pivot arr[${high}] (${arr[high]}).`,
+      explanation: `Placing pivot ${pivot} into its correct sorted position by swapping arr[${i + 1}] (${displacedByPivot}) with the pivot at arr[${high}] (${pivot}).`,
       codeLine: 2,
       status: 'swap',
     });

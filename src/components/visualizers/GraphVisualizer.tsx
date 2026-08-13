@@ -21,7 +21,10 @@ interface GraphVisualizerProps {
 
 export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizerProps) {
   const [traversalMode, setTraversalMode] = useState<'bfs' | 'dfs'>(initialMode);
-  const abortRef = useRef(false);
+  // Monotonic run id used to retire an in-flight traversal. A boolean abort
+  // flag was racy: each new run reset it to false, which would revive a
+  // traversal that had already been cancelled.
+  const runIdRef = useRef(0);
   const [visitedNodes, setVisitedNodes] = useState<number[]>([]);
   const [activeNode, setActiveNode] = useState<number | null>(null);
   const [bufferState, setBufferState] = useState<number[]>([]); // Current queue (BFS) or stack (DFS)
@@ -70,7 +73,8 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
 
   const runBFS = async () => {
     setIsAnimating(true);
-    abortRef.current = false;
+    const myRun = ++runIdRef.current;
+    const cancelled = () => runIdRef.current !== myRun;
     const visited: number[] = [];
     const queue: number[] = [0];
     const visitedSet = new Set<number>([0]);
@@ -81,7 +85,7 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
     const tree = new Set<string>();
     setExplanation("Enqueued starting Root Node 0. Marked as visited.");
     await delay(1200);
-    if (abortRef.current) return;
+    if (cancelled()) return;
 
     while (queue.length > 0) {
       const curr = queue.shift()!;
@@ -92,7 +96,7 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
 
       setExplanation(`Dequeued Node ${curr} from Front of Queue. Inspecting unvisited adjacent neighbors...`);
       await delay(1400);
-      if (abortRef.current) return;
+      if (cancelled()) return;
 
       const neighbors = adjacencyList[curr] || [];
       for (const neighbor of neighbors) {
@@ -104,7 +108,7 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
           setBufferState([...queue]);
           setExplanation(`Neighbor Node ${neighbor} is unvisited. Registering and enqueuing at Rear of Queue.`);
           await delay(1000);
-          if (abortRef.current) return;
+          if (cancelled()) return;
         }
       }
     }
@@ -116,7 +120,8 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
 
   const runDFS = async () => {
     setIsAnimating(true);
-    abortRef.current = false;
+    const myRun = ++runIdRef.current;
+    const cancelled = () => runIdRef.current !== myRun;
     const visited: number[] = [];
     const stack: number[] = [0];
     const visitedSet = new Set<number>();
@@ -128,7 +133,7 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
     const tree = new Set<string>();
     setExplanation("Pushed initial Root Node 0 onto Stack.");
     await delay(1200);
-    if (abortRef.current) return;
+    if (cancelled()) return;
 
     while (stack.length > 0) {
       const curr = stack.pop()!;
@@ -146,7 +151,7 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
 
         setExplanation(`Popped Node ${curr} from Top of Stack and visited it.`);
         await delay(1400);
-        if (abortRef.current) return;
+        if (cancelled()) return;
 
         const neighbors = adjacencyList[curr] || [];
         for (let i = neighbors.length - 1; i >= 0; i--) {
@@ -157,13 +162,13 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
             setBufferState([...stack]);
             setExplanation(`Neighbor Node ${neighbor} is unvisited. Pushing onto Stack.`);
             await delay(1000);
-            if (abortRef.current) return;
+            if (cancelled()) return;
           }
         }
       } else {
         setExplanation(`Popped Node ${curr} but it was already visited. Skipping duplicate.`);
         await delay(800);
-        if (abortRef.current) return;
+        if (cancelled()) return;
       }
     }
 
@@ -179,7 +184,7 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
   };
 
   const handleReset = () => {
-    abortRef.current = true;
+    runIdRef.current += 1; // retire any in-flight traversal
     setIsAnimating(false);
     setVisitedNodes([]);
     setActiveNode(null);
@@ -377,12 +382,13 @@ export default function GraphVisualizer({ initialMode = 'bfs' }: GraphVisualizer
           >
             <Play className="h-4 w-4" /> Start Traversal
           </button>
+          {/* Stays enabled mid-traversal so a running animation can be stopped —
+              handleReset bumps the run id, which retires the in-flight run. */}
           <button
             onClick={handleReset}
-            disabled={isAnimating}
             className="flex items-center gap-1 px-4 py-2 text-xs font-bold rounded-xl border border-border hover:bg-muted text-foreground transition-all cursor-pointer shadow-sm"
           >
-            <RotateCcw className="h-4 w-4" /> Reset Graph
+            <RotateCcw className="h-4 w-4" /> {isAnimating ? 'Stop' : 'Reset Graph'}
           </button>
         </div>
       </div>

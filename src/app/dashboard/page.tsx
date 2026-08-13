@@ -37,7 +37,7 @@ import {
   LEARNING_GOAL_LABELS,
   LANGUAGE_OPTIONS,
 } from '@/lib/profile-stats';
-import { getWeeklyActiveDays } from '@/lib/profile-utils';
+import { dateKey, getWeeklyActiveDays } from '@/lib/profile-utils';
 import type { LearningGoal } from '@/lib/profile-stats';
 
 type TabId = 'overview' | 'achievements' | 'analytics' | 'settings';
@@ -67,7 +67,10 @@ export default function DashboardPage() {
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const key = d.toISOString().split('T')[0];
+      // Must use the local date key: activity_days, streaks and the heatmap are
+      // all keyed locally. toISOString() converts to UTC, so for anyone west of
+      // Greenwich this looked up the wrong day and the chart read as empty.
+      const key = dateKey(d);
       const label = d.toLocaleDateString(undefined, { weekday: 'short' });
       const val = profile.activity_days[key] ?? 0;
       arr.push({ label, val });
@@ -163,15 +166,18 @@ export default function DashboardPage() {
 
   const avgQuizPercent = useMemo(() => {
     if (quizAttempts.length === 0) return 0;
+    // Guard total_questions === 0, which would poison the average with NaN and
+    // render as "NaN%".
     const sum = quizAttempts.reduce(
-      (acc, a) => acc + (a.score / a.total_questions) * 100,
+      (acc, a) => acc + (a.total_questions > 0 ? (a.score / a.total_questions) * 100 : 0),
       0
     );
     return Math.round(sum / quizAttempts.length);
   }, [quizAttempts]);
 
   const perfectQuizzes = useMemo(
-    () => quizAttempts.filter((a) => a.score === a.total_questions).length,
+    // A zero-question attempt trivially satisfies score === total_questions.
+    () => quizAttempts.filter((a) => a.total_questions > 0 && a.score === a.total_questions).length,
     [quizAttempts]
   );
 
@@ -863,8 +869,11 @@ export default function DashboardPage() {
               <div className="divide-y divide-border">
                 {quizAttempts.slice(0, 12).map((att, idx) => {
                   const t = topics.find((x) => x.slug === att.topic_slug);
-                  const pct = Math.round((att.score / att.total_questions) * 100);
-                  const perfect = att.score === att.total_questions;
+                  const pct =
+                    att.total_questions > 0
+                      ? Math.round((att.score / att.total_questions) * 100)
+                      : 0;
+                  const perfect = att.total_questions > 0 && att.score === att.total_questions;
                   return (
                     <div key={idx} className="p-4 flex flex-col gap-1">
                       <div className="flex justify-between items-center gap-2">

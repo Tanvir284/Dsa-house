@@ -8,11 +8,41 @@ import { topics, categories } from '@/data';
 import { Topic, Difficulty } from '@/types';
 import { canAccessAdmin, getAdminUsernamesHint } from '@/lib/admin';
 
+const DENIAL_MESSAGES: Record<string, string> = {
+  not_allowlisted: 'That username is not on the admin allowlist.',
+  bad_access_code: 'Incorrect admin access code.',
+  not_configured:
+    'Admin access is disabled on this deployment. Set ADMIN_ACCESS_CODE on the server to enable it.',
+};
+
 export default function AdminPanelPage() {
-  const { profile, loginMockUser } = useAppStore();
+  const profile = useAppStore((s) => s.profile);
+  const loginMockUser = useAppStore((s) => s.loginMockUser);
+  // Authoritative: derived from the signed httpOnly cookie, not from localStorage.
+  const isAdminSession = useAppStore((s) => s.isAdminSession);
   const [adminUsername, setAdminUsername] = useState('admin');
+  const [adminCode, setAdminCode] = useState('');
+  const [signInError, setSignInError] = useState<string | null>(null);
+  const [signingIn, setSigningIn] = useState(false);
   const [topicList, setTopicList] = useState<Topic[]>(topics);
   const [lastAction, setLastAction] = useState<string>('CMS Ready.');
+
+  const handleAdminSignIn = async (username: string) => {
+    setSignInError(null);
+    setSigningIn(true);
+    try {
+      await loginMockUser(username, adminCode || undefined);
+      const { isAdminSession: granted, adminDenialReason } = useAppStore.getState();
+      if (!granted) {
+        setSignInError(
+          (adminDenialReason && DENIAL_MESSAGES[adminDenialReason]) ??
+            'Admin access was declined by the server.'
+        );
+      }
+    } finally {
+      setSigningIn(false);
+    }
+  };
 
   // Topic form fields
   const [title, setTitle] = useState('');
@@ -32,10 +62,18 @@ export default function AdminPanelPage() {
       return;
     }
 
+    // Slugs are the routing key for /topics/[slug] — a duplicate would shadow
+    // an existing lesson, so reject it rather than silently creating one.
+    const normalizedSlug = slug.toLowerCase().trim();
+    if (topicList.some((t) => t.slug === normalizedSlug)) {
+      setLastAction(`Error: a topic with the slug "${normalizedSlug}" already exists.`);
+      return;
+    }
+
     const catId = categories.find(c => c.slug === categorySlug)?.id || categories[0].id;
     const newTopic: Topic = {
       id: crypto.randomUUID(),
-      slug: slug.toLowerCase().trim(),
+      slug: normalizedSlug,
       category_id: catId,
       title: title.trim(),
       definition: definition.trim(),
@@ -88,11 +126,30 @@ export default function AdminPanelPage() {
             placeholder="admin"
             className="px-3.5 py-2 border border-border rounded-lg bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-full font-mono"
           />
+          <label className="text-left text-xs font-semibold text-muted-foreground">
+            Access code{' '}
+            <span className="font-normal text-muted-foreground/70">
+              (required only if this deployment sets one)
+            </span>
+          </label>
+          <input
+            type="password"
+            value={adminCode}
+            onChange={(e) => setAdminCode(e.target.value)}
+            placeholder="••••••••"
+            className="px-3.5 py-2 border border-border rounded-lg bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-full font-mono"
+          />
+          {signInError && (
+            <p className="text-left text-xs font-semibold text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">
+              {signInError}
+            </p>
+          )}
           <button
-            onClick={() => loginMockUser(adminUsername.trim() || 'admin')}
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-lg btn-primary font-semibold text-sm cursor-pointer"
+            onClick={() => handleAdminSignIn(adminUsername.trim() || 'admin')}
+            disabled={signingIn}
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-lg btn-primary font-semibold text-sm cursor-pointer disabled:opacity-60"
           >
-            <User className="h-4 w-4" /> Sign In as Admin
+            <User className="h-4 w-4" /> {signingIn ? 'Verifying…' : 'Sign In as Admin'}
           </button>
         </div>
         <Link href="/" className="text-xs text-primary font-bold hover:underline">
@@ -102,7 +159,9 @@ export default function AdminPanelPage() {
     );
   }
 
-  if (!canAccessAdmin(profile)) {
+  // Gate on the server-issued claim, not on the locally stored username.
+  // `canAccessAdmin` is only used to tailor the copy.
+  if (!isAdminSession) {
     return (
       <div className="flex flex-col items-center gap-6 py-16 max-w-md mx-auto text-center animate-fade-in">
         <div className="p-4 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/25">
@@ -111,18 +170,44 @@ export default function AdminPanelPage() {
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold text-foreground">Access Denied</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Signed in as <span className="font-bold text-foreground">{profile.username}</span>, which does not have CMS privileges.
+            Signed in as <span className="font-bold text-foreground">{profile.username}</span>
+            {canAccessAdmin(profile)
+              ? ', which is on the allowlist but has not been granted an admin session.'
+              : ', which does not have CMS privileges.'}
           </p>
           <p className="text-xs text-muted-foreground font-mono mt-1">
             Allowed usernames: {getAdminUsernamesHint()}
           </p>
         </div>
-        <button
-          onClick={() => loginMockUser('admin')}
-          className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg btn-primary font-semibold text-sm cursor-pointer"
-        >
-          <Shield className="h-4 w-4" /> Switch to Admin Account
-        </button>
+
+        <div className="w-full flex flex-col gap-3">
+          <label className="text-left text-xs font-semibold text-muted-foreground">
+            Access code{' '}
+            <span className="font-normal text-muted-foreground/70">
+              (required only if this deployment sets one)
+            </span>
+          </label>
+          <input
+            type="password"
+            value={adminCode}
+            onChange={(e) => setAdminCode(e.target.value)}
+            placeholder="••••••••"
+            className="px-3.5 py-2 border border-border rounded-lg bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-full font-mono"
+          />
+          {signInError && (
+            <p className="text-left text-xs font-semibold text-rose-500 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">
+              {signInError}
+            </p>
+          )}
+          <button
+            onClick={() => handleAdminSignIn(adminUsername.trim() || 'admin')}
+            disabled={signingIn}
+            className="flex items-center justify-center gap-2 px-5 py-3 rounded-lg btn-primary font-semibold text-sm cursor-pointer disabled:opacity-60"
+          >
+            <Shield className="h-4 w-4" /> {signingIn ? 'Verifying…' : 'Switch to Admin Account'}
+          </button>
+        </div>
+
         <Link href="/dashboard" className="text-xs text-primary font-bold hover:underline">
           Go to dashboard
         </Link>

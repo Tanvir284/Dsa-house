@@ -7,7 +7,7 @@ import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { UserProfile } from '@/lib/store';
 import { setAuthSessionCookie } from '@/lib/auth-session';
-import { Mail, Lock, Eye, EyeOff, Loader2, Sparkles, User, ArrowRight, ShieldAlert, Award } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Loader2, User, ArrowRight, ShieldAlert, Award } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();

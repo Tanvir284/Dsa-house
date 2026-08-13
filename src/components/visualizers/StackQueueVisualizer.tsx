@@ -15,10 +15,20 @@ export default function StackQueueVisualizer({ initialMode = 'stack' }: StackQue
   const [lastAction, setLastAction] = useState<string>('Workspace initialized. Push elements into stack or enqueue in queue.');
   const [peeked, setPeeked] = useState<boolean>(false);
 
+  // Parses the input field, reporting the problem instead of failing silently.
+  const readInput = (operation: string): number | null => {
+    const num = parseInt(inputValue, 10);
+    if (isNaN(num)) {
+      setLastAction(`${operation} failed: "${inputValue}" is not a valid number.`);
+      return null;
+    }
+    return num;
+  };
+
   // Stack Actions
   const handlePush = () => {
-    const num = parseInt(inputValue);
-    if (isNaN(num)) return;
+    const num = readInput('PUSH');
+    if (num === null) return;
     if (stack.length >= 5) {
       setLastAction("Stack is full! (Overflow protection at size 5).");
       return;
@@ -51,8 +61,8 @@ export default function StackQueueVisualizer({ initialMode = 'stack' }: StackQue
 
   // Queue Actions
   const handleEnqueue = () => {
-    const num = parseInt(inputValue);
-    if (isNaN(num)) return;
+    const num = readInput('ENQUEUE');
+    if (num === null) return;
     if (queue.length >= 6) {
       setLastAction("Queue is full! (Overflow protection at size 6).");
       return;

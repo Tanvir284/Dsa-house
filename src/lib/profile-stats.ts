@@ -117,15 +117,27 @@ export function getQuizStatsByTopic(attempts: QuizAttempt[]): QuizTopicStats[] {
 
   return Array.from(bySlug.entries())
     .map(([slug, list]) => {
-      const percents = list.map((a) => (a.score / a.total_questions) * 100);
+      // Guard against total_questions === 0, which would make every derived
+      // percentage NaN and render as "NaN%" throughout the dashboard.
+      const percents = list.map((a) =>
+        a.total_questions > 0 ? (a.score / a.total_questions) * 100 : 0
+      );
       const topic = topics.find((t) => t.slug === slug);
+      // Don't assume the attempts array is newest-first — pick the latest by date.
+      const lastAttempt = list.reduce<string | undefined>((latest, a) => {
+        if (!a.attempted_at) return latest;
+        return !latest || a.attempted_at > latest ? a.attempted_at : latest;
+      }, undefined);
       return {
         topicSlug: slug,
         title: topic?.title ?? slug,
         attempts: list.length,
-        bestPercent: Math.round(Math.max(...percents)),
-        avgPercent: Math.round(percents.reduce((a, b) => a + b, 0) / percents.length),
-        lastAttempt: list[0]?.attempted_at,
+        bestPercent: percents.length > 0 ? Math.round(Math.max(...percents)) : 0,
+        avgPercent:
+          percents.length > 0
+            ? Math.round(percents.reduce((a, b) => a + b, 0) / percents.length)
+            : 0,
+        lastAttempt,
       };
     })
     .sort((a, b) => b.attempts - a.attempts);
@@ -176,7 +188,11 @@ export function evaluateAchievements(
   // should not keep the badge.
   const unlocked = new Set<string>();
   const totalTopics = topics.length;
-  const perfectQuiz = quizAttempts.some((a) => a.score === a.total_questions);
+  // A zero-question quiz trivially satisfies `score === total_questions`; require
+  // at least one question so the badge means something.
+  const perfectQuiz = quizAttempts.some(
+    (a) => a.total_questions > 0 && a.score === a.total_questions
+  );
 
   const checks: [string, boolean][] = [
     ['first_step', completedLessons.length >= 1],
@@ -207,8 +223,9 @@ export function getNewAchievements(previous: string[], next: string[]): string[]
 export function xpForQuiz(score: number, total: number): number {
   const base = 40;
   const perCorrect = 15;
-  const perfectBonus = score === total ? 60 : 0;
-  return base + score * perCorrect + perfectBonus;
+  const safeScore = Math.max(0, score);
+  const perfectBonus = total > 0 && safeScore === total ? 60 : 0;
+  return base + safeScore * perCorrect + perfectBonus;
 }
 
 export const LEARNING_GOAL_LABELS: Record<LearningGoal, string> = {

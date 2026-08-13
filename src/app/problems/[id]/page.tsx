@@ -10,7 +10,7 @@ import {
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { useAppStore } from '@/lib/store';
 import { problems } from '@/data';
-import { getProblemTestSpec } from '@/data/problem-tests';
+import { deriveEntryNames, getProblemTestSpec } from '@/data/problem-tests';
 import { CodeRunner } from '@/components/runner/CodeRunner';
 
 interface PageProps {
@@ -65,9 +65,9 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
     if (spec) return spec;
 
     // Generate fallback spec for in-browser playground
-    const defaultFuncName = id.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-    const defaultMethodName = id.replace(/-/g, '_');
-    
+    const { pythonMethodName: defaultMethodName, javascriptFnName: defaultFuncName } =
+      deriveEntryNames(problem.id);
+
     return {
       problemId: problem.id,
       entry: {
@@ -81,7 +81,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
       },
       isCustomInputOnly: true,
     };
-  }, [id, problem.id]);
+  }, [problem.id]);
 
   return (
     <div className="flex flex-col gap-6 py-4 w-full text-left animate-fade-in">

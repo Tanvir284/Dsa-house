@@ -72,10 +72,10 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
 
     let runCases = spec.cases;
     if (spec.isCustomInputOnly) {
-      let parsedArgs: any[] = [];
+      let parsedArgs: unknown[] = [];
       try {
-        parsedArgs = JSON.parse('[' + customInput + ']');
-      } catch (err) {
+        parsedArgs = JSON.parse('[' + customInput + ']') as unknown[];
+      } catch {
         setStatus('Invalid custom input (must be valid JSON, e.g. [1, 2], 3)');
         setBusy(false);
         return;
@@ -207,7 +207,13 @@ export function CodeRunner({ spec }: CodeRunnerProps) {
         <div className="flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-left font-sans">
           <div className="flex items-center justify-between">
             <span className="text-xs uppercase tracking-wider text-white/50 font-bold">Execution Output</span>
-            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+            <span
+              className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border font-bold ${
+                cases[0].error
+                  ? 'text-red-400 bg-red-500/10 border-red-500/20'
+                  : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+              }`}
+            >
               {cases[0].error ? 'CRASHED' : 'SUCCESS'}
             </span>
           </div>

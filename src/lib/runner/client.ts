@@ -123,7 +123,13 @@ export function runCode(opts: RunOptions): Promise<RunResult> {
           break;
         case 'done':
           finish({
-            ok: cases.every((c) => c.passed),
+            // A run only counts as "ok" when every expected case actually ran
+            // and passed. `[].every(...)` is vacuously true, so an empty result
+            // set would otherwise be reported as a full pass.
+            ok:
+              cases.length > 0 &&
+              cases.length === opts.cases.length &&
+              cases.every((c) => c.passed),
             totalMs: msg.totalMs,
             cases,
           });

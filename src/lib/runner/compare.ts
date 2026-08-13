@@ -3,6 +3,9 @@ import type { CompareMode } from './types';
 /** Deterministic deep equality for JSON-serializable values. */
 export function deepEqual(a: unknown, b: unknown): boolean {
   if (Object.is(a, b)) return true;
+  // `Object.is` distinguishes 0 from -0, but for test-case comparison a
+  // solution returning -0 (e.g. from `0 * -1`) should still match an expected 0.
+  if (typeof a === 'number' && typeof b === 'number' && a === b) return true;
   if (typeof a !== typeof b) return false;
   if (a === null || b === null) return a === b;
   if (Array.isArray(a) || Array.isArray(b)) {
@@ -17,7 +20,12 @@ export function deepEqual(a: unknown, b: unknown): boolean {
     const ak = Object.keys(ao);
     const bk = Object.keys(bo);
     if (ak.length !== bk.length) return false;
-    for (const k of ak) if (!deepEqual(ao[k], bo[k])) return false;
+    for (const k of ak) {
+      // Key sets must match, not just key counts — otherwise {x: undefined}
+      // and {y: undefined} compare equal.
+      if (!Object.prototype.hasOwnProperty.call(bo, k)) return false;
+      if (!deepEqual(ao[k], bo[k])) return false;
+    }
     return true;
   }
   return false;

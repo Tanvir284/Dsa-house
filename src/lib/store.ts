@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { QuizAttempt } from '@/types';
 import { supabase } from './supabase';
 import { applyTheme, getStoredTheme, type ThemeMode } from './theme';
-import { clearAuthSessionCookie, setAuthSessionCookie } from './auth-session';
+import { clearAuthSessionCookie, fetchAuthSession, setAuthSessionCookie } from './auth-session';
 import {
   evaluateAchievements,
   getNewAchievements,
@@ -52,6 +52,14 @@ interface AppState {
   isOffline: boolean;
   theme: 'light' | 'dark';
   profile: UserProfile | null;
+  /**
+   * Admin privilege as reported by the server (derived from the signed,
+   * httpOnly session cookie). This is the authoritative flag — a username in
+   * localStorage proves nothing.
+   */
+  isAdminSession: boolean;
+  /** Why the last admin sign-in attempt was declined, if it was. */
+  adminDenialReason: string | null;
   completedLessons: string[]; // List of topic slugs completed
   completedProblems: string[]; // List of problem IDs completed
   bookmarks: string[];        // List of topic slugs bookmarked
@@ -60,14 +68,19 @@ interface AppState {
   spacedRepetition: Record<string, SpacedRepetitionItem>;
   
   // Actions
+  // NOTE: the actions below that touch Supabase or the session-cookie endpoint
+  // are genuinely async. They are typed as Promise-returning so callers can
+  // `await` them (the login page depends on the cookie landing before it
+  // navigates — with a `void` return type that await was a silent no-op).
   initializeStore: () => void;
   toggleTheme: () => void;
-  loginMockUser: (username: string) => void;
-  logoutUser: () => void;
-  toggleBookmark: (topicSlug: string) => void;
-  completeLesson: (topicSlug: string) => void;
+  loginMockUser: (username: string, adminCode?: string) => Promise<void>;
+  logoutUser: () => Promise<void>;
+  refreshAdminSession: () => Promise<void>;
+  toggleBookmark: (topicSlug: string) => Promise<void>;
+  completeLesson: (topicSlug: string) => Promise<void>;
   toggleProblemCompletion: (problemId: string) => void;
-  submitQuizAttempt: (quizId: string, topicSlug: string, score: number, totalQuestions: number) => void;
+  submitQuizAttempt: (quizId: string, topicSlug: string, score: number, totalQuestions: number) => Promise<void>;
   updateStreak: () => void;
   updateProfile: (patch: ProfileUpdate) => void;
   refreshAvatar: () => void;
@@ -96,6 +109,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   isOffline: true, // Defaults to offline mode since we fall back initially
   theme: 'dark',   // Premium dark mode by default
   profile: null,
+  isAdminSession: false,
+  adminDenialReason: null,
   completedLessons: [],
   completedProblems: [],
   bookmarks: [],
@@ -139,6 +154,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       get().updateStreak();
       get().syncAchievements();
     }
+
+    // Re-check privileges against the server cookie on every boot, so a stale
+    // or hand-edited localStorage profile can't imply admin rights.
+    void get().refreshAdminSession();
+  },
+
+  refreshAdminSession: async () => {
+    const session = await fetchAuthSession();
+    set({ isAdminSession: session.admin });
   },
 
   toggleTheme: () => {
@@ -148,7 +172,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ theme: nextTheme });
   },
 
-  loginMockUser: async (username: string) => {
+  loginMockUser: async (username: string, adminCode?: string) => {
     let userId: string | undefined;
     const displayName = username || 'AlgorithmLearner';
     const existingProfile = normalizeProfile(
@@ -176,8 +200,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       id: userId ?? existingProfile?.id,
     });
     localStorage.setItem('dsa_profile', JSON.stringify(newProfile));
-    await setAuthSessionCookie(newProfile.id || displayName);
-    set({ profile: newProfile });
+    const session = await setAuthSessionCookie(newProfile.id || displayName, {
+      username: displayName,
+      adminCode,
+    });
+    set({
+      profile: newProfile,
+      isAdminSession: session.admin,
+      adminDenialReason: session.admin ? null : session.reason ?? null,
+    });
     get().syncAchievements();
   },
 
@@ -254,6 +285,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     await clearAuthSessionCookie();
     set({
       profile: null,
+      isAdminSession: false,
+      adminDenialReason: null,
       completedLessons: [],
       completedProblems: [],
       bookmarks: [],
@@ -341,19 +374,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   toggleProblemCompletion: (problemId: string) => {
     const current = get().completedProblems;
     const exists = current.includes(problemId);
-    let next: string[];
+    const next = exists
+      ? current.filter((id) => id !== problemId)
+      : [...current, problemId];
 
-    if (exists) {
-      next = current.filter(id => id !== problemId);
-    } else {
-      next = [...current, problemId];
-      // Reward user with XP
-      get().addXp(50);
-      get().recordActivity(1);
-    }
-
+    // Commit the new list *before* awarding XP. addXp triggers syncAchievements,
+    // which derives badges from store state — running it first meant achievements
+    // were evaluated against the pre-toggle progress.
     localStorage.setItem('dsa_completed_problems', JSON.stringify(next));
     set({ completedProblems: next });
+
+    if (!exists && get().profile) {
+      get().addXp(50);
+      get().updateStreak();
+      get().recordActivity(1);
+    }
   },
 
   submitQuizAttempt: async (quizId: string, topicSlug: string, score: number, totalQuestions: number) => {

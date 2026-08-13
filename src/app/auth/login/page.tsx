@@ -7,12 +7,13 @@ import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { UserProfile } from '@/lib/store';
 import { setAuthSessionCookie } from '@/lib/auth-session';
-import { Mail, Lock, Eye, EyeOff, Loader2, Sparkles, User, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Lock, Eye, EyeOff, Loader2, Sparkles, User, ArrowRight, ShieldAlert } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const loginMockUser = useAppStore((s) => s.loginMockUser);
   const persistProfile = useAppStore((s) => s.persistProfile);
+  const refreshAdminSession = useAppStore((s) => s.refreshAdminSession);
 
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,11 +30,18 @@ export default function LoginPage() {
       const input = usernameOrEmail.trim();
       let resolvedEmail = input;
 
+      // Honour the `?from=` redirect the middleware appends when it bounces an
+      // unauthenticated user off a protected route.
+      const redirectTo =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('from') || '/'
+          : '/';
+
       if (!supabase) {
         // Offline: use mock login with username or email prefix
         const username = input.includes('@') ? input.split('@')[0] : input;
         await loginMockUser(username || 'Guest');
-        router.push('/');
+        router.push(redirectTo);
         return;
       }
 
@@ -67,7 +75,8 @@ export default function LoginPage() {
       }
 
       // Fetch profile from public 'profiles' table if available
-      let { data: profileData, error: profileError } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      const { data: initialProfileData, error: profileError } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      let profileData = initialProfileData;
       
       // Self-healing: if the user authenticated successfully but has no profile row, create it
       if (!profileData && !profileError) {
@@ -101,8 +110,10 @@ export default function LoginPage() {
       };
 
       persistProfile(profile);
-      await setAuthSessionCookie(profile.id || username);
-      const redirectTo = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('from') || '/' : '/';
+      // Pass the username explicitly: the session value is the Supabase user id,
+      // but the server needs the username to evaluate the admin allowlist.
+      await setAuthSessionCookie(profile.id || username, { username });
+      await refreshAdminSession();
       router.push(redirectTo);
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'Login failed');

@@ -24,9 +24,19 @@ export default function LinkedListVisualizer() {
   const [explanation, setExplanation] = useState<string>('Linked List initialized. Nodes show physical memory locations and next pointer offsets.');
   const [isTraversing, setIsTraversing] = useState<boolean>(false);
 
+  // Parses the input field, reporting the problem instead of failing silently.
+  const readInput = (operation: string): number | null => {
+    const num = parseInt(inputVal, 10);
+    if (isNaN(num)) {
+      setExplanation(`${operation} failed: "${inputVal}" is not a valid number.`);
+      return null;
+    }
+    return num;
+  };
+
   const handleInsertHead = () => {
-    const num = parseInt(inputVal);
-    if (isNaN(num)) return;
+    const num = readInput('Insert at head');
+    if (num === null) return;
     const newAddr = generateHexAddress();
     const newNode: ListNode = {
       id: Math.random().toString(),
@@ -38,8 +48,8 @@ export default function LinkedListVisualizer() {
   };
 
   const handleAppendTail = () => {
-    const num = parseInt(inputVal);
-    if (isNaN(num)) return;
+    const num = readInput('Append at tail');
+    if (num === null) return;
     const newAddr = generateHexAddress();
     const newNode: ListNode = {
       id: Math.random().toString(),

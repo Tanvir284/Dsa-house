@@ -134,3 +134,38 @@ export const PROBLEM_TESTS: Record<string, ProblemTestSpec> = {
 export function getProblemTestSpec(problemId: string): ProblemTestSpec | undefined {
   return PROBLEM_TESTS[problemId];
 }
+
+/**
+ * Derive valid function identifiers from a problem id.
+ *
+ * Problem ids look like `lc-1`, `cf-4A`, `lc-206`. A naive `id.replace(/-/g, ...)`
+ * leaves the hyphen in place whenever a digit follows it, which produced
+ * `function lc-1(...)` — a syntax error in the sandbox before the user had typed
+ * anything. Everything that isn't a valid identifier character is normalised
+ * here, and a leading digit is prefixed so the result is always legal in both
+ * Python and JavaScript.
+ */
+export function deriveEntryNames(problemId: string): {
+  pythonMethodName: string;
+  javascriptFnName: string;
+} {
+  const parts = problemId
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean);
+  const safeParts = parts.length > 0 ? parts : ['solution'];
+
+  const snake = safeParts.join('_');
+  const camel =
+    safeParts[0] +
+    safeParts
+      .slice(1)
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+      .join('');
+
+  const guard = (name: string) => (/^[0-9]/.test(name) ? `_${name}` : name);
+
+  return {
+    pythonMethodName: guard(snake),
+    javascriptFnName: guard(camel),
+  };
+}

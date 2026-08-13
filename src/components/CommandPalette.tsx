@@ -15,7 +15,8 @@ export default function CommandPalette({ startOpen = false }: { startOpen?: bool
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      // Compare case-insensitively: with Shift held the browser reports 'K'.
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setOpen((o) => !o);
       }

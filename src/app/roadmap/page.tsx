@@ -105,6 +105,10 @@ export default function RoadmapPage() {
 
   // Track which nodes have JUST been unlocked to fire a one-shot unlock ring.
   const prevUnlockedRef = useRef<Set<string>>(new Set());
+  // On first render every unlocked node looks "newly unlocked" because the ref
+  // starts empty, which fired the celebration ring across the whole board on
+  // page load. Seed the baseline on the first pass and only animate after that.
+  const unlockBaselineSetRef = useRef(false);
   const [justUnlocked, setJustUnlocked] = useState<Set<string>>(new Set());
 
   const isNodeLocked = (node: SkillNode) =>
@@ -115,10 +119,13 @@ export default function RoadmapPage() {
       skillNodes.filter((n) => !isNodeLocked(n) && !completedLessons.includes(n.slug)).map((n) => n.slug)
     );
     const fresh = new Set<string>();
-    nowUnlocked.forEach((slug) => {
-      if (!prevUnlockedRef.current.has(slug)) fresh.add(slug);
-    });
+    if (unlockBaselineSetRef.current) {
+      nowUnlocked.forEach((slug) => {
+        if (!prevUnlockedRef.current.has(slug)) fresh.add(slug);
+      });
+    }
     prevUnlockedRef.current = nowUnlocked;
+    unlockBaselineSetRef.current = true;
     if (fresh.size > 0) {
       setJustUnlocked(fresh);
       const t = setTimeout(() => setJustUnlocked(new Set()), 1200);

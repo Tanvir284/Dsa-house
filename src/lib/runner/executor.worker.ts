@@ -80,7 +80,7 @@ async function loadPyodide(): Promise<PyodideInterface> {
     }
   ];
 
-  let lastError: any = null;
+  let lastError: unknown = null;
   for (const src of sources) {
     try {
       const mod = await import(
@@ -112,42 +112,45 @@ async function runPython(
     ? `${entry.className}().${entry.methodName}(*_args)`
     : `${entry.methodName}(*_args)`;
 
+  // The harness binds the stdlib modules it needs to mangled private names.
+  // User code is hoisted into globals() below, so a user variable called
+  // `json`, `sys`, `io` or `traceback` would otherwise shadow the harness's own
+  // imports and break every case with a confusing AttributeError.
   const bootstrap = `
-import json, sys, io, traceback
+import json as __dsa_json, sys as __dsa_sys, io as __dsa_io, traceback as __dsa_tb
 
-__user_source = ${JSON.stringify(source)}
+__dsa_user_source = ${JSON.stringify(source)}
 
 # Execute the user source in a fresh namespace, then hoist symbols to globals
 # so the entry helper can reference them naturally.
-_user_ns = {}
-exec(compile(__user_source, "<user>", "exec"), _user_ns)
-globals().update(_user_ns)
+__dsa_user_ns = {}
+exec(compile(__dsa_user_source, "<user>", "exec"), __dsa_user_ns)
+globals().update(__dsa_user_ns)
 
 def __dsa_entry__(args_json):
-    _args = json.loads(args_json)
-    _stdout_buffer = io.StringIO()
-    _stderr_buffer = io.StringIO()
-    _saved_out, _saved_err = sys.stdout, sys.stderr
-    sys.stdout, sys.stderr = _stdout_buffer, _stderr_buffer
+    _args = __dsa_json.loads(args_json)
+    _stdout_buffer = __dsa_io.StringIO()
+    _stderr_buffer = __dsa_io.StringIO()
+    _saved_out, _saved_err = __dsa_sys.stdout, __dsa_sys.stderr
+    __dsa_sys.stdout, __dsa_sys.stderr = _stdout_buffer, _stderr_buffer
     try:
         _result = ${invocation}
     except Exception:
-        sys.stdout, sys.stderr = _saved_out, _saved_err
-        return json.dumps({
+        return __dsa_json.dumps({
             "ok": False,
-            "error": traceback.format_exc(limit=6),
+            "error": __dsa_tb.format_exc(limit=6),
             "stdout": _stdout_buffer.getvalue(),
             "stderr": _stderr_buffer.getvalue(),
         })
     finally:
-        sys.stdout, sys.stderr = _saved_out, _saved_err
+        __dsa_sys.stdout, __dsa_sys.stderr = _saved_out, _saved_err
 
     try:
-        _encoded = json.dumps(_result, default=str)
+        _encoded = __dsa_json.dumps(_result, default=str)
     except Exception:
-        _encoded = json.dumps(str(_result))
+        _encoded = __dsa_json.dumps(str(_result))
 
-    return json.dumps({
+    return __dsa_json.dumps({
         "ok": True,
         "value": _encoded,
         "stdout": _stdout_buffer.getvalue(),
@@ -250,11 +253,15 @@ async function runJavaScript(
   runtime.setMemoryLimit(RUNNER_JS_MEMORY_LIMIT);
 
   // Cooperative interrupt budget so tight infinite loops can be broken by the
-  // main-thread timeout (which will terminate the worker anyway).
+  // main-thread timeout (which will terminate the worker anyway). The budget is
+  // *per test case* — see the reset in the case loop below. Without that reset
+  // the ticks accumulate across cases and a legitimate multi-case run would be
+  // interrupted partway through purely because it has many cases.
+  const INTERRUPT_BUDGET = 5_000_000;
   let interruptCounter = 0;
   runtime.setInterruptHandler(() => {
     interruptCounter += 1;
-    return interruptCounter > 5_000_000; // ~5M ticks -> interrupt
+    return interruptCounter > INTERRUPT_BUDGET;
   });
 
   const ctx = runtime.newContext();
@@ -262,14 +269,10 @@ async function runJavaScript(
   // Capture stdout via a JS-side `console.log`.
   const consoleHandle = ctx.newObject();
   const logFn = ctx.newFunction('log', (...args) => {
+    // NOTE: quickjs-emscripten disposes the argument handles automatically once
+    // this callback returns — disposing them here would be a double-free.
     const chunk = args
-      .map((h) => {
-        try {
-          return ctx.dump(h);
-        } finally {
-          h.dispose();
-        }
-      })
+      .map((h) => ctx.dump(h))
       .map((v) => (typeof v === 'string' ? v : JSON.stringify(v)))
       .join(' ');
     post({ type: 'stdout', chunk: chunk + '\n' });
@@ -304,6 +307,7 @@ async function runJavaScript(
 
   for (const c of cases) {
     const started = performance.now();
+    interruptCounter = 0; // fresh budget per case
     const call = ctx.evalCode(
       `JSON.stringify(__dsa_entry__(...${JSON.stringify(c.input)}))`,
     );

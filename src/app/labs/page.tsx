@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BarChart3, Info, Check, Minus, Play, RefreshCw, Zap, Binary, Network,
-  Plus, Trash2, HelpCircle, ArrowRight, Layers, Flame, Award, GitFork
+  Plus, Trash2, ArrowRight, Layers, Award, GitFork
 } from 'lucide-react';
 
 // ==========================================
@@ -504,7 +504,7 @@ function SortingRaceTab() {
             <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Array Size</label>
             <select
               value={arraySize}
-              onChange={(e) => setArraySize(Number(e.target.value) as any)}
+              onChange={(e) => setArraySize(Number(e.target.value) as 100 | 500 | 1000 | 2500)}
               disabled={racing}
               className="mt-1 bg-surface border border-border text-xs rounded-lg p-2 font-semibold text-foreground focus:outline-none cursor-pointer"
             >
@@ -518,7 +518,7 @@ function SortingRaceTab() {
             <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Array Distribution</label>
             <select
               value={arrayType}
-              onChange={(e) => setArrayType(e.target.value as any)}
+              onChange={(e) => setArrayType(e.target.value as 'random' | 'sorted' | 'reversed')}
               disabled={racing}
               className="mt-1 bg-surface border border-border text-xs rounded-lg p-2 font-semibold text-foreground focus:outline-none cursor-pointer"
             >
@@ -605,21 +605,17 @@ function SortingRaceTab() {
 // 6. RECURSION STACK TRACE TAB
 // ==========================================
 
-function RecursionStackTab() {
-  const [recValue, setRecValue] = useState<number>(6);
-  const [recType, setRecType] = useState<'fib' | 'fact'>('fib');
-  const [running, setRunning] = useState(false);
-  const [frames, setFrames] = useState<StackFrame[]>([]);
-  const [steps, setSteps] = useState<RecursionStep[]>([]);
-  const [peakDepth, setPeakDepth] = useState(0);
-  const [totalCalls, setTotalCalls] = useState(0);
-  const [stepIdx, setStepIdx] = useState<number>(-1);
-
-  const calculateTrace = () => {
-    setRunning(true);
-    setStepIdx(-1);
-
-    setTimeout(() => {
+// The trace is a pure function of (value, type), so it is computed with useMemo
+// rather than pushed into state from an effect. The previous version ran inside
+// an uncancelled setTimeout in an effect, which both tripped React's
+// set-state-in-effect rule and could write state after unmount.
+function computeRecursionTrace(rawValue: number, recType: 'fib' | 'fact') {
+      // A NaN input (e.g. the number field was cleared) never satisfies
+      // `val <= 1`, so the recursion would never bottom out and would blow the
+      // call stack. Clamp to the supported 0–12 range before tracing.
+      const recValue = Number.isFinite(rawValue)
+        ? Math.max(0, Math.min(12, Math.floor(rawValue)))
+        : 0;
       const traceFrames: StackFrame[] = [];
       const traceSteps: RecursionStep[] = [];
       let idCounter = 0;
@@ -699,18 +695,33 @@ function RecursionStackTab() {
         fact(recValue, 0);
       }
 
-      setFrames(traceFrames);
-      setSteps(traceSteps);
-      setPeakDepth(depthCounter);
-      setTotalCalls(callsCounter);
-      setStepIdx(traceSteps.length - 1); // Start at fully evaluated tree
-      setRunning(false);
-    }, 50);
+  return {
+    frames: traceFrames,
+    steps: traceSteps,
+    peakDepth: depthCounter,
+    totalCalls: callsCounter,
   };
+}
 
-  useEffect(() => {
-    calculateTrace();
-  }, [recValue, recType]);
+function RecursionStackTab() {
+  const [recValue, setRecValue] = useState<number>(6);
+  const [recType, setRecType] = useState<'fib' | 'fact'>('fib');
+  const [stepIdx, setStepIdx] = useState<number>(-1);
+
+  const { frames, steps, peakDepth, totalCalls } = React.useMemo(
+    () => computeRecursionTrace(recValue, recType),
+    [recValue, recType],
+  );
+
+  // When the traced expression changes, jump to the fully evaluated tree.
+  // Adjusting state during render (rather than in an effect) is React's
+  // recommended pattern here and avoids an extra render pass.
+  const traceKey = `${recType}:${recValue}`;
+  const [renderedTraceKey, setRenderedTraceKey] = useState<string | null>(null);
+  if (renderedTraceKey !== traceKey) {
+    setRenderedTraceKey(traceKey);
+    setStepIdx(steps.length - 1);
+  }
 
   // Determine active stack frame IDs at the current step index
   const getActiveFrames = () => {
@@ -819,7 +830,10 @@ function RecursionStackTab() {
                 min={0}
                 max={recType === 'fib' ? 12 : 12}
                 value={recValue}
-                onChange={(e) => setRecValue(Math.max(0, Math.min(12, Number(e.target.value))))}
+                onChange={(e) => {
+                  const parsed = Number(e.target.value);
+                  setRecValue(Number.isFinite(parsed) ? Math.max(0, Math.min(12, parsed)) : 0);
+                }}
                 className="w-full mt-1.5 bg-surface border border-border rounded-lg p-2 text-xs font-semibold font-mono text-foreground focus:outline-none focus:border-primary"
               />
               <span className="text-[10px] text-muted-foreground mt-1 block">Maximum n: 12 (Safe range to prevent UI lag)</span>
@@ -941,10 +955,6 @@ function GraphMatrixTab() {
     if (exists) return;
 
     setEdges([...edges, { from: fromNode, to: toNode }]);
-  };
-
-  const removeEdge = (idx: number) => {
-    setEdges(edges.filter((_, i) => i !== idx));
   };
 
   const loadPreset = (type: 'tree' | 'clique' | 'cycle' | 'star') => {
@@ -1263,32 +1273,44 @@ function TreeTraversalTab() {
 
   const stepsList = getTraversalSteps();
 
-  useEffect(() => {
+  // Reset the timeline when the traversal changes. Done during render rather
+  // than in an effect so `step` can never index past a shorter step list on the
+  // render that follows the switch.
+  const [renderedTraversal, setRenderedTraversal] = useState(traversalType);
+  if (renderedTraversal !== traversalType) {
+    setRenderedTraversal(traversalType);
     setStep(-1);
     setIsPlaying(false);
-  }, [traversalType]);
+  }
+
+  // Mirror `step` into a ref so the timer can decide when to stop without the
+  // interval effect re-subscribing on every tick.
+  const stepRef = useRef(step);
+  useEffect(() => {
+    stepRef.current = step;
+  }, [step]);
 
   useEffect(() => {
-    let interval: any;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setStep(prev => {
-          if (prev >= stepsList.length - 1) {
-            setIsPlaying(false);
-            return prev;
-          }
-          return prev + 1;
-        });
-      }, 1200);
-    }
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      // Stopping is decided in the timer callback, not inside the state
+      // updater — updaters must stay pure.
+      if (stepRef.current >= stepsList.length - 1) {
+        setIsPlaying(false);
+        return;
+      }
+      setStep((prev) => (prev < stepsList.length - 1 ? prev + 1 : prev));
+    }, 1200);
     return () => clearInterval(interval);
-  }, [isPlaying, stepsList]);
+    // Depend on the length, not the array identity — `getTraversalSteps()`
+    // returns a fresh array every render, which restarted the timer constantly.
+  }, [isPlaying, stepsList.length]);
 
-  const activeNode = step >= 0 ? stepsList[step].visited : null;
-  const visitedNodes = new Set(step >= 0 ? stepsList[step].output : []);
-  const activeDS = step >= 0 ? stepsList[step].dataStructure : [];
-  const activeQueueStack = step >= 0 ? stepsList[step].queueStack : [];
-  const currentOutput = step >= 0 ? stepsList[step].output : [];
+  const currentStep = step >= 0 ? stepsList[step] : undefined;
+  const activeNode = currentStep?.visited ?? null;
+  const visitedNodes = new Set(currentStep?.output ?? []);
+  const activeQueueStack = currentStep?.queueStack ?? [];
+  const currentOutput = currentStep?.output ?? [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">

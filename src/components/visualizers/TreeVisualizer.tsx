@@ -39,7 +39,19 @@ export default function TreeVisualizer() {
   const [foundNode, setFoundNode] = useState<number | null>(null);
   const [explanation, setExplanation] = useState<string>('Binary Search Tree initialized. Insert nodes or search targets to visualize path traversals.');
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const abortRef = useRef(false);
+  // Monotonic run id. A boolean abort flag was racy: starting a new operation
+  // reset it to false, so an in-flight animation that had been cancelled would
+  // resume and fight the new one over the same state.
+  const runIdRef = useRef(0);
+
+  const readInput = (operation: string): number | null => {
+    const num = parseInt(inputVal, 10);
+    if (isNaN(num)) {
+      setExplanation(`${operation} failed: "${inputVal}" is not a valid number.`);
+      return null;
+    }
+    return num;
+  };
 
   // Tree coordinates layout configurations
   const depthHeight = 65;
@@ -57,11 +69,11 @@ export default function TreeVisualizer() {
   };
 
   const handleInsert = async () => {
-    const num = parseInt(inputVal);
-    if (isNaN(num)) return;
     if (isAnimating) return;
+    const num = readInput('Insert');
+    if (num === null) return;
     setIsAnimating(true);
-    abortRef.current = false;
+    const myRun = ++runIdRef.current;
     setFoundNode(null);
 
     const path: number[] = [];
@@ -80,12 +92,8 @@ export default function TreeVisualizer() {
       }
       
       await new Promise(resolve => setTimeout(resolve, 800));
-      if (abortRef.current) {
-        setIsAnimating(false);
-        setActiveNodes([]);
-        return;
-      }
-      
+      if (runIdRef.current !== myRun) return; // superseded or cleared
+
       if (num < curr.val) {
         if (!curr.left) {
           setExplanation(`Comparison: ${num} < ${curr.val}. Left branch is empty. Inserting Node(${num}) at this branch.`);
@@ -106,16 +114,17 @@ export default function TreeVisualizer() {
     setTree((prev) => (prev ? insertBST(prev, num) : { val: num }));
 
     await new Promise(resolve => setTimeout(resolve, 600));
+    if (runIdRef.current !== myRun) return;
     setActiveNodes([]);
     setIsAnimating(false);
   };
 
   const handleSearch = async () => {
-    const num = parseInt(inputVal);
-    if (isNaN(num)) return;
     if (isAnimating) return;
+    const num = readInput('Search');
+    if (num === null) return;
     setIsAnimating(true);
-    abortRef.current = false;
+    const myRun = ++runIdRef.current;
     setFoundNode(null);
 
     const path: number[] = [];
@@ -134,11 +143,7 @@ export default function TreeVisualizer() {
       }
 
       await new Promise(resolve => setTimeout(resolve, 900));
-      if (abortRef.current) {
-        setActiveNodes([]);
-        setIsAnimating(false);
-        return;
-      }
+      if (runIdRef.current !== myRun) return; // superseded or cleared
 
       if (num < curr.val) {
         setExplanation(`Comparison: ${num} < ${curr.val}. Searching the Left subtree.`);
@@ -155,7 +160,7 @@ export default function TreeVisualizer() {
   };
 
   const handleClear = () => {
-    abortRef.current = true;
+    runIdRef.current += 1; // invalidate any in-flight animation
     setIsAnimating(false);
     setTree(undefined);
     setActiveNodes([]);
@@ -164,7 +169,7 @@ export default function TreeVisualizer() {
   };
 
   const handleLoadDemo = () => {
-    abortRef.current = true;
+    runIdRef.current += 1; // invalidate any in-flight animation
     setIsAnimating(false);
     setTree({
       val: 50,
@@ -370,17 +375,17 @@ export default function TreeVisualizer() {
           </div>
         </div>
 
+        {/* These stay enabled during an animation so a slow traversal can be
+            cancelled — both bump the run id, which retires the in-flight run. */}
         <div className="flex gap-2">
           <button
             onClick={handleLoadDemo}
-            disabled={isAnimating}
             className="flex items-center gap-1 px-3 py-2 text-xs font-bold rounded-xl border border-border hover:bg-muted text-foreground transition-all cursor-pointer shadow-sm"
           >
             <RotateCcw className="h-4 w-4" /> Demo Tree
           </button>
           <button
             onClick={handleClear}
-            disabled={isAnimating}
             className="px-4 py-2 text-xs font-bold rounded-xl border border-border hover:border-rose-500/50 hover:bg-rose-500/15 hover:text-rose-400 transition-all duration-200 cursor-pointer shadow-sm"
           >
             Clear Tree

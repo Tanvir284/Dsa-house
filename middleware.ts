@@ -2,6 +2,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getAuthSessionCookieName } from './src/lib/auth-session';
 import { verifySessionCookie } from './src/lib/session-signature';
 
+// Middleware handles *authentication* only: does the caller hold a valid,
+// signed session? Authorization for /admin (the `admin` claim inside that
+// cookie) is enforced by the admin page itself, so a signed-in non-admin gets
+// a proper "Access Denied" screen instead of being bounced into a redirect
+// loop with /auth/login — which redirects authenticated users straight back.
 const PROTECTED_PATHS = ['/admin'];
 const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/forgot-password'];
 

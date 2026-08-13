@@ -33,7 +33,9 @@ export default function VisualizerWrapper({
   additionalControls,
 }: VisualizerWrapperProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1000); // ms delay per step
+  // Defaults to the "Normal" preset so one of the preset chips reads as active
+  // on first paint (previously 1000ms matched no preset).
+  const [speed, setSpeed] = useState(900); // ms delay per step
   const [inputVal, setInputVal] = useState(config.defaultInput);
   const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -44,17 +46,32 @@ export default function VisualizerWrapper({
     };
   }, []);
 
+  // Keep the index inside bounds when a new input produces a shorter step list.
+  useEffect(() => {
+    setCurrentStepIndex((prev) => {
+      const maxIndex = Math.max(0, steps.length - 1);
+      return prev > maxIndex ? maxIndex : prev;
+    });
+  }, [steps.length, setCurrentStepIndex]);
+
+  // Mirror the current index so the playback timer can read it without the
+  // interval effect having to re-subscribe on every step.
+  const stepIndexRef = useRef(currentStepIndex);
+  useEffect(() => {
+    stepIndexRef.current = currentStepIndex;
+  }, [currentStepIndex]);
+
   // Playback Loop
   useEffect(() => {
     if (isPlaying) {
       playIntervalRef.current = setInterval(() => {
-        setCurrentStepIndex((prev) => {
-          if (prev < steps.length - 1) {
-            return prev + 1;
-          }
+        // Stopping is decided here (a timer callback), not inside the state
+        // updater — updaters must stay pure because React may re-invoke them.
+        if (stepIndexRef.current >= steps.length - 1) {
           setIsPlaying(false);
-          return prev;
-        });
+          return;
+        }
+        setCurrentStepIndex((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
       }, speed);
     } else {
       if (playIntervalRef.current) {
@@ -180,7 +197,7 @@ export default function VisualizerWrapper({
           <input
             type="range"
             min="0"
-            max={steps.length - 1}
+            max={Math.max(0, steps.length - 1)}
             value={currentStepIndex}
             onChange={(e) => {
               setIsPlaying(false);
