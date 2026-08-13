@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { categories, topics } from '@/data';
+import AmbientOrbField from '@/components/3d/AmbientOrbField';
 
 
 interface SkillNode {
@@ -192,6 +193,7 @@ export default function RoadmapPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="relative overflow-hidden rounded-3xl glass-card blob-glow p-6 sm:p-10"
       >
+        <AmbientOrbField compact className="absolute inset-0 -z-10 opacity-[0.12]" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
           <div className="lg:col-span-7 flex flex-col gap-4">
             <div className="inline-flex items-center gap-2 self-start rounded-full border border-glass-border px-3 py-1.5"

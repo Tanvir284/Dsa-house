@@ -3,6 +3,7 @@
 import React, { useState, use, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import { BookMarked, CheckCircle2, Copy, Check, ChevronLeft, ChevronRight, Sparkles, Terminal, BookOpen, Trophy, ArrowRight } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { topics, categories, lessonSections, codeSnippets, quizzes, quizQuestions } from '@/data';
@@ -236,8 +237,13 @@ function TopicPageContent({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-6 py-4 w-full text-left">
-      
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-6 py-4 w-full text-left"
+    >
+
       {/* 1. Header Board */}
       <div className="flex flex-col gap-3 border-b border-border pb-5">
         <Link href="/topics" className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground w-fit">
@@ -252,26 +258,30 @@ function TopicPageContent({ slug }: { slug: string }) {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => toggleBookmark(topic.slug)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
                 isBookmarked
                   ? 'bg-primary/10 border-primary/30 text-primary'
                   : 'border-border bg-surface text-muted-foreground hover:text-foreground'
               }`}
             >
               <BookMarked className="h-4 w-4" /> {isBookmarked ? 'Saved' : 'Save'}
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => completeLesson(topic.slug)}
-              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border transition-colors cursor-pointer ${
                 isCompleted
                   ? 'bg-complete/10 border-complete/30 text-complete'
                   : 'border-border bg-surface text-muted-foreground hover:text-foreground'
               }`}
             >
               <CheckCircle2 className="h-4 w-4" /> {isCompleted ? 'Completed' : 'Mark Done'}
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
@@ -308,8 +318,16 @@ function TopicPageContent({ slug }: { slug: string }) {
           </div>
 
           <div className="p-5 overflow-y-auto flex-1 flex flex-col gap-6 text-sm">
+            <AnimatePresence mode="wait">
             {activeTab === 'lesson' ? (
-              <>
+              <motion.div
+                key="lesson"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-6"
+              >
                 {/* Definition callout */}
                 <p className="text-muted-foreground font-medium leading-relaxed border-l-2 border-primary/45 pl-3">
                   {topic.definition}
@@ -357,10 +375,16 @@ function TopicPageContent({ slug }: { slug: string }) {
                     className="input-themed w-full px-3 py-2 border rounded-xl text-sm resize-y min-h-[100px]"
                   />
                 </div>
-              </>
+              </motion.div>
             ) : (
               /* Quiz interface inside the IDE pane */
-              <div className="flex flex-col gap-5 h-full">
+              <motion.div
+                key="quiz"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex flex-col gap-5 h-full">
                 {quizFinished ? (
                   <div className="flex flex-col items-center justify-center text-center gap-4 py-16 flex-1">
                     <div className="p-4 rounded-full bg-complete/10 text-complete border border-complete/25 shadow-[0_0_15px_rgba(16,185,129,0.2)] animate-bounce">
@@ -462,8 +486,9 @@ function TopicPageContent({ slug }: { slug: string }) {
                 ) : (
                   <div className="text-center py-16 text-muted-foreground">No verification quiz modules loaded for this topic.</div>
                 )}
-              </div>
+              </motion.div>
             )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -652,6 +677,6 @@ function TopicPageContent({ slug }: { slug: string }) {
         )}
       </div>
 
-    </div>
+    </motion.div>
   );
 }

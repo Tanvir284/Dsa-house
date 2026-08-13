@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { VisualizerStep, VisualizerConfig } from '@/types';
 import Tooltip from './_shared/Tooltip';
 import { staggerContainer, riseItem, textSwap, springSnappy } from './_shared/vizMotion';
+import AmbientOrbField from '@/components/3d/AmbientOrbField';
 
 const SPEED_PRESETS = [
   { label: 'Slow', icon: Turtle, ms: 1600 },
@@ -152,6 +153,8 @@ export default function VisualizerWrapper({
     >
       {/* 1. Interactive Visualizer Sandbox Panel */}
       <motion.div variants={riseItem} className="relative flex flex-col items-center justify-center p-8 min-h-[340px] rounded-2xl border border-border bg-card shadow-lg overflow-hidden visualizer-arena">
+        {/* Decorative only — behind renderVisuals, never intercepts pointer events */}
+        <AmbientOrbField compact className="absolute inset-0 -z-10 opacity-[0.15] pointer-events-none" />
         <div className="absolute top-4 left-4 flex items-center gap-2 select-none">
           <span className="flex h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_#00f2ff] animate-pulse" />
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visualization Arena</span>

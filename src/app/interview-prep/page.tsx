@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Trophy, Flame, BookOpen, AlertCircle } from 'lucide-react';
+import { fadeUp, inViewOnce, staggerContainer } from '@/lib/motion';
 
 interface FlashCard {
   pattern: string;
@@ -52,7 +54,7 @@ export default function InterviewPrepPage() {
   return (
     <div className="flex flex-col gap-10 py-6 w-full text-left animate-slide-up">
       {/* Page Header */}
-      <div className="flex flex-col gap-2 relative">
+      <motion.div variants={fadeUp} initial="hidden" animate="show" className="flex flex-col gap-2 relative">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider w-fit animate-pulse-slow">
           <Trophy className="h-3.5 w-3.5" /> Prep Arena
         </div>
@@ -60,7 +62,7 @@ export default function InterviewPrepPage() {
         <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
           Master common coding patterns, review time and space complexities, and avoid trap questions frequently asked by tech recruiters.
         </p>
-      </div>
+      </motion.div>
 
       {/* 1. Interactive Patterns Cards */}
       <section className="flex flex-col gap-5 w-full">
@@ -68,15 +70,23 @@ export default function InterviewPrepPage() {
           <Flame className="h-5 w-5 text-rose-500 animate-pulse" /> Common Interview Patterns
         </h2>
         <p className="text-xs text-muted-foreground">Click any card below to review its algorithmic mechanics and sample questions.</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={inViewOnce}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full"
+        >
           {patterns.map((card, idx) => {
             const isActive = activeCardIdx === idx;
             return (
-              <div
+              <motion.div
                 key={idx}
+                variants={fadeUp}
+                layout
                 onClick={() => setActiveCardIdx(isActive ? null : idx)}
-                className={`p-5 rounded-xl border transition-all text-left flex flex-col justify-between gap-4 cursor-pointer hover:border-primary/50 ${
+                className={`p-5 rounded-xl border transition-colors text-left flex flex-col justify-between gap-4 cursor-pointer hover:border-primary/50 ${
                   isActive ? 'border-primary bg-primary/5 ring-1 ring-primary/25' : 'border-border bg-card'
                 }`}
               >
@@ -86,39 +96,53 @@ export default function InterviewPrepPage() {
                   <p className="text-xs text-muted-foreground leading-relaxed">{card.useCase}</p>
                 </div>
 
-                {isActive && (
-                  <div className="flex flex-col gap-3 pt-3 border-t border-border/60 animate-fade-in text-xs">
-                    <div className="flex flex-col gap-1">
-                      <span className="font-bold text-foreground">Algorithm Mechanics:</span>
-                      <p className="text-muted-foreground leading-relaxed">{card.mechanics}</p>
-                    </div>
-
-                    <div className="flex flex-col gap-1.5">
-                      <span className="font-bold text-foreground">Sample LeetCode Problems:</span>
-                      <div className="flex flex-col gap-1 pl-2.5 border-l border-border/80 font-mono text-[10px]">
-                        {card.sampleProblems.map((prob, pIdx) => (
-                          <span key={pIdx} className="text-muted-foreground">{pIdx+1}. {prob}</span>
-                        ))}
+                <AnimatePresence initial={false}>
+                  {isActive && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                      className="flex flex-col gap-3 pt-3 border-t border-border/60 text-xs overflow-hidden"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <span className="font-bold text-foreground">Algorithm Mechanics:</span>
+                        <p className="text-muted-foreground leading-relaxed">{card.mechanics}</p>
                       </div>
-                    </div>
-                  </div>
-                )}
+
+                      <div className="flex flex-col gap-1.5">
+                        <span className="font-bold text-foreground">Sample LeetCode Problems:</span>
+                        <div className="flex flex-col gap-1 pl-2.5 border-l border-border/80 font-mono text-[10px]">
+                          {card.sampleProblems.map((prob, pIdx) => (
+                            <span key={pIdx} className="text-muted-foreground">{pIdx+1}. {prob}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 <div className="text-[10px] text-primary font-bold">
                   {isActive ? 'Click to hide details' : 'Click to reveal details'}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </section>
 
       {/* 2. Big O Cheat Sheet Table */}
-      <section className="flex flex-col gap-4 w-full">
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={inViewOnce}
+        className="flex flex-col gap-4 w-full"
+      >
         <h2 className="text-xl font-bold flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-primary" /> Complexity Cheat Sheet
         </h2>
-        
+
         <div className="border border-border rounded-xl bg-card overflow-x-auto w-full">
           <table className="w-full text-left border-collapse text-xs font-mono">
             <thead>
@@ -145,10 +169,16 @@ export default function InterviewPrepPage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </motion.section>
 
       {/* 3. Common Pitfalls & Traps */}
-      <section className="flex flex-col gap-4 w-full">
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={inViewOnce}
+        className="flex flex-col gap-4 w-full"
+      >
         <h2 className="text-xl font-bold flex items-center gap-2">
           <AlertCircle className="h-5 w-5 text-rose-500" /> Common Mistakes & Interview Traps
         </h2>
@@ -178,7 +208,7 @@ export default function InterviewPrepPage() {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
     </div>
   );

@@ -3,10 +3,12 @@
 import React, { useState, useRef, use } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { ArrowRight, HelpCircle, CheckCircle2, RotateCcw, ChevronLeft, Award } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { topics, quizzes, quizQuestions } from '@/data';
 import confetti from 'canvas-confetti';
+import { springSoft } from '@/lib/motion';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -90,12 +92,22 @@ export default function ActiveQuizPage({ params }: PageProps) {
     const isPass = score >= questions.length / 2;
 
     return (
-      <div className="flex flex-col items-center gap-8 py-10 max-w-xl mx-auto w-full text-center animate-fade-in">
-        
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-col items-center gap-8 py-10 max-w-xl mx-auto w-full text-center"
+      >
+
         {/* Success Icon */}
-        <div className="p-5 rounded-full bg-primary/10 text-primary border border-primary/20 w-fit shrink-0">
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ ...springSoft, delay: 0.1 }}
+          className="p-5 rounded-full bg-primary/10 text-primary border border-primary/20 w-fit shrink-0"
+        >
           <Award className="h-16 w-16" />
-        </div>
+        </motion.div>
 
         <div className="flex flex-col gap-2">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Quiz Completed</span>
@@ -137,13 +149,18 @@ export default function ActiveQuizPage({ params }: PageProps) {
           </Link>
         </div>
 
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-8 py-6 max-w-2xl mx-auto w-full text-left animate-slide-up">
-      
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-8 py-6 max-w-2xl mx-auto w-full text-left"
+    >
+
       {/* Top navbar links */}
       <Link href="/practice" className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground w-fit">
         <ChevronLeft className="h-4 w-4" /> Exit Quiz Lobby
@@ -156,15 +173,23 @@ export default function ActiveQuizPage({ params }: PageProps) {
           <span>{progressPercent}% Complete</span>
         </div>
         <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden border border-border">
-          <div
-            style={{ width: `${progressPercent}%` }}
-            className="h-full bg-primary transition-all duration-300"
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercent}%` }}
+            transition={springSoft}
+            className="h-full bg-primary"
           />
         </div>
       </div>
 
       {/* Active Question Box */}
-      <div className="flex flex-col gap-6">
+      <motion.div
+        key={currQIdx}
+        initial={{ opacity: 0, x: 16 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-col gap-6"
+      >
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-lg bg-primary/10 text-primary mt-0.5">
             <HelpCircle className="h-5 w-5" />
@@ -210,7 +235,7 @@ export default function ActiveQuizPage({ params }: PageProps) {
             );
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Explanation Banner */}
       {isAnswered && (
@@ -246,6 +271,6 @@ export default function ActiveQuizPage({ params }: PageProps) {
         )}
       </div>
 
-    </div>
+    </motion.div>
   );
 }

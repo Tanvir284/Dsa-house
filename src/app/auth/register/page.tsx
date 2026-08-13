@@ -3,11 +3,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useAppStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { UserProfile } from '@/lib/store';
 import { setAuthSessionCookie } from '@/lib/auth-session';
 import { Mail, Lock, Eye, EyeOff, Loader2, User, ArrowRight, ShieldAlert, Award } from 'lucide-react';
+import AmbientOrbField from '@/components/3d/AmbientOrbField';
+import { fadeUp, staggerContainer } from '@/lib/motion';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -84,13 +87,19 @@ export default function RegisterPage() {
 
   return (
     <div className="relative min-h-[85vh] w-full flex items-center justify-center px-4 py-12 overflow-hidden select-none">
-      {/* Dynamic Glowing Ambient Blobs */}
+      {/* Dynamic Glowing Ambient Blobs + WebGL depth */}
       <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] rounded-full bg-primary/10 blur-[80px] pointer-events-none animate-pulse-slow" />
       <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-accent/80 opacity-[0.05] blur-[100px] pointer-events-none animate-pulse-slow" />
+      <AmbientOrbField compact className="absolute inset-0 -z-10 opacity-[0.12]" />
 
       {/* Glassmorphic Container Card */}
-      <div className="w-full max-w-md relative z-10 backdrop-blur-xl bg-card/45 border border-border/60 rounded-2xl p-6 sm:p-8 shadow-xl transition-all duration-300 hover:border-border/80">
-        
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md relative z-10 backdrop-blur-xl bg-card/45 border border-border/60 rounded-2xl p-6 sm:p-8 shadow-xl transition-colors duration-300 hover:border-border/80"
+      >
+
         {/* Brand identity */}
         <div className="flex flex-col items-center gap-3 mb-6 text-center">
           <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary/10 to-accent/10 border border-primary/20 transition-all duration-300">
@@ -117,52 +126,58 @@ export default function RegisterPage() {
         </div>
 
         {/* Form Container */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          
+        <motion.form
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4"
+        >
+
           {/* Username field */}
-          <div className="flex flex-col gap-1.5 text-left">
+          <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
             <label className="text-xs font-semibold text-muted-foreground">Username</label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
-              <input 
-                type="text" 
-                placeholder="Choose a username" 
-                value={username} 
-                onChange={(e) => setUsername(e.target.value)} 
-                className="w-full pl-10 pr-4 py-2.5 bg-[#0d0f14]/50 border border-border/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/45 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium" 
+              <input
+                type="text"
+                placeholder="Choose a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 input-themed border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/45 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium"
                 required
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Email field */}
-          <div className="flex flex-col gap-1.5 text-left">
+          <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
             <label className="text-xs font-semibold text-muted-foreground">Email Address</label>
             <div className="relative">
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                className="w-full pl-10 pr-4 py-2.5 bg-[#0d0f14]/50 border border-border/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/45 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium" 
-                required 
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 input-themed border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/45 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium"
+                required
               />
             </div>
-          </div>
+          </motion.div>
 
           {/* Password field */}
-          <div className="flex flex-col gap-1.5 text-left">
+          <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
             <label className="text-xs font-semibold text-muted-foreground">Password</label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                placeholder="Create a strong password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                className="w-full pl-10 pr-10 py-2.5 bg-[#0d0f14]/50 border border-border/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/45 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium" 
-                required 
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Create a strong password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-10 pr-10 py-2.5 input-themed border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/45 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium"
+                required
               />
               <button
                 type="button"
@@ -172,21 +187,32 @@ export default function RegisterPage() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-          </div>
+          </motion.div>
 
           {/* Error Message Box */}
-          {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-xs flex items-start gap-2.5 leading-relaxed text-left animate-slide-up">
-              <ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />
-              <span className="font-semibold">{error}</span>
-            </div>
-          )}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, y: -8 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25 }}
+                className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-xs flex items-start gap-2.5 leading-relaxed text-left overflow-hidden"
+              >
+                <ShieldAlert className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />
+                <span className="font-semibold">{error}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Submit Button */}
-          <button 
-            type="submit" 
-            disabled={loading} 
-            className="w-full mt-2 py-2.5 bg-primary text-primary-foreground hover:bg-primary/95 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 shadow-md shadow-primary/10 hover:shadow-primary/20 cursor-pointer"
+          <motion.button
+            variants={fadeUp}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            type="submit"
+            disabled={loading}
+            className="w-full mt-2 py-2.5 bg-primary text-primary-foreground hover:bg-primary/95 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors duration-300 disabled:opacity-50 shadow-md shadow-primary/10 hover:shadow-primary/20 cursor-pointer"
           >
             {loading ? (
               <>
@@ -199,8 +225,8 @@ export default function RegisterPage() {
                 <ArrowRight className="h-4 w-4" />
               </>
             )}
-          </button>
-        </form>
+          </motion.button>
+        </motion.form>
 
         {/* Separator / Footer Links */}
         <div className="mt-6 pt-5 border-t border-border/60 flex items-center justify-center gap-1.5 text-xs text-muted-foreground font-semibold">
@@ -210,7 +236,7 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-      </div>
+      </motion.div>
     </div>
   );
 }

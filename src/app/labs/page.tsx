@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   BarChart3, Info, Check, Minus, Play, RefreshCw, Zap, Binary, Network,
   Plus, Trash2, ArrowRight, Layers, Award, GitFork
 } from 'lucide-react';
+import { navPillTransition } from '@/lib/motion';
 
 // ==========================================
 // 1. DATA DEFINITIONS & TYPES
@@ -195,8 +197,22 @@ const runInsertionSort = (arr: number[]) => {
 export default function LabsPage() {
   const [activeTab, setActiveTab] = useState<'estimator' | 'sorter' | 'recursion' | 'graph' | 'traversal' | 'bitwise'>('estimator');
 
+  const LAB_TABS = [
+    { id: 'estimator' as const, label: 'Complexity Estimator', icon: BarChart3 },
+    { id: 'sorter' as const, label: 'Sorting Performance Race', icon: Zap },
+    { id: 'recursion' as const, label: 'Recursion Stack Trace', icon: Binary },
+    { id: 'graph' as const, label: 'Graph Builder & Matrix Lab', icon: Network },
+    { id: 'traversal' as const, label: 'Tree Traversals (BFS/DFS)', icon: GitFork },
+    { id: 'bitwise' as const, label: 'Bitwise Sandbox', icon: Layers },
+  ];
+
   return (
-    <div className="flex flex-col gap-6 py-2 w-full animate-fade-in">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-6 py-2 w-full"
+    >
       <div>
         <h1 className="text-3xl font-black text-foreground flex items-center gap-2">
           <Zap className="h-8 w-8 text-primary animate-pulse-slow" /> DSA Sandbox Labs
@@ -208,84 +224,46 @@ export default function LabsPage() {
 
       {/* Modern Tabs Navigation */}
       <div className="flex flex-wrap gap-2 border-b border-border/80 pb-3">
-        <button
-          onClick={() => setActiveTab('estimator')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'estimator'
-              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
-          }`}
-        >
-          <BarChart3 className="h-4 w-4" />
-          <span>Complexity Estimator</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('sorter')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'sorter'
-              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
-          }`}
-        >
-          <Zap className="h-4 w-4" />
-          <span>Sorting Performance Race</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('recursion')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'recursion'
-              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
-          }`}
-        >
-          <Binary className="h-4 w-4" />
-          <span>Recursion Stack Trace</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('graph')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'graph'
-              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
-          }`}
-        >
-          <Network className="h-4 w-4" />
-          <span>Graph Builder & Matrix Lab</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('traversal')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'traversal'
-              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
-          }`}
-        >
-          <GitFork className="h-4 w-4" />
-          <span>Tree Traversals (BFS/DFS)</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('bitwise')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-            activeTab === 'bitwise'
-              ? 'bg-primary/10 text-primary border border-primary/20 shadow-sm'
-              : 'text-muted-foreground hover:text-foreground hover:bg-surface/50 border border-transparent'
-          }`}
-        >
-          <Layers className="h-4 w-4" />
-          <span>Bitwise Sandbox</span>
-        </button>
+        {LAB_TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`relative flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-xl transition-colors cursor-pointer border border-transparent ${
+              activeTab === id ? 'text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-surface/50'
+            }`}
+          >
+            {activeTab === id && (
+              <motion.span
+                layoutId="labs-tab-pill"
+                transition={navPillTransition}
+                className="absolute inset-0 -z-10 rounded-xl bg-primary/10 border border-primary/20 shadow-sm"
+              />
+            )}
+            <Icon className="h-4 w-4" />
+            <span>{label}</span>
+          </button>
+        ))}
       </div>
 
       {/* Render active lab content */}
-      <div className="w-full">
-        {activeTab === 'estimator' && <ComplexityEstimatorTab />}
-        {activeTab === 'sorter' && <SortingRaceTab />}
-        {activeTab === 'recursion' && <RecursionStackTab />}
-        {activeTab === 'graph' && <GraphMatrixTab />}
-        {activeTab === 'traversal' && <TreeTraversalTab />}
-        {activeTab === 'bitwise' && <BitwiseLabTab />}
-      </div>
-    </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="w-full"
+        >
+          {activeTab === 'estimator' && <ComplexityEstimatorTab />}
+          {activeTab === 'sorter' && <SortingRaceTab />}
+          {activeTab === 'recursion' && <RecursionStackTab />}
+          {activeTab === 'graph' && <GraphMatrixTab />}
+          {activeTab === 'traversal' && <TreeTraversalTab />}
+          {activeTab === 'bitwise' && <BitwiseLabTab />}
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

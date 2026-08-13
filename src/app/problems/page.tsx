@@ -2,9 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Search, CheckCircle2, Circle, Trophy, Award, Flame, ExternalLink, RefreshCw } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { problems, categories } from '@/data';
+import { fadeUp, springSoft, staggerContainer } from '@/lib/motion';
 
 const problemCategoryOptions = Array.from(new Set(problems.map((problem) => problem.category)))
   .sort((left, right) => {
@@ -71,17 +73,17 @@ export default function ProblemsArenaPage() {
     <div className="flex flex-col gap-8 py-4 w-full animate-fade-in">
       
       {/* Header */}
-      <div className="flex flex-col gap-2">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold text-foreground">Coding Arena</h1>
         <p className="text-sm text-muted-foreground">
           Master data structures and algorithms by solving {problems.length} problems curated from LeetCode and Codeforces.
         </p>
-      </div>
+      </motion.div>
 
       {/* Stats Dashboard Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
         {/* Progress Card */}
-        <div className="card p-5 flex items-center gap-4">
+        <motion.div variants={fadeUp} className="card p-5 flex items-center gap-4">
           <div className="p-3.5 rounded-2xl bg-primary/10 border border-primary/20 text-primary">
             <Trophy className="h-6 w-6" />
           </div>
@@ -93,16 +95,18 @@ export default function ProblemsArenaPage() {
             </div>
             {/* Progress bar */}
             <div className="w-full bg-border/40 h-2 rounded-full mt-2 overflow-hidden">
-              <div 
-                className="bg-primary h-full rounded-full transition-all duration-500" 
-                style={{ width: `${completionRate}%` }} 
+              <motion.div
+                className="bg-primary h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${completionRate}%` }}
+                transition={springSoft}
               />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Completion rate Card */}
-        <div className="card p-5 flex items-center gap-4">
+        <motion.div variants={fadeUp} className="card p-5 flex items-center gap-4">
           <div className="p-3.5 rounded-2xl bg-complete/10 border border-complete/20 text-complete">
             <Award className="h-6 w-6" />
           </div>
@@ -111,10 +115,10 @@ export default function ProblemsArenaPage() {
             <span className="text-xl font-black text-foreground mt-0.5">{completionRate}%</span>
             <span className="text-xs text-muted-foreground">Level up your problem solving</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* XP Reward Card */}
-        <div className="card p-5 flex items-center gap-4">
+        <motion.div variants={fadeUp} className="card p-5 flex items-center gap-4">
           <div className="p-3.5 rounded-2xl bg-accent/10 border border-accent/20 text-accent">
             <Flame className="h-6 w-6 animate-pulse" />
           </div>
@@ -123,8 +127,8 @@ export default function ProblemsArenaPage() {
             <span className="text-xl font-black text-accent mt-0.5">+{completedProblems.length * 50} XP</span>
             <span className="text-xs text-muted-foreground">50 XP per problem solved</span>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Filter & Search Bar */}
       <div className="flex flex-col xl:flex-row gap-3 xl:items-center">
@@ -201,7 +205,15 @@ export default function ProblemsArenaPage() {
       </div>
 
       {/* Problems Table/List */}
-      <div className="card w-full overflow-hidden">
+      <AnimatePresence mode="wait">
+      <motion.div
+        key={`${currentPage}-${searchQuery}-${selectedDifficulty}-${selectedSource}-${selectedCategory}`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.18 }}
+        className="card w-full overflow-hidden"
+      >
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -311,7 +323,8 @@ export default function ProblemsArenaPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      </motion.div>
+      </AnimatePresence>
 
       {/* Pagination controls */}
       {totalPages > 1 && (

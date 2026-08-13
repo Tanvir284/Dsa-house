@@ -3,6 +3,7 @@
 import React, { useState, use, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Sparkles, ChevronLeft, Terminal, Copy, Check } from 'lucide-react';
 import { generateBubbleSortSteps, generateBinarySearchSteps, generateMergeSortSteps, generateQuickSortSteps } from '@/lib/dsa-utils';
 import { topics, codeSnippets } from '@/data';
@@ -189,7 +190,12 @@ function StandaloneVisualizerContent({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-6 py-4 w-full text-left">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-6 py-4 w-full text-left"
+    >
       {/* Return Navigation */}
       <Link href="/visualizer" className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground hover:text-foreground w-fit font-mono">
         <ChevronLeft className="h-4 w-4" /> CD_LABORATORY_DIR
@@ -348,6 +354,6 @@ function StandaloneVisualizerContent({ slug }: { slug: string }) {
 
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

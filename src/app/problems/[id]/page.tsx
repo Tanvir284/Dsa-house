@@ -3,9 +3,10 @@
 import React, { useState, use, useMemo } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { 
-  ChevronLeft, CheckCircle2, Circle, Copy, Check, FileText, 
-  AlertCircle, Code, Terminal 
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  ChevronLeft, CheckCircle2, Circle, Copy, Check, FileText,
+  AlertCircle, Code, Terminal
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { useAppStore } from '@/lib/store';
@@ -84,8 +85,13 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
   }, [problem.id]);
 
   return (
-    <div className="flex flex-col gap-6 py-4 w-full text-left animate-fade-in">
-      
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-6 py-4 w-full text-left"
+    >
+
       {/* Back button and title bar */}
       <div className="flex flex-col gap-3 border-b border-border pb-5">
         <Link 
@@ -115,9 +121,11 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
           </div>
 
           {/* Mark solved action */}
-          <button
+          <motion.button
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => toggleProblemCompletion(problem.id)}
-            className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl border transition-colors cursor-pointer ${
               isCompleted
                 ? 'bg-complete/10 border-complete/30 text-complete hover:bg-complete/15'
                 : 'border-border bg-surface text-muted-foreground hover:text-foreground hover:border-border-hover'
@@ -132,7 +140,7 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
                 <Circle className="h-4 w-4" /> Mark Solved
               </>
             )}
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -262,46 +270,62 @@ export default function ProblemWorkspacePage({ params }: PageProps) {
 
 
 
-            {activeTab === 'code' && (
-              /* Multilingual solution block */
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="flex-1 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed text-foreground/95 select-text text-left">
-                  {codeValue ? (
-                    <pre className="m-0">
-                      <code>
-                        {codeValue.split('\n').map((line, idx) => (
-                          <div key={idx} className="flex hover:bg-muted/10 px-1 py-0.5 rounded">
-                            <span className="text-muted-foreground/30 w-7 select-none text-right pr-2 mr-2.5 font-sans text-[9px] border-r border-border/25">
-                              {idx + 1}
-                            </span>
-                            <span className="whitespace-pre">{line}</span>
-                          </div>
-                        ))}
-                      </code>
-                    </pre>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-center gap-2 text-muted-foreground py-12">
-                      <AlertCircle className="h-6 w-6" />
-                      <span className="text-xs font-semibold">
-                        No {activeLang === 'cpp' ? 'C++' : activeLang} solution available for this problem yet.
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <AnimatePresence mode="wait">
+              {activeTab === 'code' && (
+                /* Multilingual solution block */
+                <motion.div
+                  key={`code-${activeLang}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex-1 flex flex-col overflow-hidden"
+                >
+                  <div className="flex-1 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed text-foreground/95 select-text text-left">
+                    {codeValue ? (
+                      <pre className="m-0">
+                        <code>
+                          {codeValue.split('\n').map((line, idx) => (
+                            <div key={idx} className="flex hover:bg-muted/10 px-1 py-0.5 rounded">
+                              <span className="text-muted-foreground/30 w-7 select-none text-right pr-2 mr-2.5 font-sans text-[9px] border-r border-border/25">
+                                {idx + 1}
+                              </span>
+                              <span className="whitespace-pre">{line}</span>
+                            </div>
+                          ))}
+                        </code>
+                      </pre>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full text-center gap-2 text-muted-foreground py-12">
+                        <AlertCircle className="h-6 w-6" />
+                        <span className="text-xs font-semibold">
+                          No {activeLang === 'cpp' ? 'C++' : activeLang} solution available for this problem yet.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
 
-            {activeTab === 'runner' && (
-              <div className="flex-1 overflow-y-auto p-4">
-                <CodeRunner spec={runnerSpec} />
-              </div>
-            )}
+              {activeTab === 'runner' && (
+                <motion.div
+                  key="runner"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex-1 overflow-y-auto p-4"
+                >
+                  <CodeRunner spec={runnerSpec} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
         </div>
 
       </div>
 
-    </div>
+    </motion.div>
   );
 }

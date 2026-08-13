@@ -2,9 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Search, CheckCircle2, ChevronRight, Bookmark } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { categories, topics } from '@/data';
+import { fadeUp, inViewOnce } from '@/lib/motion';
 
 export default function TopicsPage() {
   const { completedLessons, bookmarks } = useAppStore();
@@ -28,15 +30,15 @@ export default function TopicsPage() {
     <div className="flex flex-col gap-8 py-4 w-full animate-fade-in">
 
       {/* Header */}
-      <div className="flex flex-col gap-2">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold text-foreground">All Topics</h1>
         <p className="text-sm text-muted-foreground">
           Browse all data structures and algorithms. Each topic includes theory, visualizers, code, and practice problems.
         </p>
-      </div>
+      </motion.div>
 
       {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.08 }} className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         {/* Search */}
         <div className="relative flex-1 w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -79,7 +81,7 @@ export default function TopicsPage() {
         <span className="text-xs text-muted-foreground ml-auto">
           {filteredTopics.length} topic{filteredTopics.length !== 1 ? 's' : ''}
         </span>
-      </div>
+      </motion.div>
 
       {/* Results Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
@@ -106,8 +108,15 @@ export default function TopicsPage() {
               'badge-hard';
 
             return (
-              <Link
+              <motion.div
                 key={topic.id}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={inViewOnce}
+                whileHover={{ y: -3 }}
+              >
+              <Link
                 href={`/topics/${topic.slug}`}
                 className="topic-card group min-h-[14rem] h-full"
               >
@@ -144,6 +153,7 @@ export default function TopicsPage() {
                   </div>
                 </div>
               </Link>
+              </motion.div>
             );
           })
         )}

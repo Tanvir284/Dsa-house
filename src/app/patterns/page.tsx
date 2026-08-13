@@ -2,8 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Layers, ArrowRight, BookOpen, Sparkles } from 'lucide-react';
 import { topics, categories } from '@/data';
+import { fadeUp, inViewOnce, staggerContainer } from '@/lib/motion';
 
 const PATTERN_GROUPS = [
   {
@@ -31,7 +33,7 @@ const PATTERN_GROUPS = [
 export default function PatternsPage() {
   return (
     <div className="flex flex-col gap-10 py-4 w-full animate-fade-in">
-      <div className="flex flex-col gap-2">
+      <motion.div variants={fadeUp} initial="hidden" animate="show" className="flex flex-col gap-2">
         <span className="badge badge-primary w-fit">
           <Layers className="h-3 w-3" /> Pattern Library
         </span>
@@ -40,31 +42,39 @@ export default function PatternsPage() {
           {topics.length} in-depth topics organized by learning path — from arrays to dynamic programming.
           Each includes theory, code, quizzes, and visualizers where available.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-wrap gap-3">
+      <motion.div variants={fadeUp} initial="hidden" animate="show" className="flex flex-wrap gap-3">
         <Link href="/roadmap" className="btn-primary px-4 py-2 text-sm font-semibold rounded-lg flex items-center gap-2">
           <BookOpen className="h-4 w-4" /> Skill roadmap
         </Link>
         <Link href="/interview-prep" className="btn-secondary px-4 py-2 text-sm font-semibold rounded-lg flex items-center gap-2">
           Interview cheat sheets <ArrowRight className="h-4 w-4" />
         </Link>
-      </div>
+      </motion.div>
 
       <div className="flex flex-col gap-8">
         {PATTERN_GROUPS.map((group) => (
           <section key={group.title}>
             <h2 className="text-lg font-bold text-foreground mb-4">{group.title}</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="show"
+              viewport={inViewOnce}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            >
               {group.slugs.map((slug) => {
                 const topic = topics.find((t) => t.slug === slug);
                 if (!topic) return null;
                 const cat = categories.find((c) => c.id === topic.category_id);
                 const hasViz = ['bubble-sort', 'binary-search', 'merge-sort', 'quick-sort', 'linked-list', 'stack', 'queue', 'binary-search-tree', 'bfs', 'dfs'].includes(slug);
                 return (
-                  <div
+                  <motion.div
                     key={slug}
-                    className={`modern-card p-5 flex flex-col gap-3 bg-gradient-to-br ${group.color} hover-lift group`}
+                    variants={fadeUp}
+                    whileHover={{ y: -3 }}
+                    className={`modern-card p-5 flex flex-col gap-3 bg-gradient-to-br ${group.color} group`}
                   >
                     <div className="flex justify-between items-start gap-2">
                       <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">
@@ -86,10 +96,10 @@ export default function PatternsPage() {
                         </Link>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           </section>
         ))}
       </div>

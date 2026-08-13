@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import {
   BookOpen, Map, User, Code, ArrowRight, CheckCircle2, Flame, Sparkles, ChevronRight, Zap,
   Layers, Calendar, BarChart3, Search, Trophy, Database, Network, Share2, Cpu,
@@ -10,6 +11,48 @@ import {
 import { useAppStore } from '@/lib/store';
 import { categories, topics, problems } from '@/data';
 import { VISUALIZER_COUNT } from '@/data/visualizers';
+import NodeGraphMotif from '@/components/3d/NodeGraphMotif';
+import { fadeUp, inViewOnce, springSoft, staggerContainer } from '@/lib/motion';
+
+function TiltPanel({
+  children,
+  className = '',
+  strength = 7,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  strength?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [strength, -strength]), springSoft);
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-strength, strength]), springSoft);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  }
+
+  function handleMouseLeave() {
+    x.set(0);
+    y.set(0);
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateX, rotateY, transformPerspective: 1000 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const { profile, completedLessons, bookmarks, loginMockUser } = useAppStore();
@@ -79,42 +122,52 @@ export default function Home() {
     <div className="flex flex-col gap-16 py-4 w-full animate-fade-in">
 
       {/* ─── HERO SECTION ─── */}
-      <section className="relative overflow-hidden flex flex-col lg:flex-row items-center gap-12 lg:gap-16 premium-glass border border-white/5 rounded-3xl p-8 md:p-12 shadow-2xl">
+      <section className="relative overflow-hidden flex flex-col lg:flex-row items-center gap-12 lg:gap-16 premium-glass border border-border rounded-3xl p-8 md:p-12 shadow-2xl">
+        <NodeGraphMotif className="absolute inset-0 -z-10 opacity-50" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[90px] pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-accent/5 rounded-full blur-[80px] pointer-events-none" />
 
         {/* Left: Copy */}
-        <div className="flex-1 flex flex-col gap-6 items-start text-left relative z-10">
-          <span className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-bold text-primary bg-primary/10 border border-primary/20 rounded-full">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="show"
+          className="flex-1 flex flex-col gap-6 items-start text-left relative z-10"
+        >
+          <motion.span variants={fadeUp} className="inline-flex items-center gap-1 px-3 py-1 text-[11px] font-bold text-primary bg-primary/10 border border-primary/20 rounded-full">
             <Zap className="h-3 w-3" /> Interactive Learning Platform
-          </span>
+          </motion.span>
 
-          <h1 className="text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-foreground font-heading">
+          <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-foreground font-heading">
             Learn DSA the{' '}
             <span className="bg-gradient-to-r from-primary via-[#60a5fa] to-accent bg-clip-text text-transparent">right way</span>
-          </h1>
+          </motion.h1>
 
-          <p className="text-base text-muted-foreground max-w-lg leading-relaxed font-medium">
+          <motion.p variants={fadeUp} className="text-base text-muted-foreground max-w-lg leading-relaxed font-medium">
             Stop watching passive tutorials. Visualize every step, trace every pointer, and build real understanding of data structures and algorithms.
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full sm:w-auto">
-            <Link
-              href="/roadmap"
-              className="btn-premium-primary px-6 py-3 cursor-pointer shadow-lg shadow-primary/10 w-full sm:w-auto"
-            >
-              <Map className="h-4 w-4 mr-2" /> Start Learning <ArrowRight className="h-4 w-4 ml-1.5" />
-            </Link>
-            <Link
-              href="/problems"
-              className="btn-premium-secondary px-6 py-3 cursor-pointer w-full sm:w-auto"
-            >
-              <Trophy className="h-4 w-4 mr-2 text-primary" /> Coding Arena
-            </Link>
-          </div>
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 mt-2 w-full sm:w-auto">
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
+              <Link
+                href="/roadmap"
+                className="btn-premium-primary px-6 py-3 cursor-pointer shadow-lg shadow-primary/10 w-full sm:w-auto"
+              >
+                <Map className="h-4 w-4 mr-2" /> Start Learning <ArrowRight className="h-4 w-4 ml-1.5" />
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
+              <Link
+                href="/problems"
+                className="btn-premium-secondary px-6 py-3 cursor-pointer w-full sm:w-auto"
+              >
+                <Trophy className="h-4 w-4 mr-2 text-primary" /> Coding Arena
+              </Link>
+            </motion.div>
+          </motion.div>
 
           {/* Quick stats */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-xs text-muted-foreground font-semibold">
+          <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4 text-xs text-muted-foreground font-semibold">
             <span className="flex items-center gap-1.5">
               <BookOpen className="h-4 w-4 text-primary" />
               <strong className="text-foreground">{totalLessons}</strong> topics
@@ -127,12 +180,17 @@ export default function Home() {
               <Code className="h-4 w-4 text-primary" />
               <strong className="text-foreground">4</strong> languages
             </span>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Right: Live Sort Animation */}
-        <div className="flex-1 w-full max-w-md relative z-10">
-          <div className="premium-glass bg-[#0d0f14]/50 border border-white/5 rounded-2xl p-6 shadow-xl">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="flex-1 w-full max-w-md relative z-10"
+        >
+          <TiltPanel className="premium-glass bg-[#0d0f14]/50 border border-border rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-semibold text-muted-foreground font-mono">Bubble Sort — Live</span>
               <span className="flex h-2 w-2 rounded-full bg-complete animate-pulse" />
@@ -152,9 +210,10 @@ export default function Home() {
                 return (
                   <div key={idx} className="flex flex-col items-center flex-1 max-w-8 h-full justify-end">
                     <span className="text-[10px] font-mono font-semibold text-muted-foreground mb-1">{val}</span>
-                    <div
-                      style={{ height: `${heightPct}%` }}
-                      className={`w-full rounded-t-lg border-t border-x transition-all duration-300 ${barStyle}`}
+                    <motion.div
+                      animate={{ height: `${heightPct}%` }}
+                      transition={springSoft}
+                      className={`w-full rounded-t-lg border-t border-x ${barStyle}`}
                     />
                   </div>
                 );
@@ -162,19 +221,25 @@ export default function Home() {
             </div>
 
             {/* Code snippet preview */}
-            <div className="bg-[#090c14]/65 border border-white/5 rounded-xl p-3.5 font-mono text-[11px] text-muted-foreground/80 leading-relaxed text-left">
+            <div className="bg-[#090c14]/65 border border-border rounded-xl p-3.5 font-mono text-[11px] text-muted-foreground/80 leading-relaxed text-left">
               <div><span className="text-accent">for</span> i <span className="text-accent">in</span> <span className="text-primary">range</span>(n):</div>
               <div className="pl-4"><span className="text-accent">for</span> j <span className="text-accent">in</span> <span className="text-primary">range</span>(n-i-1):</div>
               <div className="pl-8"><span className="text-accent">if</span> arr[j] {'>'} arr[j+1]:</div>
               <div className="pl-12"><span className="text-muted-foreground/60">swap(arr[j], arr[j+1])</span></div>
             </div>
-          </div>
-        </div>
+          </TiltPanel>
+        </motion.div>
       </section>
 
       {/* ─── USER PROGRESS ─── */}
       {profile ? (
-        <section className="premium-glass bg-[#161b26]/30 border border-white/5 rounded-2xl p-6 shadow-xl">
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={inViewOnce}
+          className="premium-glass bg-[#161b26]/30 border border-border rounded-2xl p-6 shadow-xl"
+        >
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4 text-left">
               <Image
@@ -203,17 +268,17 @@ export default function Home() {
                 <span>Progress</span>
                 <span className="font-bold text-foreground font-mono">{completionPercent}%</span>
               </div>
-              <div className="h-2 bg-[#0d0f14]/50 border border-white/5 rounded-full overflow-hidden">
+              <div className="h-2 bg-[#0d0f14]/50 border border-border rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full" style={{ width: `${completionPercent}%` }} />
               </div>
             </div>
           </div>
 
-          <hr className="border-white/5 my-5" />
+          <hr className="border-border my-5" />
 
           {/* Quick actions */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-            <div className="bg-[#090c14]/40 border border-white/5 p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-[#090c14]/40 border border-border p-4 rounded-xl flex flex-col gap-2">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Continue Learning</span>
               <p className="text-sm font-bold text-foreground truncate">
                 {topics.find(t => !completedLessons.includes(t.slug))?.title || 'All done!'}
@@ -228,7 +293,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="bg-[#090c14]/40 border border-white/5 p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-[#090c14]/40 border border-border p-4 rounded-xl flex flex-col gap-2">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Bookmarks</span>
               <p className="text-2xl font-black text-foreground font-mono">{bookmarks.length}</p>
               <Link href="/bookmarks" className="text-xs text-primary font-bold hover:underline mt-auto flex items-center gap-1">
@@ -236,7 +301,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="bg-[#090c14]/40 border border-white/5 p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-[#090c14]/40 border border-border p-4 rounded-xl flex flex-col gap-2">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Daily Goal</span>
               <p className="text-xs text-muted-foreground font-medium leading-relaxed">Complete one topic per day to maintain your learning streak.</p>
               <Link href="/roadmap" className="text-xs text-primary font-bold hover:underline mt-auto flex items-center gap-1">
@@ -244,9 +309,15 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </section>
+        </motion.section>
       ) : (
-        <section className="premium-glass bg-[#161b26]/30 border border-white/5 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left">
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={inViewOnce}
+          className="premium-glass bg-[#161b26]/30 border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left"
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
               <User className="h-5 w-5 text-primary" />
@@ -256,50 +327,62 @@ export default function Home() {
               <p className="text-xs text-muted-foreground font-medium">Sign in to save bookmarks, track completed topics, and build streaks.</p>
             </div>
           </div>
-          <button
+          <motion.button
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => loginMockUser('AlgoMaster')}
             className="btn-premium-primary px-5 py-2.5 cursor-pointer shrink-0"
           >
             Sign In
-          </button>
-        </section>
+          </motion.button>
+        </motion.section>
       )}
 
       {/* ─── FEATURES BENTO ─── */}
       <section className="flex flex-col gap-8">
-        <div className="text-center">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={inViewOnce} className="text-center">
           <h2 className="text-2xl font-bold text-foreground font-heading">Everything you need to master DSA</h2>
           <p className="text-sm text-muted-foreground mt-2 font-medium">Lessons, labs, daily challenges, patterns, and a full command palette.</p>
-        </div>
+        </motion.div>
 
-        <div className="bento-grid">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={inViewOnce}
+          className="bento-grid"
+        >
           {features.map((f) => {
             const Icon = f.icon;
             return (
-              <Link
+              <TiltPanel
                 key={f.title}
-                href={f.href}
-                className={`premium-glass bg-[#161b26]/20 border border-white/5 hover:border-primary/25 flex flex-col gap-3.5 p-5 group transition-all duration-300 rounded-2xl text-left ${f.span}`}
+                strength={5}
+                className={`premium-glass bg-[#161b26]/20 border border-border hover:border-primary/25 group transition-colors duration-300 rounded-2xl ${f.span}`}
               >
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-all">
-                  <Icon className="h-4.5 w-4.5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{f.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-medium">{f.desc}</p>
-                </div>
-                <span className="text-[11px] font-bold text-primary flex items-center gap-0.5 mt-auto">
-                  Explore <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </span>
-              </Link>
+                <motion.div variants={fadeUp}>
+                  <Link href={f.href} className="flex flex-col gap-3.5 p-5 text-left h-full">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-all">
+                      <Icon className="h-4.5 w-4.5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{f.title}</h3>
+                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-medium">{f.desc}</p>
+                    </div>
+                    <span className="text-[11px] font-bold text-primary flex items-center gap-0.5 mt-auto">
+                      Explore <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  </Link>
+                </motion.div>
+              </TiltPanel>
             );
           })}
-        </div>
+        </motion.div>
       </section>
 
       {/* ─── TOPIC CATEGORIES ─── */}
       <section className="flex flex-col gap-6">
-        <div className="flex justify-between items-end">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={inViewOnce} className="flex justify-between items-end">
           <div className="text-left">
             <h2 className="text-2xl font-bold text-foreground font-heading">Explore Topics</h2>
             <p className="text-sm text-muted-foreground mt-1 font-medium">Organized by category, from fundamentals to advanced.</p>
@@ -307,9 +390,15 @@ export default function Home() {
           <Link href="/topics" className="text-sm text-primary font-bold hover:underline flex items-center gap-1">
             View All <ChevronRight className="h-4 w-4" />
           </Link>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={inViewOnce}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-5"
+        >
           {categories.map((cat) => {
             const catTopics = topics.filter(t => t.category_id === cat.id);
             const catCompleted = catTopics.filter(t => completedLessons.includes(t.slug)).length;
@@ -370,9 +459,11 @@ export default function Home() {
             const CatIcon = config.icon;
 
             return (
-              <div 
-                key={cat.id} 
-                className={`premium-glass-card p-5 flex flex-col gap-4 bg-[#161b26]/30 backdrop-blur-md border border-white/5 hover:shadow-lg transition-all duration-300 ${config.borderHover}`}
+              <motion.div
+                key={cat.id}
+                variants={fadeUp}
+                whileHover={{ y: -3 }}
+                className={`premium-glass-card p-5 flex flex-col gap-4 bg-[#161b26]/30 backdrop-blur-md border border-border hover:shadow-lg transition-shadow duration-300 ${config.borderHover}`}
               >
                 <div className="flex items-start gap-3.5 text-left">
                   <div className={`p-2.5 rounded-xl border shrink-0 ${config.bgTint}`}>
@@ -397,7 +488,7 @@ export default function Home() {
                     <span>PROGRESS</span>
                     <span>{catPercent}%</span>
                   </div>
-                  <div className="h-1 bg-[#0d0f14]/50 border border-white/5 rounded-full overflow-hidden">
+                  <div className="h-1 bg-[#0d0f14]/50 border border-border rounded-full overflow-hidden">
                     <div 
                       className="h-full rounded-full transition-all duration-500" 
                       style={{ 
@@ -433,26 +524,34 @@ export default function Home() {
                     );
                   })}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </section>
 
       {/* ─── CTA SECTION ─── */}
-      <section className="text-center py-12 flex flex-col items-center gap-4 relative overflow-hidden">
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={inViewOnce}
+        className="text-center py-12 flex flex-col items-center gap-4 relative overflow-hidden"
+      >
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/10 rounded-full blur-[90px] pointer-events-none" />
         <h2 className="text-2xl font-bold text-foreground font-heading relative z-10">Ready to start?</h2>
         <p className="text-sm text-muted-foreground max-w-md font-medium relative z-10">
           Follow the structured roadmap, visualize every algorithm, and track your progress as you go.
         </p>
-        <Link
-          href="/roadmap"
-          className="btn-premium-primary px-6 py-3 cursor-pointer mt-2 relative z-10"
-        >
-          Start the Roadmap <ArrowRight className="h-4 w-4 ml-1.5" />
-        </Link>
-      </section>
+        <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
+          <Link
+            href="/roadmap"
+            className="btn-premium-primary px-6 py-3 cursor-pointer mt-2 relative z-10"
+          >
+            Start the Roadmap <ArrowRight className="h-4 w-4 ml-1.5" />
+          </Link>
+        </motion.div>
+      </motion.section>
 
     </div>
   );

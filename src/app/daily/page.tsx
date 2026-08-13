@@ -2,10 +2,12 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Calendar, Flame, Lightbulb, CheckCircle2, ArrowRight, Zap, User } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { getTodaysChallenge } from '@/lib/daily-challenges';
 import { todayKey } from '@/lib/profile-utils';
+import { fadeUp, staggerContainer } from '@/lib/motion';
 
 export default function DailyChallengePage() {
   const { profile, loginMockUser, completeDailyChallenge } = useAppStore();
@@ -14,7 +16,7 @@ export default function DailyChallengePage() {
   // SSR/CSR hydration mismatches when the server and client are in different
   // timezones or cross the midnight boundary at different times.
   const [mounted, setMounted] = useState(false);
-  
+
   // Use useMemo to compute challenge once during initial render
   const challenge = useMemo(() => getTodaysChallenge(), []);
 
@@ -45,17 +47,22 @@ export default function DailyChallengePage() {
   }
 
   return (
-    <div className="flex flex-col gap-8 py-4 max-w-3xl mx-auto w-full animate-fade-in">
-      <div className="flex flex-col gap-2">
+    <motion.div
+      variants={staggerContainer}
+      initial="hidden"
+      animate="show"
+      className="flex flex-col gap-8 py-4 max-w-3xl mx-auto w-full animate-fade-in"
+    >
+      <motion.div variants={fadeUp} className="flex flex-col gap-2">
         <span className="badge badge-primary w-fit">
-          <Calendar className="h-3 w-3" /> {todayLabel || '\u00A0'}
+          <Calendar className="h-3 w-3" /> {todayLabel || ' '}
         </span>
         <h1 className="text-3xl font-black text-foreground">Daily Challenge</h1>
         <p className="text-sm text-muted-foreground">One curated problem per day. Mark complete after you solve it on paper or in your editor.</p>
-      </div>
+      </motion.div>
 
       {challenge && (
-      <article className="modern-card p-6 md:p-8 flex flex-col gap-6 relative overflow-hidden">
+      <motion.article variants={fadeUp} className="modern-card p-6 md:p-8 flex flex-col gap-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
         <div className="flex flex-wrap gap-2 relative">
@@ -89,13 +96,15 @@ export default function DailyChallengePage() {
               <CheckCircle2 className="h-5 w-5" /> Completed today — XP awarded!
             </div>
           ) : (
-            <button
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.96 }}
               type="button"
               onClick={() => completeDailyChallenge(challenge.id, challenge.xpReward)}
               className="btn-primary px-5 py-2.5 text-sm font-bold rounded-lg flex items-center gap-2 cursor-pointer"
             >
               <Flame className="h-4 w-4" /> Mark as solved
-            </button>
+            </motion.button>
           )}
           <Link
             href={`/topics/${challenge.topicSlug}`}
@@ -104,12 +113,12 @@ export default function DailyChallengePage() {
             Study pattern <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-      </article>
+      </motion.article>
       )}
 
-      <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+      <motion.p variants={fadeUp} className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
         <User className="h-3 w-3" /> Streak and XP sync to your <Link href="/dashboard" className="text-primary font-semibold hover:underline">dashboard</Link>
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }

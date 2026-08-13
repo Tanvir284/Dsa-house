@@ -2,9 +2,11 @@
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Bookmark, Trash2, ChevronRight } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { topics, categories } from '@/data';
+import { fadeUp, inViewOnce, staggerContainer } from '@/lib/motion';
 
 export default function BookmarksPage() {
   const { bookmarks, toggleBookmark } = useAppStore();
@@ -15,14 +17,20 @@ export default function BookmarksPage() {
 
   return (
     <div className="flex flex-col gap-8 py-4 w-full animate-fade-in">
-      <div>
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <h1 className="text-2xl font-bold text-foreground">Bookmarks</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Topics you&apos;ve saved for later review.
         </p>
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={inViewOnce}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"
+      >
         {bookmarkedTopics.length === 0 ? (
           <div className="col-span-full py-16 text-center surface rounded-xl flex flex-col items-center gap-4">
             <Bookmark className="h-10 w-10 text-muted-foreground/30" />
@@ -42,7 +50,7 @@ export default function BookmarksPage() {
               topic.difficulty === 'Intermediate' ? 'badge-medium' : 'badge-hard';
 
             return (
-              <div key={topic.id} className="card p-5 flex flex-col gap-4 group">
+              <motion.div key={topic.id} variants={fadeUp} whileHover={{ y: -3 }} className="card p-5 flex flex-col gap-4 group">
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-[11px] text-muted-foreground">{cat?.title}</span>
@@ -67,11 +75,11 @@ export default function BookmarksPage() {
                     Study <ChevronRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             );
           })
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

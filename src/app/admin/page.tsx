@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Shield, Plus, Trash2, AlertTriangle, Save, RefreshCw, Lock, User } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { topics, categories } from '@/data';
@@ -103,7 +104,12 @@ export default function AdminPanelPage() {
 
   if (!profile) {
     return (
-      <div className="flex flex-col items-center gap-6 py-16 max-w-md mx-auto text-center animate-fade-in">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col items-center gap-6 py-16 max-w-md mx-auto text-center"
+      >
         <div className="p-4 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/25">
           <Lock className="h-10 w-10" />
         </div>
@@ -155,7 +161,7 @@ export default function AdminPanelPage() {
         <Link href="/" className="text-xs text-primary font-bold hover:underline">
           Return to home
         </Link>
-      </div>
+      </motion.div>
     );
   }
 
@@ -163,7 +169,12 @@ export default function AdminPanelPage() {
   // `canAccessAdmin` is only used to tailor the copy.
   if (!isAdminSession) {
     return (
-      <div className="flex flex-col items-center gap-6 py-16 max-w-md mx-auto text-center animate-fade-in">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col items-center gap-6 py-16 max-w-md mx-auto text-center"
+      >
         <div className="p-4 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/25">
           <AlertTriangle className="h-10 w-10" />
         </div>
@@ -211,12 +222,17 @@ export default function AdminPanelPage() {
         <Link href="/dashboard" className="text-xs text-primary font-bold hover:underline">
           Go to dashboard
         </Link>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-10 py-6 w-full text-left animate-slide-up">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col gap-10 py-6 w-full text-left"
+    >
       <div className="flex flex-col gap-2 relative">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/25 text-rose-500 text-xs font-bold uppercase tracking-wider w-fit animate-pulse-slow">
           <Shield className="h-3.5 w-3.5" /> Security Panel
@@ -314,12 +330,14 @@ export default function AdminPanelPage() {
               </div>
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
               type="submit"
-              className="mt-2 py-2 rounded-lg bg-primary text-primary-foreground font-bold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 cursor-pointer text-sm shadow-sm"
+              className="mt-2 py-2 rounded-lg bg-primary text-primary-foreground font-bold hover:opacity-90 transition-colors flex items-center justify-center gap-1.5 cursor-pointer text-sm shadow-sm"
             >
               <Save className="h-4 w-4" /> Save & Publish Lesson
-            </button>
+            </motion.button>
           </form>
         </div>
 
@@ -329,10 +347,19 @@ export default function AdminPanelPage() {
           </h2>
 
           <div className="flex flex-col divide-y divide-border/60 overflow-y-auto max-h-[580px] pr-1">
+            <AnimatePresence initial={false}>
             {topicList.map(topic => {
               const cat = categories.find(c => c.id === topic.category_id);
               return (
-                <div key={topic.id} className="py-3 flex justify-between items-center gap-4 hover:bg-background/25 px-2 rounded-lg transition-colors">
+                <motion.div
+                  key={topic.id}
+                  layout
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.22 }}
+                  className="py-3 flex justify-between items-center gap-4 hover:bg-background/25 px-2 rounded-lg overflow-hidden"
+                >
                   <div className="flex flex-col gap-0.5 text-left">
                     <span className="text-sm font-bold text-foreground">{topic.title}</span>
                     <span className="text-[9px] font-bold text-muted-foreground uppercase font-mono tracking-wider">
@@ -349,9 +376,10 @@ export default function AdminPanelPage() {
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -362,6 +390,6 @@ export default function AdminPanelPage() {
         {lastAction}
       </div>
 
-    </div>
+    </motion.div>
   );
 }

@@ -4,6 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import StoreInitializer from '@/components/layout/StoreInitializer';
 import ThemeScript from '@/components/layout/ThemeScript';
+import PageTransition from '@/components/layout/PageTransition';
 
 export const metadata: Metadata = {
   title: 'DSA House — Learn Data Structures & Algorithms',
@@ -37,7 +38,7 @@ export default function RootLayout({
         <StoreInitializer />
         <Navbar />
         <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col relative z-10">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
       </body>

@@ -2,9 +2,11 @@
 
 import React, { useMemo } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { CheckCircle2, ChevronRight, Award, Target } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { quizzes, quizQuestions, topics } from '@/data';
+import { fadeUp, inViewOnce, staggerContainer } from '@/lib/motion';
 
 export default function PracticeIndexPage() {
   const { quizAttempts } = useAppStore();
@@ -40,14 +42,19 @@ export default function PracticeIndexPage() {
   return (
     <div className="flex flex-col gap-8 py-4 w-full animate-fade-in">
       {/* Header */}
-      <div>
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <h1 className="text-2xl font-bold text-foreground">Practice</h1>
         <p className="text-sm text-muted-foreground mt-1">Test your understanding with quizzes for each topic.</p>
-      </div>
+      </motion.div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="card p-5 flex items-center gap-4">
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+      >
+        <motion.div variants={fadeUp} className="card p-5 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <Target className="h-5 w-5 text-primary" />
           </div>
@@ -55,8 +62,8 @@ export default function PracticeIndexPage() {
             <span className="text-xs text-muted-foreground">Total Attempts</span>
             <p className="text-xl font-bold text-foreground">{stats.totalAttempts}</p>
           </div>
-        </div>
-        <div className="card p-5 flex items-center gap-4">
+        </motion.div>
+        <motion.div variants={fadeUp} className="card p-5 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
             <Award className="h-5 w-5 text-accent" />
           </div>
@@ -64,8 +71,8 @@ export default function PracticeIndexPage() {
             <span className="text-xs text-muted-foreground">Average Score</span>
             <p className="text-xl font-bold text-foreground">{stats.avgScorePercent}%</p>
           </div>
-        </div>
-        <div className="card p-5 flex items-center gap-4">
+        </motion.div>
+        <motion.div variants={fadeUp} className="card p-5 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-complete/10 flex items-center justify-center">
             <CheckCircle2 className="h-5 w-5 text-complete" />
           </div>
@@ -73,11 +80,17 @@ export default function PracticeIndexPage() {
             <span className="text-xs text-muted-foreground">Perfect Scores</span>
             <p className="text-xl font-bold text-foreground">{stats.perfectScores}</p>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Quiz List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="show"
+        viewport={inViewOnce}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         {quizList.map((quiz) => {
           const attempted = quiz.highScore !== null;
           const perfect = quiz.highScore === quiz.questionsCount;
@@ -87,7 +100,12 @@ export default function PracticeIndexPage() {
             quiz.difficulty === 'Intermediate' ? 'badge-medium' : 'badge-hard';
 
           return (
-            <div key={quiz.id} className={`card p-5 flex flex-col gap-4 ${perfect ? 'border-complete/30' : attempted ? 'border-primary/20' : ''}`}>
+            <motion.div
+              key={quiz.id}
+              variants={fadeUp}
+              whileHover={{ y: -3 }}
+              className={`card p-5 flex flex-col gap-4 ${perfect ? 'border-complete/30' : attempted ? 'border-primary/20' : ''}`}
+            >
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-[11px] text-muted-foreground">{quiz.questionsCount} questions</span>
@@ -117,10 +135,10 @@ export default function PracticeIndexPage() {
                   {attempted ? 'Retake' : 'Start'} <ChevronRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </div>
   );
 }

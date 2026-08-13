@@ -3,6 +3,9 @@
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { AnimatePresence, motion } from 'framer-motion';
+import { fadeUp, navPillTransition, springSoft, staggerContainer } from '@/lib/motion';
+import AmbientOrbField from '@/components/3d/AmbientOrbField';
 import {
   User,
   CheckCircle2,
@@ -23,6 +26,7 @@ import {
   Zap,
   TrendingUp,
   AlertCircle,
+  type LucideIcon,
 } from 'lucide-react';
 import { useAppStore, UserProfile, ProfileUpdate } from '@/lib/store';
 import { topics, categories } from '@/data';
@@ -181,7 +185,7 @@ export default function DashboardPage() {
     [quizAttempts]
   );
 
-  const tabs: { id: TabId; label: string; icon: React.ElementType }[] = [
+  const tabs: { id: TabId; label: string; icon: LucideIcon }[] = [
     { id: 'overview', label: 'Overview', icon: Sparkles },
     { id: 'achievements', label: 'Achievements', icon: Award },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
@@ -218,7 +222,13 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6 py-4 w-full animate-fade-in">
       {/* Profile hero */}
-      <section className="card p-6 flex flex-col gap-6">
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="relative card p-6 flex flex-col gap-6 overflow-hidden"
+      >
+        <AmbientOrbField compact className="absolute inset-0 -z-10 opacity-[0.12]" />
         <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
           <div className="flex items-start gap-4">
             <div className="relative shrink-0">
@@ -253,12 +263,17 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto shrink-0">
-            <StatPill icon={Flame} label="Streak" value={`${profile.streak_count}d`} accent="text-primary" />
-            <StatPill icon={TrendingUp} label="Best streak" value={`${profile.longest_streak}d`} accent="text-amber-500" />
-            <StatPill icon={Zap} label="Total XP" value={profile.total_xp.toLocaleString()} accent="text-accent" />
-            <StatPill icon={CheckCircle2} label="Progress" value={`${completedPercent}%`} accent="text-complete" />
-          </div>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto shrink-0"
+          >
+            <motion.div variants={fadeUp}><StatPill icon={Flame} label="Streak" value={`${profile.streak_count}d`} accent="text-primary" /></motion.div>
+            <motion.div variants={fadeUp}><StatPill icon={TrendingUp} label="Best streak" value={`${profile.longest_streak}d`} accent="text-amber-500" /></motion.div>
+            <motion.div variants={fadeUp}><StatPill icon={Zap} label="Total XP" value={profile.total_xp.toLocaleString()} accent="text-accent" /></motion.div>
+            <motion.div variants={fadeUp}><StatPill icon={CheckCircle2} label="Progress" value={`${completedPercent}%`} accent="text-complete" /></motion.div>
+          </motion.div>
         </div>
 
         {/* Level bar */}
@@ -273,7 +288,12 @@ export default function DashboardPage() {
               </span>
             </div>
             <div className="progress-bar h-2.5">
-              <div className="progress-bar-fill" style={{ width: `${levelInfo.percent}%` }} />
+              <motion.div
+                className="progress-bar-fill"
+                initial={{ width: 0 }}
+                animate={{ width: `${levelInfo.percent}%` }}
+                transition={springSoft}
+              />
             </div>
           </div>
         )}
@@ -291,14 +311,16 @@ export default function DashboardPage() {
           </div>
           <div className="flex-1 max-w-xs">
             <div className="progress-bar h-2">
-              <div
-                className="h-full bg-complete rounded-full transition-all"
-                style={{ width: `${weeklyPercent}%` }}
+              <motion.div
+                className="h-full bg-complete rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${weeklyPercent}%` }}
+                transition={springSoft}
               />
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-xl bg-muted/60 border border-border overflow-x-auto">
@@ -307,20 +329,33 @@ export default function DashboardPage() {
             key={id}
             type="button"
             onClick={() => setTab(id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-              tab === id
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
+            className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
+              tab === id ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
             }`}
           >
+            {tab === id && (
+              <motion.span
+                layoutId="dashboard-tab-pill"
+                transition={navPillTransition}
+                className="absolute inset-0 -z-10 rounded-lg bg-card shadow-sm"
+              />
+            )}
             <Icon className="h-3.5 w-3.5" />
             {label}
           </button>
         ))}
       </div>
 
+      <AnimatePresence mode="wait">
       {tab === 'overview' && (
-        <div className="flex flex-col gap-6">
+        <motion.div
+          key="overview"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.22 }}
+          className="flex flex-col gap-6"
+        >
           {nextLesson && (
             <section className="card p-5 border-primary/15 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -566,11 +601,18 @@ export default function DashboardPage() {
               </div>
             </section>
           )}
-        </div>
+        </motion.div>
       )}
 
       {tab === 'achievements' && (
-        <section className="card p-5">
+        <motion.section
+          key="achievements"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.22 }}
+          className="card p-5"
+        >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-sm font-bold text-foreground flex items-center gap-2">
               <Star className="h-4 w-4 text-amber-500" />
@@ -608,11 +650,18 @@ export default function DashboardPage() {
               );
             })}
           </div>
-        </section>
+        </motion.section>
       )}
 
       {tab === 'analytics' && (
-        <div className="flex flex-col gap-6">
+        <motion.div
+          key="analytics"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.22 }}
+          className="flex flex-col gap-6"
+        >
           {/* XP & Activity Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="card p-5">
@@ -904,19 +953,28 @@ export default function DashboardPage() {
               </div>
             )}
           </section>
-        </div>
+        </motion.div>
       )}
 
       {tab === 'settings' && (
-        <SettingsSection
-          key={profile.id + '-' + profile.username + '-' + profile.bio}
-          profile={profile}
-          updateProfile={updateProfile}
-          refreshAvatar={refreshAvatar}
-          exportUserData={exportUserData}
-          resetProgress={resetProgress}
-        />
+        <motion.div
+          key="settings"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.22 }}
+        >
+          <SettingsSection
+            key={profile.id + '-' + profile.username + '-' + profile.bio}
+            profile={profile}
+            updateProfile={updateProfile}
+            refreshAvatar={refreshAvatar}
+            exportUserData={exportUserData}
+            resetProgress={resetProgress}
+          />
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -927,7 +985,7 @@ function StatPill({
   value,
   accent,
 }: {
-  icon: React.ElementType;
+  icon: LucideIcon;
   label: string;
   value: string;
   accent: string;
@@ -970,7 +1028,7 @@ function TopicList({
   showDifficulty,
 }: {
   title: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   iconClass: string;
   items: typeof topics;
   empty: string;
