@@ -260,18 +260,38 @@ Notable pieces, not an exhaustive list:
   properties), not eyeballed.
 
 **A pattern worth flagging for future work in this codebase:**
-`AnimatePresence` requires a *direct* `motion.*` element as each child to
-reliably track exit-animation completion — wrapping the actual `motion.div`
-inside a plain function component (as the interview session's setup/active/
-summary panels initially did) breaks that tracking. In testing, React's own
-state updated correctly on every interaction (confirmed via render logging),
-but `AnimatePresence` never received the exit signal it needed through that
-extra layer of indirection, so the DOM stayed on the first panel indefinitely
-regardless of what the state actually was. If a future multi-step flow needs
-panel-to-panel transitions, either make the panel component's root the direct
-`AnimatePresence` child (no wrapping function-component boundary) or skip
-`AnimatePresence` and rely on each panel's own mount-time `initial`/`animate`
-props, which fire correctly on ordinary React mount independent of it.
+`AnimatePresence mode="wait"` has bitten this app twice, in two different
+ways, and both times a plain keyed `motion.*` with no `AnimatePresence`
+wrapper was the fix.
+
+The first time, `AnimatePresence` requires a *direct* `motion.*` element as
+each child to reliably track exit-animation completion — wrapping the actual
+`motion.div` inside a plain function component (as the interview session's
+setup/active/summary panels initially did) breaks that tracking. In testing,
+React's own state updated correctly on every interaction (confirmed via
+render logging), but `AnimatePresence` never received the exit signal it
+needed through that extra layer of indirection, so the DOM stayed on the
+first panel indefinitely regardless of what the state actually was.
+
+The second time, the child *was* a direct `motion.p` — no wrapping component —
+and it still got stuck. `VisualizerWrapper`'s step narration (the `role=
+"status"` panel described above) showed frame 0's text forever no matter how
+many steps a user clicked through, while the step counter, the registers
+panel, and the rendered bars — all driven by the same `currentStep` in the
+same render — updated correctly on every click. Running the tracer directly
+(bypassing the browser) confirmed the underlying data was right at every
+frame; the exit transition `AnimatePresence` was waiting on for that
+narration's `<motion.p key={currentStepIndex}>` apparently never resolved, so
+it never advanced past the first child. This rules out "must be wrapped in a
+custom component" as the whole story — the failure mode is `mode="wait"`
+itself not resolving reliably, independent of the child's shape.
+
+If a future multi-step flow needs panel-to-panel or frame-to-frame
+transitions, don't reach for `AnimatePresence mode="wait"` in this codebase.
+A plain keyed `motion.*` with no wrapper still replays its own mount-time
+`initial`/`animate` transition on every key change via ordinary React
+reconciliation — correctness holds; the only thing given up is the outgoing
+element's exit animation.
 
 ---
 

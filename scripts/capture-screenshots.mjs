@@ -53,6 +53,8 @@ const ROUTES = [
   ['visualizer',  'binary-search-tree',  '/visualizer/binary-search-tree', 1200],
   ['visualizer',  'bfs',                 '/visualizer/bfs',   1200],
   ['visualizer',  'dfs',                 '/visualizer/dfs',   1200],
+  ['visualizer',  'heap-sort',           '/visualizer/heap-sort', 1200],
+  ['visualizer',  'jump-search',         '/visualizer/jump-search', 1200],
 
   // Practice + problems
   ['practice',    'practice-index',      '/practice',         800],
@@ -64,6 +66,7 @@ const ROUTES = [
   ['daily',       'daily-challenge',     '/daily',            800],
   ['labs',        'labs',                '/labs',             600],
   ['interview',   'interview-prep',      '/interview-prep',   600],
+  ['interview',   'mock-interview-setup', '/interview',       800],
   ['bookmarks',   'bookmarks',           '/bookmarks',        600],
 
   // Auth flows
