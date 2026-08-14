@@ -153,7 +153,18 @@ export default function ArrayVisualizer({ step }: ArrayVisualizerProps) {
               {/* Value label above bar */}
               <span className="text-[10px] font-mono font-black text-muted-foreground group-hover:text-foreground mb-2 transition-colors">{el.val}</span>
               {/* Bar element */}
-              <Tooltip content={`${label} · value ${el.val}`}>
+              {/*
+                Tooltip's wrapper is `inline-flex` with no explicit height
+                (see src/components/visualizers/_shared/Tooltip.tsx). The
+                parent here uses `items-center`, not the flex default of
+                `stretch`, so without `h-full` that wrapper sizes to `auto` —
+                and the bar's `height: X%` then has nothing but that
+                collapsed auto-height to resolve against, rendering every
+                bar at ~1px regardless of value. This was live in production
+                (verified against the deployed site, not just locally) before
+                being caught while capturing screenshots for this README.
+              */}
+              <Tooltip content={`${label} · value ${el.val}`} className="w-full h-full">
                 <motion.div
                   layout
                   animate={{ height: `${heightPercent}%`, scale: isActive ? 1.03 : 1 }}
