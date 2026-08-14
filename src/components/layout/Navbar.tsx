@@ -317,7 +317,12 @@ function MobileSearchOverlay({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] lg:hidden bg-black/60 backdrop-blur-sm p-4 pt-20" onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()}>
-        <CommandPalette startOpen />
+        {/* Without onRequestClose, dismissing the palette itself (Escape, a
+            result, the backdrop click it renders internally) left its own
+            "open" state false while this outer overlay stayed mounted — a
+            bare, unstyled "Search…" trigger button would flash inside what
+            was meant to be a fully-dismissed overlay. */}
+        <CommandPalette startOpen onRequestClose={onClose} />
       </div>
     </div>
   );

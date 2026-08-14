@@ -177,10 +177,11 @@ export default function LoginPage() {
 
           {/* Email / Username field */}
           <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
-            <label className="text-xs font-semibold text-muted-foreground">Username or Email</label>
+            <label htmlFor="login-username" className="text-xs font-semibold text-muted-foreground">Username or Email</label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" aria-hidden="true" />
               <input
+                id="login-username"
                 type="text"
                 placeholder="Enter username or email"
                 value={usernameOrEmail}
@@ -194,14 +195,15 @@ export default function LoginPage() {
           {/* Password field */}
           <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold text-muted-foreground">Password</label>
+              <label htmlFor="login-password" className="text-xs font-semibold text-muted-foreground">Password</label>
               <Link href="/auth/forgot-password" className="text-xs font-semibold text-primary hover:underline">
                 Forgot password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" aria-hidden="true" />
               <input
+                id="login-password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter password"
                 value={password}
@@ -212,6 +214,8 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/60 hover:text-foreground transition-colors cursor-pointer"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

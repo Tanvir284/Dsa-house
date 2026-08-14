@@ -136,10 +136,11 @@ export default function RegisterPage() {
 
           {/* Username field */}
           <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
-            <label className="text-xs font-semibold text-muted-foreground">Username</label>
+            <label htmlFor="register-username" className="text-xs font-semibold text-muted-foreground">Username</label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" aria-hidden="true" />
               <input
+                id="register-username"
                 type="text"
                 placeholder="Choose a username"
                 value={username}
@@ -152,10 +153,11 @@ export default function RegisterPage() {
 
           {/* Email field */}
           <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
-            <label className="text-xs font-semibold text-muted-foreground">Email Address</label>
+            <label htmlFor="register-email" className="text-xs font-semibold text-muted-foreground">Email Address</label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" aria-hidden="true" />
               <input
+                id="register-email"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
@@ -168,10 +170,11 @@ export default function RegisterPage() {
 
           {/* Password field */}
           <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
-            <label className="text-xs font-semibold text-muted-foreground">Password</label>
+            <label htmlFor="register-password" className="text-xs font-semibold text-muted-foreground">Password</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" aria-hidden="true" />
               <input
+                id="register-password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Create a strong password"
                 value={password}
@@ -182,6 +185,8 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground/60 hover:text-foreground transition-colors cursor-pointer"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

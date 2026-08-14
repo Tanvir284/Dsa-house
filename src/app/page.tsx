@@ -141,7 +141,7 @@ export default function Home() {
 
           <motion.h1 variants={fadeUp} className="text-4xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-foreground font-heading">
             Learn DSA the{' '}
-            <span className="bg-gradient-to-r from-primary via-[#60a5fa] to-accent bg-clip-text text-transparent">right way</span>
+            <span className="gradient-text">right way</span>
           </motion.h1>
 
           <motion.p variants={fadeUp} className="text-base text-muted-foreground max-w-lg leading-relaxed font-medium">
@@ -191,7 +191,7 @@ export default function Home() {
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           className="flex-1 w-full max-w-md relative z-10"
         >
-          <TiltPanel className="premium-glass bg-[#0d0f14]/50 border border-border rounded-2xl p-6 shadow-xl">
+          <TiltPanel className="premium-glass bg-[color-mix(in_srgb,var(--card)_50%,transparent)] border border-border rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-semibold text-muted-foreground font-mono">Bubble Sort — Live</span>
               <span className="flex h-2 w-2 rounded-full bg-complete animate-pulse" />
@@ -204,9 +204,13 @@ export default function Home() {
                 const isSwap = swapIndices.includes(idx);
                 const heightPct = (val / 100) * 100;
 
+                // Same viz-swap/viz-compare tokens the real arena uses, rather
+                // than a one-off red/violet pair — this hero mini-sort is a
+                // preview of the arena, so it should teach the same colours,
+                // not a colorblind-unsafe pair the arena itself no longer uses.
                 let barStyle = 'bg-primary/20 border-primary/30';
-                if (isSwap) barStyle = 'bg-red-500/30 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]';
-                else if (isActive) barStyle = 'bg-accent/30 border-accent/50 shadow-[0_0_10px_rgba(139,92,246,0.2)]';
+                if (isSwap) barStyle = 'bg-[color-mix(in_srgb,var(--viz-swap)_20%,transparent)] border-[var(--viz-swap)] shadow-[0_0_10px_color-mix(in_srgb,var(--viz-swap)_45%,transparent)]';
+                else if (isActive) barStyle = 'bg-[color-mix(in_srgb,var(--viz-compare)_20%,transparent)] border-[var(--viz-compare)] shadow-[0_0_10px_color-mix(in_srgb,var(--viz-compare)_45%,transparent)]';
 
                 return (
                   <div key={idx} className="flex flex-col items-center flex-1 max-w-8 h-full justify-end">
@@ -222,7 +226,7 @@ export default function Home() {
             </div>
 
             {/* Code snippet preview */}
-            <div className="bg-[#090c14]/65 border border-border rounded-xl p-3.5 font-mono text-[11px] text-muted-foreground/80 leading-relaxed text-left">
+            <div className="bg-[color-mix(in_srgb,var(--code-editor)_65%,transparent)] border border-border rounded-xl p-3.5 font-mono text-[11px] text-muted-foreground/80 leading-relaxed text-left">
               <div><span className="text-accent">for</span> i <span className="text-accent">in</span> <span className="text-primary">range</span>(n):</div>
               <div className="pl-4"><span className="text-accent">for</span> j <span className="text-accent">in</span> <span className="text-primary">range</span>(n-i-1):</div>
               <div className="pl-8"><span className="text-accent">if</span> arr[j] {'>'} arr[j+1]:</div>
@@ -239,7 +243,7 @@ export default function Home() {
           initial="hidden"
           whileInView="show"
           viewport={inViewOnce}
-          className="premium-glass bg-[#161b26]/30 border border-border rounded-2xl p-6 shadow-xl"
+          className="premium-glass bg-[color-mix(in_srgb,var(--surface)_30%,transparent)] border border-border rounded-2xl p-6 shadow-xl"
         >
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4 text-left">
@@ -269,7 +273,7 @@ export default function Home() {
                 <span>Progress</span>
                 <span className="font-bold text-foreground font-mono">{completionPercent}%</span>
               </div>
-              <div className="h-2 bg-[#0d0f14]/50 border border-border rounded-full overflow-hidden">
+              <div className="h-2 bg-[color-mix(in_srgb,var(--card)_50%,transparent)] border border-border rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-primary to-accent rounded-full" style={{ width: `${completionPercent}%` }} />
               </div>
             </div>
@@ -279,7 +283,7 @@ export default function Home() {
 
           {/* Quick actions */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-            <div className="bg-[#090c14]/40 border border-border p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-[color-mix(in_srgb,var(--code-editor)_40%,transparent)] border border-border p-4 rounded-xl flex flex-col gap-2">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Continue Learning</span>
               <p className="text-sm font-bold text-foreground truncate">
                 {topics.find(t => !completedLessons.includes(t.slug))?.title || 'All done!'}
@@ -294,7 +298,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="bg-[#090c14]/40 border border-border p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-[color-mix(in_srgb,var(--code-editor)_40%,transparent)] border border-border p-4 rounded-xl flex flex-col gap-2">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Bookmarks</span>
               <p className="text-2xl font-black text-foreground font-mono">{bookmarks.length}</p>
               <Link href="/bookmarks" className="text-xs text-primary font-bold hover:underline mt-auto flex items-center gap-1">
@@ -302,7 +306,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="bg-[#090c14]/40 border border-border p-4 rounded-xl flex flex-col gap-2">
+            <div className="bg-[color-mix(in_srgb,var(--code-editor)_40%,transparent)] border border-border p-4 rounded-xl flex flex-col gap-2">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider font-mono">Daily Goal</span>
               <p className="text-xs text-muted-foreground font-medium leading-relaxed">Complete one topic per day to maintain your learning streak.</p>
               <Link href="/roadmap" className="text-xs text-primary font-bold hover:underline mt-auto flex items-center gap-1">
@@ -317,7 +321,7 @@ export default function Home() {
           initial="hidden"
           whileInView="show"
           viewport={inViewOnce}
-          className="premium-glass bg-[#161b26]/30 border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left"
+          className="premium-glass bg-[color-mix(in_srgb,var(--surface)_30%,transparent)] border border-border rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-left"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -359,7 +363,7 @@ export default function Home() {
               <TiltPanel
                 key={f.title}
                 strength={5}
-                className={`premium-glass bg-[#161b26]/20 border border-border hover:border-primary/25 group transition-colors duration-300 rounded-2xl ${f.span}`}
+                className={`premium-glass bg-[color-mix(in_srgb,var(--surface)_20%,transparent)] border border-border hover:border-primary/25 group transition-colors duration-300 rounded-2xl ${f.span}`}
               >
                 <motion.div variants={fadeUp}>
                   <Link href={f.href} className="flex flex-col gap-3.5 p-5 text-left h-full">
@@ -464,7 +468,7 @@ export default function Home() {
                 key={cat.id}
                 variants={fadeUp}
                 whileHover={{ y: -3 }}
-                className={`premium-glass-card p-5 flex flex-col gap-4 bg-[#161b26]/30 backdrop-blur-md border border-border hover:shadow-lg transition-shadow duration-300 ${config.borderHover}`}
+                className={`premium-glass-card p-5 flex flex-col gap-4 bg-[color-mix(in_srgb,var(--surface)_30%,transparent)] backdrop-blur-md border border-border hover:shadow-lg transition-shadow duration-300 ${config.borderHover}`}
               >
                 <div className="flex items-start gap-3.5 text-left">
                   <div className={`p-2.5 rounded-xl border shrink-0 ${config.bgTint}`}>
@@ -489,7 +493,7 @@ export default function Home() {
                     <span>PROGRESS</span>
                     <span>{catPercent}%</span>
                   </div>
-                  <div className="h-1 bg-[#0d0f14]/50 border border-border rounded-full overflow-hidden">
+                  <div className="h-1 bg-[color-mix(in_srgb,var(--card)_50%,transparent)] border border-border rounded-full overflow-hidden">
                     <div 
                       className="h-full rounded-full transition-all duration-500" 
                       style={{ 
