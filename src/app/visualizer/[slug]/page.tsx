@@ -28,11 +28,12 @@ import GraphVisualizer from '@/components/visualizers/GraphVisualizer';
 function useTopicSnippets(topicId: string | undefined): CodeSnippet[] {
   const [snippets, setSnippets] = useState<CodeSnippet[]>([]);
 
+  // No branch resets `snippets` back to `[]` for a defined-then-undefined
+  // transition: the caller (`StandaloneVisualizerContent`) is remounted with
+  // `key={slug}` on every slug change, so this hook never observes `topicId`
+  // flip between two different defined values within one mount.
   useEffect(() => {
-    if (!topicId) {
-      setSnippets([]);
-      return;
-    }
+    if (!topicId) return;
     let cancelled = false;
     import('@/data').then(({ codeSnippets }) => {
       if (!cancelled) setSnippets(codeSnippets[topicId] ?? []);
