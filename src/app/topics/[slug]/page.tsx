@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BookMarked, CheckCircle2, Copy, Check, ChevronLeft, ChevronRight, Sparkles, Terminal, BookOpen, Trophy, ArrowRight } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { topics, categories, lessonSections, codeSnippets, quizzes, quizQuestions } from '@/data';
-import { generateBubbleSortSteps, generateBinarySearchSteps, generateMergeSortSteps, generateQuickSortSteps } from '@/lib/dsa-utils';
+import { getAlgorithm, parseInput, runAlgorithm, toVisualizerSteps } from '@/lib/trace';
 import confetti from 'canvas-confetti';
 
 // Import visualizers
@@ -21,64 +21,23 @@ import { VisualizerStep, CodeLanguage, VisualizerConfig, QuizQuestion } from '@/
 import { visualizerCatalog } from '@/data/visualizers';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
-// Visualizer Config mappings
-const visualizerConfigs: Record<string, VisualizerConfig> = {
-  'bubble-sort': {
-    title: 'Bubble Sort Visualizer',
-    pseudocode: [
-      'bubbleSort(arr):',
-      '  for i from 0 to n-1:',
-      '    swapped = false',
-      '    for j from 0 to n-i-2:',
-      '      if arr[j] > arr[j+1]:',
-      '        swap(arr[j], arr[j+1])',
-      '        swapped = true',
-      '    if not swapped: break',
-    ],
-    defaultInput: '52, 23, 89, 4, 12, 33, 77, 10',
-    inputPlaceholder: 'e.g. 52, 23, 89, 4, 12',
-  },
-  'binary-search': {
-    title: 'Binary Search Visualizer',
-    pseudocode: [
-      'binarySearch(arr, target):',
-      '  low = 0, high = arr.length - 1',
-      '  while low <= high:',
-      '    mid = floor(low + (high - low) / 2)',
-      '    if arr[mid] == target: return mid',
-      '    else if arr[mid] < target: low = mid + 1',
-      '    else: high = mid - 1',
-      '  return -1',
-    ],
-    defaultInput: '10, 20, 30, 40, 50, 60, 70, 80',
-    inputPlaceholder: 'e.g. 10, 20, 30, 40',
-  },
-  'merge-sort': {
-    title: 'Merge Sort Visualizer',
-    pseudocode: [
-      'mergeSort(arr, l, r):',
-      '  if l >= r: return',
-      '  m = l + (r - l) / 2',
-      '  mergeSort(arr, l, m)',
-      '  mergeSort(arr, m + 1, r)',
-      '  merge(arr, l, m, r)',
-    ],
-    defaultInput: '34, 12, 89, 5, 23, 77, 45, 10',
-    inputPlaceholder: 'e.g. 34, 12, 89, 5',
-  },
-  'quick-sort': {
-    title: 'Quick Sort Visualizer',
-    pseudocode: [
-      'quickSort(arr, low, high):',
-      '  if low < high:',
-      '    p = partition(arr, low, high)',
-      '    quickSort(arr, low, p - 1)',
-      '    quickSort(arr, p + 1, high)',
-    ],
-    defaultInput: '50, 23, 89, 4, 12, 33, 77, 10',
-    inputPlaceholder: 'e.g. 50, 23, 89, 4',
-  },
-};
+/**
+ * Build the player config from the algorithm registry.
+ *
+ * The pseudocode, defaults, and complexity used to be duplicated here and in
+ * the standalone `/visualizer/[slug]` page — two copies that had already
+ * drifted apart. Both now read the same definition.
+ */
+function configFor(slug: string): VisualizerConfig | null {
+  const algorithm = getAlgorithm(slug);
+  if (!algorithm) return null;
+  return {
+    title: `${algorithm.title} Visualizer`,
+    pseudocode: algorithm.pseudocode,
+    defaultInput: algorithm.defaultInput.join(', '),
+    inputPlaceholder: `e.g. ${algorithm.defaultInput.slice(0, 4).join(', ')}`,
+  };
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -135,35 +94,18 @@ function TopicPageContent({ slug }: { slug: string }) {
   const [correctCount, setCorrectCount] = useState<number>(0);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
 
-  // Derive visualizer steps during render
+  // Run the algorithm and derive the player steps from the recording.
   const visualizerSteps: VisualizerStep[] = useMemo(() => {
-    if (!topic) return [];
-    let numbers: number[] = [];
-    const config = visualizerConfigs[topic.slug];
-    const rawInput = customInput || config?.defaultInput;
+    const algorithm = topic ? getAlgorithm(topic.slug) : undefined;
+    if (!algorithm) return [];
 
-    if (rawInput) {
-      numbers = rawInput
-        .split(',')
-        .map((num) => parseInt(num.trim()))
-        .filter((num) => !isNaN(num));
-    }
-
-    if (topic.slug === 'bubble-sort') {
-      const arr = numbers.length > 0 ? numbers : [52, 23, 89, 4, 12, 33, 77, 10];
-      return generateBubbleSortSteps(arr);
-    } else if (topic.slug === 'binary-search') {
-      const arr = (numbers.length > 0 ? numbers : [10, 20, 30, 40, 50, 60, 70, 80]).sort((a, b) => a - b);
-      return generateBinarySearchSteps(arr, bsTarget);
-    } else if (topic.slug === 'merge-sort') {
-      const arr = numbers.length > 0 ? numbers : [34, 12, 89, 5, 23, 77, 45, 10];
-      return generateMergeSortSteps(arr);
-    } else if (topic.slug === 'quick-sort') {
-      const arr = numbers.length > 0 ? numbers : [50, 23, 89, 4, 12, 33, 77, 10];
-      return generateQuickSortSteps(arr);
-    }
-    return [];
+    const parsed = customInput ? parseInput(customInput) : null;
+    return toVisualizerSteps(
+      runAlgorithm(algorithm, parsed ?? algorithm.defaultInput, { target: bsTarget }),
+    );
   }, [topic, customInput, bsTarget]);
+
+  const visualizerConfig = useMemo(() => (topic ? configFor(topic.slug) : null), [topic]);
 
   const handleGenerateVisualizerInput = useCallback((customInputVal?: string) => {
     setCustomInput(customInputVal || null);
@@ -503,7 +445,7 @@ function TopicPageContent({ slug }: { slug: string }) {
               </span>
               
               {/* Registers Tracker */}
-              {['bubble-sort', 'binary-search', 'merge-sort', 'quick-sort'].includes(topic.slug) && (
+              {visualizerConfig && (
                 <div className="flex gap-2 text-[10px] font-mono font-medium text-muted-foreground select-none">
                   <span className="text-muted-foreground/60 mr-1">Markers:</span>
                   {(() => {
@@ -521,17 +463,17 @@ function TopicPageContent({ slug }: { slug: string }) {
 
             {/* Sandbox Workspace Selection */}
             <div className="flex-1 w-full bg-muted/30 p-4">
-              {['bubble-sort', 'binary-search', 'merge-sort', 'quick-sort'].includes(topic.slug) ? (
+              {visualizerConfig ? (
                 visualizerSteps.length > 0 && (
                   <VisualizerWrapper
-                    config={visualizerConfigs[topic.slug]}
+                    config={visualizerConfig}
                     steps={visualizerSteps}
                     currentStepIndex={visualizerIndex}
                     setCurrentStepIndex={setVisualizerIndex}
                     onGenerateInput={handleGenerateVisualizerInput}
                     renderVisuals={(step) => <ArrayVisualizer step={step} />}
                     additionalControls={
-                      topic.slug === 'binary-search' ? (
+                      getAlgorithm(topic.slug)?.usesTarget ? (
                         <div className="flex flex-col gap-1 text-left">
                           <label className="text-[10px] font-medium text-muted-foreground">Target</label>
                           <input
