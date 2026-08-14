@@ -1,4 +1,4 @@
-import { topics, categories } from '@/data';
+import { topics, categories } from '@/data/catalog';
 import { visualizerCatalog } from '@/data/visualizers';
 
 export interface SearchItem {
@@ -19,7 +19,8 @@ const STATIC_PAGES: SearchItem[] = [
   { id: 'p-daily', title: 'Daily Challenge', subtitle: 'Problem of the day', href: '/daily', type: 'page', keywords: 'daily challenge' },
   { id: 'p-labs', title: 'Complexity Lab', subtitle: 'Compare algorithms', href: '/labs', type: 'page', keywords: 'labs complexity big-o' },
   { id: 'p-patterns', title: 'Pattern Library', subtitle: 'Interview patterns', href: '/patterns', type: 'page', keywords: 'patterns interview' },
-  { id: 'p-interview', title: 'Interview Prep', subtitle: 'Cheat sheets', href: '/interview-prep', type: 'page', keywords: 'interview prep' },
+  { id: 'p-interview', title: 'Interview Prep', subtitle: 'Cheat sheets', href: '/interview-prep', type: 'page', keywords: 'interview prep patterns cheatsheet' },
+  { id: 'p-mock-interview', title: 'Mock Interview', subtitle: 'Timed practice session', href: '/interview', type: 'page', keywords: 'mock interview timed session timer' },
   { id: 'p-dashboard', title: 'Dashboard', subtitle: 'Your profile', href: '/dashboard', type: 'page', keywords: 'dashboard profile xp' },
   { id: 'p-bookmarks', title: 'Bookmarks', subtitle: 'Saved topics', href: '/bookmarks', type: 'page', keywords: 'bookmarks saved' },
 ];

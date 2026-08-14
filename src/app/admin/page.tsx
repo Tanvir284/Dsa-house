@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Shield, Plus, Trash2, AlertTriangle, Save, RefreshCw, Lock, User } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { topics, categories } from '@/data';
+import { topics, categories } from '@/data/catalog';
 import { Topic, Difficulty } from '@/types';
 import { canAccessAdmin, getAdminUsernamesHint } from '@/lib/admin';
 
@@ -124,21 +124,23 @@ export default function AdminPanelPage() {
           </p>
         </div>
         <div className="w-full flex flex-col gap-3">
-          <label className="text-left text-xs font-semibold text-muted-foreground">Admin username</label>
+          <label htmlFor="admin-username" className="text-left text-xs font-semibold text-muted-foreground">Admin username</label>
           <input
+            id="admin-username"
             type="text"
             value={adminUsername}
             onChange={(e) => setAdminUsername(e.target.value)}
             placeholder="admin"
             className="px-3.5 py-2 border border-border rounded-lg bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-full font-mono"
           />
-          <label className="text-left text-xs font-semibold text-muted-foreground">
+          <label htmlFor="admin-code" className="text-left text-xs font-semibold text-muted-foreground">
             Access code{' '}
             <span className="font-normal text-muted-foreground/70">
               (required only if this deployment sets one)
             </span>
           </label>
           <input
+            id="admin-code"
             type="password"
             value={adminCode}
             onChange={(e) => setAdminCode(e.target.value)}

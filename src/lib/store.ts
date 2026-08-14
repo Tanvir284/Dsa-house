@@ -13,6 +13,15 @@ import { createDefaultProfile, normalizeProfile, todayKey } from './profile-util
 import type { LearningGoal } from './profile-stats';
 import type { CodeLanguage } from '@/types';
 
+/**
+ * Flat XP granted the moment a problem transitions from incomplete to
+ * complete, from `toggleProblemCompletion` below. Exported so other reward
+ * paths (the mock-interview session, src/app/interview/page.tsx) can account
+ * for XP this store action already grants instead of awarding it again on
+ * top — that double-award was a real bug caught in review.
+ */
+export const PROBLEM_COMPLETION_XP = 50;
+
 export interface UserProfile {
   id?: string;
   username: string;
@@ -385,7 +394,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ completedProblems: next });
 
     if (!exists && get().profile) {
-      get().addXp(50);
+      get().addXp(PROBLEM_COMPLETION_XP);
       get().updateStreak();
       get().recordActivity(1);
     }

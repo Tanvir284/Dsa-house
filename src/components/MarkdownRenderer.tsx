@@ -1,12 +1,52 @@
 'use client';
 
-import React from 'react';
-import katex from 'katex';
+import React, { useEffect, useState } from 'react';
 import 'katex/dist/katex.min.css';
 import { AlertCircle } from 'lucide-react';
 
+type KatexModule = typeof import('katex');
+
 interface MarkdownRendererProps {
   content: string;
+}
+
+/** Cached across component instances so navigating between topics loads once. */
+let katexPromise: Promise<KatexModule> | null = null;
+
+function loadKatex(): Promise<KatexModule> {
+  katexPromise ??= import('katex').then((mod) => mod.default ?? mod);
+  return katexPromise;
+}
+
+/** Cheap pre-check so prose without math never pays for the typesetter. */
+function containsMath(content: string): boolean {
+  return content.includes('$');
+}
+
+/**
+ * Loads KaTeX only when there is math to typeset.
+ *
+ * KaTeX is ~260 KB of JavaScript and was previously a static import, so every
+ * route that rendered any markdown — including problem descriptions, which
+ * contain no LaTeX at all — shipped the whole typesetting engine. Math renders
+ * on a second pass; until then the raw expression is shown, which is legible
+ * rather than blank.
+ */
+function useKatex(needed: boolean): KatexModule | null {
+  const [katex, setKatex] = useState<KatexModule | null>(null);
+
+  useEffect(() => {
+    if (!needed) return;
+    let cancelled = false;
+    loadKatex().then((mod) => {
+      if (!cancelled) setKatex(mod);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [needed]);
+
+  return katex;
 }
 
 /**
@@ -17,6 +57,7 @@ interface MarkdownRendererProps {
  * - Callouts: > [!NOTE], > [!IMPORTANT], > [!WARNING]
  */
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+  const katex = useKatex(containsMath(content));
   const paragraphs = content.split('\n\n');
 
   return (
@@ -34,11 +75,11 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
           return (
             <div key={blockIdx} className={`p-4 rounded-lg border flex gap-3 text-left my-2 ${alertClass}`}>
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
               <div className="flex flex-col gap-0.5">
                 <span className="text-[10px] font-semibold uppercase tracking-wider leading-none mb-1">{type}</span>
                 <div className="text-xs leading-relaxed font-semibold">
-                  {renderInline(text)}
+                  {renderInline(text, katex)}
                 </div>
               </div>
             </div>
@@ -48,6 +89,13 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         // Block math $$...$$
         if (trimmed.startsWith('$$') && trimmed.endsWith('$$')) {
           const latex = trimmed.slice(2, -2).trim();
+          if (!katex) {
+            return (
+              <pre key={blockIdx} className="my-3 overflow-x-auto text-center font-mono text-xs">
+                {latex}
+              </pre>
+            );
+          }
           try {
             const html = katex.renderToString(latex, { displayMode: true, throwOnError: false });
             return (
@@ -68,7 +116,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           return (
             <ul key={blockIdx} className="list-disc list-inside text-xs font-medium space-y-1 pl-2">
               {items.map((item, i) => (
-                <li key={i}>{renderInline(item.replace(/^[-*]\s/, ''))}</li>
+                <li key={i}>{renderInline(item.replace(/^[-*]\s/, ''), katex)}</li>
               ))}
             </ul>
           );
@@ -77,7 +125,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         // Regular paragraph with inline rendering
         return (
           <p key={blockIdx} className="font-medium text-xs/relaxed whitespace-pre-line">
-            {renderInline(trimmed)}
+            {renderInline(trimmed, katex)}
           </p>
         );
       })}
@@ -87,8 +135,11 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
 /**
  * Renders inline content with $...$ math, **bold**, and `code`.
+ *
+ * `katex` is null until the typesetter has loaded; inline math falls back to
+ * the literal expression in a code style rather than disappearing.
  */
-function renderInline(text: string): React.ReactNode {
+function renderInline(text: string, katex: KatexModule | null): React.ReactNode {
   const tokens: React.ReactNode[] = [];
   let cursor = 0;
   let key = 0;
@@ -107,16 +158,24 @@ function renderInline(text: string): React.ReactNode {
     if (full.startsWith('$') && full.endsWith('$')) {
       // Inline math
       const latex = full.slice(1, -1);
-      try {
-        const html = katex.renderToString(latex, { displayMode: false, throwOnError: false });
-        tokens.push(<span key={key++} dangerouslySetInnerHTML={{ __html: html }} />);
-      } catch {
-        tokens.push(<span key={key++} className="text-rose-400">{full}</span>);
+      if (!katex) {
+        tokens.push(
+          <code key={key++} className="font-mono text-[11px]">
+            {latex}
+          </code>,
+        );
+      } else {
+        try {
+          const html = katex.renderToString(latex, { displayMode: false, throwOnError: false });
+          tokens.push(<span key={key++} dangerouslySetInnerHTML={{ __html: html }} />);
+        } catch {
+          tokens.push(<span key={key++} className="text-rose-400">{full}</span>);
+        }
       }
     } else if (full.startsWith('**') && full.endsWith('**')) {
       // Bold
       const inner = full.slice(2, -2);
-      tokens.push(<strong key={key++} className="font-bold text-foreground">{renderInline(inner)}</strong>);
+      tokens.push(<strong key={key++} className="font-bold text-foreground">{renderInline(inner, katex)}</strong>);
     } else if (full.startsWith('`') && full.endsWith('`')) {
       // Inline code
       const code = full.slice(1, -1);

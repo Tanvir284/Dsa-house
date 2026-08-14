@@ -61,133 +61,187 @@
   50% { transform: translateY(-6px); }
 }
 
+/* ============================================
+   DESIGN LANGUAGE — "Ink & Signal"
+
+   One principle governs the whole palette:
+
+       Colour carries information. Chrome does not.
+
+   In a tool whose core surface is an algorithm visualisation, hue is the
+   channel doing the teaching — this cell is being compared, that one is
+   settled, this is the pivot. Spending saturated colour on decorative
+   gradients, glowing buttons, and tinted panels competes with the only place
+   colour actually means something.
+
+   So the interface is built from warm neutrals and near-monochrome chrome.
+   Saturation is rationed to three jobs:
+     1. algorithm state, inside the arena
+     2. difficulty and progress, on badges and meters
+     3. a single amber accent for interactive affordance
+
+   The arena palette is Okabe–Ito, which stays distinguishable under
+   protanopia, deuteranopia, and tritanopia — the previous red/green swap and
+   sorted states were indistinguishable to roughly 1 in 12 men.
+
+   Grounds are warm (a trace of yellow) rather than the blue-black default,
+   which is what makes the amber read as intentional rather than as an
+   accident of the accent picker.
+   ============================================ */
+
 /* ─── Dark Theme (Default) ─── */
 :root {
   color-scheme: dark;
 
-  --background: #090c14;
-  --background-end: #111827;
-  --foreground: #e8eaed;
-  --card: #161b26;
-  --card-foreground: #e8eaed;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --primary: #4f9dff;
-  --primary-foreground: #ffffff;
-  --secondary: #1e2130;
-  --secondary-foreground: #e8eaed;
-  --muted: #161923;
-  --muted-foreground: #9ca3af;
-  --accent: #8b5cf6;
-  --accent-foreground: #ffffff;
-  --complete: #22c55e;
+  /* Warm near-black. Not #000 — pure black clips shadow detail and vibrates
+     against light text on OLED. */
+  --background: #0b0b0c;
+  --background-end: #101012;
+  --foreground: #f4f4f3;
+  --card: #141416;
+  --card-foreground: #f4f4f3;
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* The single interactive accent. Amber at this lightness clears 4.5:1 on
+     the dark ground, which the old #4f9dff blue did not. */
+  --primary: #f0b429;
+  --primary-foreground: #0b0b0c;
+  --secondary: #1c1c1f;
+  --secondary-foreground: #f4f4f3;
+  --muted: #161618;
+  --muted-foreground: #a3a3a0;
+  --accent: #f0b429;
+  --accent-foreground: #0b0b0c;
+  --complete: #0e9f6e;
   --complete-foreground: #ffffff;
-  --surface: #1e2130;
-  --surface-hover: #262a3c;
-  --easy: #22c55e;
-  --medium: #eab308;
-  --hard: #ef4444;
+  --surface: #1c1c1f;
+  --surface-hover: #26262a;
 
-  --code-panel: #12141c;
-  --code-editor: #0d0f14;
-  --arena-tint: rgba(15, 17, 23, 0.55);
-  --input-bg: #12141c;
-  --roadmap-node-fill: #161b26;
-  --roadmap-node-stroke: rgba(255, 255, 255, 0.12);
-  --roadmap-node-active-fill: rgba(79, 157, 255, 0.14);
-  --roadmap-node-done-fill: rgba(34, 197, 94, 0.15);
-  --roadmap-label: #9ca3af;
+  /* Difficulty. Badge-only — never rendered inside the arena, so these may
+     share a family with the accent without muddying algorithm state. */
+  --easy: #34d399;
+  --medium: #fbbf24;
+  --hard: #f87171;
 
-  /* Cognitive color-coding shared by all visualizers */
-  --viz-idle: #2a2e3d;
-  --viz-compare: #4f9dff;
-  --viz-swap: #f43f5e;
-  --viz-sorted: #22c55e;
-  --viz-active: #8b5cf6;
-  --viz-range: rgba(79, 157, 255, 0.14);
+  --code-panel: #101012;
+  --code-editor: #0d0d0f;
+  --arena-tint: rgba(12, 12, 14, 0.6);
+  --input-bg: #141416;
+  --roadmap-node-fill: #141416;
+  --roadmap-node-stroke: rgba(255, 255, 255, 0.14);
+  --roadmap-node-active-fill: rgba(240, 180, 41, 0.16);
+  --roadmap-node-done-fill: rgba(14, 159, 110, 0.18);
+  --roadmap-label: #a3a3a0;
 
-  /* Accent gradient — hero, CTA, focus */
-  --accent-from: #4f9dff;
-  --accent-to: #8b5cf6;
-  --accent-gradient: linear-gradient(135deg, #4f9dff 0%, #8b5cf6 100%);
+  /* ── Arena palette (Okabe–Ito, colourblind-safe) ──
+     Distinguishable by hue AND lightness, so the encoding survives greyscale
+     printing and every common form of colour vision deficiency. */
+  --viz-idle: #2a2a2e;       /* neutral, recedes                        */
+  --viz-compare: #56b4e9;    /* sky blue — under inspection             */
+  --viz-swap: #ee6f10;       /* vermillion — being moved                */
+  --viz-sorted: #009e73;     /* bluish green — settled                  */
+  --viz-active: #ededea;     /* luminance flash — a transient touch      */
+  --viz-pivot: #cc79a7;      /* reddish purple — pivot                  */
+  /* `active` is deliberately achromatic. A read or write is a momentary touch,
+     not a lasting state, so it is encoded as a luminance flash — which leaves
+     all four hues free to mean exactly one algorithmic state each. */
+  --viz-range: rgba(240, 180, 41, 0.12);
 
-  /* Glass surfaces */
-  --glass-bg: rgba(22, 27, 38, 0.55);
-  --glass-bg-strong: rgba(22, 27, 38, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.10);
-  --glass-highlight: rgba(255, 255, 255, 0.06);
+  /* Accent gradient, kept narrow — a tonal shift rather than a hue journey.
+     The old blue→purple sweep read as decoration; this reads as material. */
+  --accent-from: #f0b429;
+  --accent-to: #de911d;
+  --accent-gradient: linear-gradient(135deg, #f0b429 0%, #de911d 100%);
 
-  --radius: 14px;
-  --radius-lg: 20px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.25);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.35);
-  --shadow-xl: 0 24px 60px rgba(0,0,0,0.45);
-  --shadow-glow: 0 0 40px rgba(79, 157, 255, 0.28), 0 0 80px rgba(139, 92, 246, 0.18);
-  --shadow-glow-hover: 0 0 60px rgba(79, 157, 255, 0.4), 0 0 120px rgba(139, 92, 246, 0.28);
+  /* Surfaces are opaque and layered by lightness rather than by blur. Frosted
+     glass costs a compositor layer per panel and reduces text contrast against
+     whatever happens to be behind it. */
+  --glass-bg: #141416;
+  --glass-bg-strong: #1c1c1f;
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-highlight: rgba(255, 255, 255, 0.04);
+
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  /* Shadows read as elevation, not as glow. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 0 1px rgba(240, 180, 41, 0.35);
+  --shadow-glow-hover: 0 0 0 1px rgba(240, 180, 41, 0.55);
 }
 
 /* ─── Light Theme ─── */
 html.light {
   color-scheme: light;
 
-  --background: #f5f6fa;
-  --background-end: #eceef8;
-  --foreground: #111827;
+  /* Warm paper, not blue-grey. */
+  --background: #faf9f7;
+  --background-end: #f2f1ee;
+  --foreground: #1a1a19;
   --card: #ffffff;
-  --card-foreground: #111827;
-  --border: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(15, 23, 42, 0.14);
-  --primary: #2563eb;
-  --primary-foreground: #ffffff;
-  --secondary: #f3f4f6;
-  --secondary-foreground: #111827;
-  --muted: #eef0f3;
-  --muted-foreground: #4b5563;
-  --accent: #7c3aed;
-  --accent-foreground: #ffffff;
-  --complete: #16a34a;
-  --complete-foreground: #ffffff;
-  --surface: #f3f4f6;
-  --surface-hover: #e5e7eb;
-  --easy: #16a34a;
-  --medium: #ca8a04;
-  --hard: #dc2626;
+  --card-foreground: #1a1a19;
+  --border: rgba(26, 26, 25, 0.10);
+  --border-strong: rgba(26, 26, 25, 0.18);
 
-  --code-panel: #f8fafc;
-  --code-editor: #f1f5f9;
-  --arena-tint: rgba(255, 255, 255, 0.72);
+  /* Amber has to darken substantially to clear 4.5:1 on paper; #f0b429 on
+     white is 1.8:1 and would fail as text or as a focus indicator. */
+  --primary: #92610a;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f1ee;
+  --secondary-foreground: #1a1a19;
+  --muted: #f2f1ee;
+  --muted-foreground: #5c5c58;
+  --accent: #92610a;
+  --accent-foreground: #ffffff;
+  --complete: #047857;
+  --complete-foreground: #ffffff;
+  --surface: #f2f1ee;
+  --surface-hover: #e8e6e1;
+
+  --easy: #047857;
+  --medium: #b45309;
+  --hard: #b91c1c;
+
+  --code-panel: #f7f6f3;
+  --code-editor: #f2f1ee;
+  --arena-tint: rgba(255, 255, 255, 0.75);
   --input-bg: #ffffff;
   --roadmap-node-fill: #ffffff;
-  --roadmap-node-stroke: rgba(0, 0, 0, 0.12);
-  --roadmap-node-active-fill: rgba(37, 99, 235, 0.12);
-  --roadmap-node-done-fill: rgba(22, 163, 74, 0.12);
-  --roadmap-label: #6b7280;
+  --roadmap-node-stroke: rgba(26, 26, 25, 0.16);
+  --roadmap-node-active-fill: rgba(146, 97, 10, 0.12);
+  --roadmap-node-done-fill: rgba(4, 120, 87, 0.12);
+  --roadmap-label: #5c5c58;
 
-  /* Cognitive color-coding shared by all visualizers (light) */
-  --viz-idle: #e2e5ec;
-  --viz-compare: #2563eb;
-  --viz-swap: #e11d48;
-  --viz-sorted: #16a34a;
-  --viz-active: #7c3aed;
-  --viz-range: rgba(37, 99, 235, 0.12);
+  /* Okabe–Ito, darkened where needed to hold contrast against paper. */
+  --viz-idle: #dedcd6;
+  --viz-compare: #0d6f99;
+  --viz-swap: #b34e00;
+  --viz-sorted: #007a59;
+  --viz-active: #3f3f46;
+  --viz-pivot: #a3527f;
+  --viz-range: rgba(146, 97, 10, 0.10);
 
-  --accent-from: #2563eb;
-  --accent-to: #7c3aed;
-  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  --accent-from: #92610a;
+  --accent-to: #7c5209;
+  --accent-gradient: linear-gradient(135deg, #92610a 0%, #7c5209 100%);
 
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-bg-strong: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(15, 23, 42, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.5);
+  --glass-bg: #ffffff;
+  --glass-bg-strong: #ffffff;
+  --glass-border: rgba(26, 26, 25, 0.10);
+  --glass-highlight: rgba(26, 26, 25, 0.03);
 
-  --shadow-sm: 0 1px 2px rgba(15,23,42,0.05);
-  --shadow-md: 0 4px 12px rgba(15,23,42,0.08);
-  --shadow-lg: 0 8px 30px rgba(15,23,42,0.10);
-  --shadow-xl: 0 20px 60px rgba(15,23,42,0.14);
-  --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.22), 0 0 80px rgba(124, 58, 237, 0.14);
-  --shadow-glow-hover: 0 0 60px rgba(37, 99, 235, 0.32), 0 0 120px rgba(124, 58, 237, 0.22);
+  --shadow-sm: 0 1px 2px rgba(26, 26, 25, 0.06);
+  --shadow-md: 0 2px 8px rgba(26, 26, 25, 0.08);
+  --shadow-lg: 0 8px 24px rgba(26, 26, 25, 0.10);
+  --shadow-xl: 0 20px 48px rgba(26, 26, 25, 0.12);
+  --shadow-glow: 0 0 0 1px rgba(146, 97, 10, 0.35);
+  --shadow-glow-hover: 0 0 0 1px rgba(146, 97, 10, 0.55);
 }
+
 
 /* ─── Base Styles ─── */
 html {
@@ -252,24 +306,17 @@ h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.25; }
 /* ─── Buttons ─── */
 .btn-primary {
   position: relative;
-  background: var(--accent-gradient);
-  background-size: 180% 180%;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
   font-weight: 600;
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.2s ease,
-              background-position 0.4s ease,
-              filter 0.2s ease;
-  box-shadow: 0 4px 14px rgba(79, 157, 255, 0.35),
-              0 1px 0 rgba(255, 255, 255, 0.15) inset;
+  transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
   background-position: 100% 0;
-  box-shadow: 0 8px 24px rgba(79, 157, 255, 0.45),
-              0 0 24px rgba(139, 92, 246, 0.35),
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 45%, transparent),
               0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 .btn-primary:active {
@@ -281,10 +328,8 @@ h3 { font-size: 1.25rem; font-weight: 600; line-height: 1.25; }
   background: var(--glass-bg);
   color: var(--foreground);
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   font-weight: 600;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.2s ease,
               border-color 0.2s ease,
@@ -512,12 +557,10 @@ html {
 
 /* ─── Glass Panel (used sparingly) ─── */
 .glass-panel {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-lg),
-              0 1px 0 var(--glass-highlight) inset;
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 
@@ -550,38 +593,19 @@ html {
 /* ─── Aurora / Nebula background ─── */
 .mesh-bg {
   position: fixed;
-  inset: -15%;
+  inset: 0;
   z-index: -2;
   pointer-events: none;
-  will-change: transform;
-  animation: meshDrift 28s ease-in-out infinite;
-  /* Five overlapping aurora blobs */
+  /* Two low-saturation washes over a plain vertical ground. The previous
+     five-blob aurora (blue, violet, emerald, rose) put four competing hues
+     behind every screen, including behind the visualiser arena where hue is
+     supposed to be meaningful. */
   background:
-    /* top-left cool blue */
-    radial-gradient(ellipse 65% 50% at 10% 8%,
-      color-mix(in srgb, var(--accent-from) 35%, transparent),
-      transparent 55%),
-    /* top-right violet */
-    radial-gradient(ellipse 58% 45% at 88% 14%,
-      color-mix(in srgb, var(--accent-to) 30%, transparent),
-      transparent 55%),
-    /* centre warm glow */
-    radial-gradient(ellipse 50% 55% at 50% 48%,
-      color-mix(in srgb, var(--accent-from) 12%, transparent),
-      transparent 60%),
-    /* bottom-left emerald hint */
-    radial-gradient(ellipse 55% 40% at 5% 92%,
-      color-mix(in srgb, #22c55e 18%, transparent),
-      transparent 55%),
-    /* bottom-right rose hint */
-    radial-gradient(ellipse 50% 38% at 95% 90%,
-      color-mix(in srgb, #f43f5e 14%, transparent),
-      transparent 50%),
-    /* base gradient */
-    linear-gradient(160deg,
-      var(--background) 0%,
-      var(--background-end, var(--background)) 100%);
-  filter: saturate(130%) blur(0px);
+    radial-gradient(ellipse 70% 50% at 12% 0%,
+      color-mix(in srgb, var(--accent-from) 9%, transparent), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 92% 8%,
+      color-mix(in srgb, var(--accent-to) 7%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--background) 0%, var(--background-end, var(--background)) 100%);
 }
 
 /* Noise texture overlay for depth */
@@ -626,16 +650,16 @@ html {
 /* Glassmorphic card — opt-in premium variant */
 .glass-card {
   position: relative;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  box-shadow: var(--shadow-lg),
-              0 1px 0 var(--glass-highlight) inset;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.3s ease,
-              border-color 0.3s ease;
+  /* No backdrop-filter: each frosted panel forced its own compositor layer
+     and dropped text contrast against whatever scrolled behind it. Depth now
+     comes from lightness and a hairline border. */
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
 }
 .glass-card:hover {
   transform: translateY(-3px) scale(1.01);
@@ -678,12 +702,10 @@ html {
 
 /* Frosted floating navbar */
 .glass-navbar {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  box-shadow: var(--shadow-md),
-              0 1px 0 var(--glass-highlight) inset;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  backdrop-filter: saturate(120%) blur(12px);
+  -webkit-backdrop-filter: saturate(120%) blur(12px);
+  border-bottom: 1px solid var(--border);
 }
 
 /* Sliding active-pill indicator */
@@ -881,7 +903,6 @@ html {
 .chapter-band {
   border-radius: 20px;
   border: 1px solid var(--border);
-  backdrop-filter: blur(4px);
 }
 
 /* ─── Reduced motion ─── */
@@ -897,100 +918,166 @@ html {
 }
 
 /* ========================================================
-   DSA HOUSE — Premium High-End Visual Utilities (redesign)
+   Elevated surfaces
+
+   These replace a block of "premium glass" utilities whose colours were
+   hardcoded to the old navy palette (rgba(22, 27, 38, ...)). Being literal
+   rather than tokenised, they ignored the theme entirely — in light mode they
+   painted dark navy panels on paper. Everything here now derives from tokens
+   and works in both themes.
    ======================================================== */
 
 .premium-glass {
-  background: rgba(22, 27, 38, 0.45);
-  backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
 }
 
 .premium-glass-card {
   position: relative;
-  background: rgba(22, 27, 38, 0.4);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
-  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.premium-glass-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-lg);
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.01) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
 }
 
 .premium-glass-card:hover {
   transform: translateY(-2px);
-  background: rgba(22, 27, 38, 0.55);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn-premium-primary {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13.5px;
-  letter-spacing: -0.01em;
-  color: #fff;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  box-shadow: 0 4px 20px -2px rgba(79, 157, 255, 0.25);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  overflow: hidden;
-}
-
-.btn-premium-primary::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition: background 0.16s ease, transform 0.16s ease;
 }
 
 .btn-premium-primary:hover {
-  box-shadow: 0 6px 26px -2px rgba(79, 157, 255, 0.4), 0 0 15px rgba(139, 92, 246, 0.15);
-  transform: translateY(-1px);
-}
-
-.btn-premium-primary:hover::after {
-  transform: translateX(100%);
+  background: color-mix(in srgb, var(--primary) 88%, var(--foreground));
 }
 
 .btn-premium-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13.5px;
   color: var(--foreground);
-  border-radius: 12px;
-  background: rgba(30, 33, 48, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
 }
 
 .btn-premium-secondary:hover {
-  background: rgba(38, 42, 60, 0.7);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-1px);
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
 }
 
 .btn-premium-secondary:active,
 .btn-premium-primary:active {
   transform: scale(0.98);
+}
+
+
+/* ============================================
+   Ambient decoration
+   Replaces the former WebGL scenes. Both effects run entirely on the
+   compositor (transform/opacity only), cost no main-thread time, render
+   during SSR, and stop moving for prefers-reduced-motion.
+   ============================================ */
+
+.ambient-field {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-orb {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.ambient-orb-a {
+  width: 42%;
+  aspect-ratio: 1;
+  top: -8%;
+  right: -6%;
+  background: radial-gradient(circle at 30% 30%, var(--accent-from), transparent 70%);
+  animation: orbDriftA 26s ease-in-out infinite;
+}
+
+.ambient-orb-b {
+  width: 38%;
+  aspect-ratio: 1;
+  bottom: -12%;
+  left: -8%;
+  background: radial-gradient(circle at 60% 40%, var(--accent-to), transparent 70%);
+  animation: orbDriftB 32s ease-in-out infinite;
+}
+
+.ambient-orb-c {
+  width: 30%;
+  aspect-ratio: 1;
+  top: 30%;
+  left: 40%;
+  background: radial-gradient(circle at 50% 50%, var(--accent-from), transparent 72%);
+  opacity: 0.35;
+  animation: orbDriftA 38s ease-in-out infinite reverse;
+}
+
+@keyframes orbDriftA {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-6%, 8%, 0) scale(1.12); }
+}
+
+@keyframes orbDriftB {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50%      { transform: translate3d(7%, -6%, 0) scale(0.95); }
+}
+
+.node-motif {
+  overflow: visible;
+}
+
+.node-motif-rotor {
+  transform-origin: 50% 50%;
+  animation: motifRotate 60s linear infinite;
+}
+
+.node-motif-node {
+  animation: motifPulse 4.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes motifRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes motifPulse {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-orb,
+  .node-motif-rotor,
+  .node-motif-node {
+    animation: none !important;
+  }
 }

@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipForward, SkipBack, RotateCcw, Sliders, List, HelpCircle, Code, Rabbit, Turtle, Gauge } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { VisualizerStep, VisualizerConfig } from '@/types';
 import Tooltip from './_shared/Tooltip';
-import { staggerContainer, riseItem, textSwap, springSnappy } from './_shared/vizMotion';
+import { staggerContainer, riseItem, springSnappy } from './_shared/vizMotion';
 import AmbientOrbField from '@/components/3d/AmbientOrbField';
 
 const SPEED_PRESETS = [
@@ -156,7 +156,7 @@ export default function VisualizerWrapper({
         {/* Decorative only — behind renderVisuals, never intercepts pointer events */}
         <AmbientOrbField compact className="absolute inset-0 -z-10 opacity-[0.15] pointer-events-none" />
         <div className="absolute top-4 left-4 flex items-center gap-2 select-none">
-          <span className="flex h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_#00f2ff] animate-pulse" />
+          <span className="flex h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_var(--accent)] animate-pulse" aria-hidden="true" />
           <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Visualization Arena</span>
         </div>
 
@@ -192,7 +192,7 @@ export default function VisualizerWrapper({
         <div className="relative flex-1 flex items-center">
           <div className="absolute left-0 right-0 h-1.5 rounded-lg bg-muted overflow-hidden">
             <motion.div
-              className="h-full rounded-lg bg-gradient-to-r from-primary to-[#fb923c]"
+              className="h-full rounded-lg bg-gradient-to-r from-primary to-[var(--accent-to)]"
               animate={{ width: `${progress * 100}%` }}
               transition={springSnappy}
             />
@@ -206,6 +206,8 @@ export default function VisualizerWrapper({
               setIsPlaying(false);
               setCurrentStepIndex(Number(e.target.value));
             }}
+            aria-label="Scrub to step"
+            aria-valuetext={`Step ${currentStepIndex + 1} of ${steps.length}`}
             className="relative flex-1 h-1.5 bg-transparent rounded-lg appearance-none cursor-pointer accent-primary focus:outline-none"
           />
         </div>
@@ -220,7 +222,7 @@ export default function VisualizerWrapper({
         {/* Playback Controls Card */}
         <motion.div variants={riseItem} className="flex flex-col justify-between p-5 rounded-2xl border border-border bg-card shadow-sm hover:border-primary/25 transition-all">
           <h3 className="text-xs font-black flex items-center gap-2 text-muted-foreground uppercase tracking-widest mb-4">
-            <Sliders className="h-4 w-4 text-primary" /> Playback Controls
+            <Sliders className="h-4 w-4 text-primary" aria-hidden="true" /> Playback Controls
           </h3>
           <div className="flex flex-col gap-4">
             {/* Control buttons */}
@@ -260,7 +262,7 @@ export default function VisualizerWrapper({
                     onClick={handlePlayPause}
                     whileTap={{ scale: 0.9 }}
                     whileHover={{ scale: 1.06 }}
-                    className="relative m-1 p-3.5 rounded-full bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground shadow-[0_4px_15px_rgba(249,115,22,0.35)] cursor-pointer"
+                    className="relative m-1 p-3.5 rounded-full bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground shadow-[0_4px_15px_color-mix(in_srgb,var(--primary)_35%,transparent)] cursor-pointer"
                     aria-label={isPlaying ? 'Pause' : 'Play'}
                   >
                     {isPlaying ? <Pause className="h-5 w-5 fill-primary-foreground" /> : <Play className="h-5 w-5 fill-primary-foreground" />}
@@ -312,6 +314,8 @@ export default function VisualizerWrapper({
                 step="100"
                 value={2200 - speed} // Reverse value so larger values are faster
                 onChange={(e) => setSpeed(2200 - Number(e.target.value))}
+                aria-label="Playback speed"
+                aria-valuetext={`${((2200 - speed) / 1000).toFixed(1)} times speed`}
                 className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
               />
               <span className="text-[10px] font-mono font-extrabold text-muted-foreground w-16 text-right select-none">
@@ -324,7 +328,7 @@ export default function VisualizerWrapper({
         {/* Input Configuration Card */}
         <motion.div variants={riseItem} className="flex flex-col justify-between p-5 rounded-2xl border border-border bg-card shadow-sm hover:border-primary/25 transition-all">
           <h3 className="text-xs font-black flex items-center gap-2 text-muted-foreground uppercase tracking-widest mb-4">
-            <List className="h-4 w-4 text-primary" /> Input Configuration
+            <List className="h-4 w-4 text-primary" aria-hidden="true" /> Input Configuration
           </h3>
           <form onSubmit={handleCustomInputSubmit} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
@@ -359,7 +363,7 @@ export default function VisualizerWrapper({
         {/* Pseudocode/Step Tracker Card */}
         <motion.div variants={riseItem} className="flex flex-col justify-between p-5 rounded-2xl border border-border bg-card shadow-sm hover:border-primary/25 transition-all">
           <h3 className="text-xs font-black flex items-center gap-2 text-muted-foreground uppercase tracking-widest mb-4">
-            <Code className="h-4 w-4 text-primary" /> Algorithm Trace
+            <Code className="h-4 w-4 text-primary" aria-hidden="true" /> Algorithm Trace
           </h3>
           <div className="code-panel p-3.5 font-mono text-[11px] overflow-y-auto max-h-[140px] flex flex-col gap-0.5 shadow-inner">
             {config.pseudocode.map((line, idx) => (
@@ -381,22 +385,43 @@ export default function VisualizerWrapper({
       {/* 3. Verbal Step Narrative Card */}
       <motion.div variants={riseItem} className="p-5 rounded-2xl border border-border/60 bg-primary/5 backdrop-blur-sm shadow-md flex items-start gap-4 hover:border-primary/25 transition-all">
         <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/15 text-primary mt-0.5">
-          <HelpCircle className="h-5 w-5" />
+          <HelpCircle className="h-5 w-5" aria-hidden="true" />
         </div>
-        <div className="flex flex-col gap-1.5 min-w-0">
+        <div className="flex flex-col gap-1.5 min-w-0" role="status" aria-live="polite">
           <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Operation Progress</span>
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={currentStepIndex}
-              variants={textSwap}
-              initial="hidden"
-              animate="show"
-              exit="exit"
-              className="text-sm font-semibold leading-relaxed text-foreground/95"
-            >
-              {currentStep.explanation}
-            </motion.p>
-          </AnimatePresence>
+          {/*
+            This narration is the only accessible description of what the
+            visualizer is doing — the bars and highlighted cells it describes
+            are unreadable to a screen reader. `role="status"` + `aria-live`
+            on the persisting wrapper means every step change is announced,
+            whether the user steps manually or lets it play.
+
+            Deliberately not wrapped in AnimatePresence: with `mode="wait"`
+            here, stepping through a visualizer got stuck showing the first
+            frame's narration forever — the "Step: N / M" counter and the
+            rendered bars (both driven by the same `currentStep`) updated
+            correctly on every click, confirming the underlying data was
+            right, but the exit transition this wrapper waits on apparently
+            never resolved, so it never advanced to the entering child. This
+            is the same failure mode already documented for PageTransition
+            (see docs/ARCHITECTURE.md's accessibility section) — an
+            AnimatePresence exit-completion signal that doesn't fire
+            reliably — hitting a *direct* motion child this time, not one
+            behind a wrapping component boundary. A plain keyed `motion.p`
+            still remounts and replays its own enter animation on every step
+            via ordinary React reconciliation; the only thing given up is the
+            outgoing text's exit animation, which is a small price for
+            narration that actually updates.
+          */}
+          <motion.p
+            key={currentStepIndex}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="text-sm font-semibold leading-relaxed text-foreground/95"
+          >
+            {currentStep.explanation}
+          </motion.p>
         </div>
       </motion.div>
 

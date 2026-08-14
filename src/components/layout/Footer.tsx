@@ -39,7 +39,7 @@ export default function Footer() {
               </div>
               <span className="text-base font-bold tracking-tight text-foreground flex items-center gap-1 font-heading">
                 <span>DSA</span>
-                <span className="bg-gradient-to-r from-primary via-[#60a5fa] to-accent bg-clip-text text-transparent font-extrabold">House</span>
+                <span className="gradient-text font-extrabold">House</span>
               </span>
             </Link>
 

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { MotionConfig } from 'framer-motion';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -35,12 +36,25 @@ export default function RootLayout({
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-primary focus:text-primary-foreground focus:font-bold focus:rounded-lg focus:m-2">
           Skip to content
         </a>
-        <StoreInitializer />
-        <Navbar />
-        <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col relative z-10">
-          <PageTransition>{children}</PageTransition>
-        </main>
-        <Footer />
+        {/*
+          `reducedMotion="user"` makes every `motion.*` component in the tree
+          automatically honour prefers-reduced-motion by disabling
+          transform/layout animation (opacity still transitions, so content
+          doesn't hard-cut). ~40 components use Framer Motion directly without
+          checking `useReducedMotion()` themselves — this is a single switch
+          covering all of them, rather than auditing each one by hand. The
+          three call sites that already gate manually (roadmap, PageTransition,
+          the shared Tooltip) are unaffected; they simply become redundant,
+          not wrong.
+        */}
+        <MotionConfig reducedMotion="user">
+          <StoreInitializer />
+          <Navbar />
+          <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col relative z-10">
+            <PageTransition>{children}</PageTransition>
+          </main>
+          <Footer />
+        </MotionConfig>
       </body>
     </html>
   );

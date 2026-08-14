@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search, CheckCircle2, Circle, Trophy, Award, Flame, ExternalLink, RefreshCw } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { problems, categories } from '@/data';
+import { categories } from '@/data/catalog';
+import { problems } from '@/data/problems';
 import { fadeUp, springSoft, staggerContainer } from '@/lib/motion';
 
 const problemCategoryOptions = Array.from(new Set(problems.map((problem) => problem.category)))

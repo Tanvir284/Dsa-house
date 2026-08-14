@@ -13,7 +13,7 @@ import {
   Type, Target, Puzzle,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { categories, topics } from '@/data';
+import { categories, topics } from '@/data/catalog';
 import AmbientOrbField from '@/components/3d/AmbientOrbField';
 
 
@@ -39,10 +39,16 @@ interface Chapter {
  * naturally zigzags from the strategic top down to the advanced bottom.
  */
 const CHAPTERS: Chapter[] = [
+  // The two middle stops used to be #4f9dff and #8b5cf6 — the exact hex of
+  // the old --primary/--accent tokens the rest of the app has moved off of.
+  // Kept as a five-stage spectrum (a journey map benefits from per-chapter
+  // distinctness that the arena's meaning-per-hue rule doesn't apply to), but
+  // shifted off those two specific values so the roadmap doesn't quietly
+  // resurrect the retired brand colours.
   { id: 0, title: 'The Foundations', tagline: 'Where every journey begins — the building blocks of data.', accent: '#22c55e', gradient: 'linear-gradient(135deg, #22c55e 0%, #06b6d4 100%)' },
-  { id: 1, title: 'Order & Search',  tagline: 'Learn to arrange and find things with purpose.',            accent: '#06b6d4', gradient: 'linear-gradient(135deg, #06b6d4 0%, #4f9dff 100%)' },
-  { id: 2, title: 'Divide & Conquer', tagline: 'Break big problems into smaller, solvable ones.',          accent: '#4f9dff', gradient: 'linear-gradient(135deg, #4f9dff 0%, #8b5cf6 100%)' },
-  { id: 3, title: 'Trees & Graphs',  tagline: 'Explore branching worlds and connected networks.',          accent: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)' },
+  { id: 1, title: 'Order & Search',  tagline: 'Learn to arrange and find things with purpose.',            accent: '#06b6d4', gradient: 'linear-gradient(135deg, #06b6d4 0%, #2f8fd1 100%)' },
+  { id: 2, title: 'Divide & Conquer', tagline: 'Break big problems into smaller, solvable ones.',          accent: '#2f8fd1', gradient: 'linear-gradient(135deg, #2f8fd1 0%, #9d5fd6 100%)' },
+  { id: 3, title: 'Trees & Graphs',  tagline: 'Explore branching worlds and connected networks.',          accent: '#9d5fd6', gradient: 'linear-gradient(135deg, #9d5fd6 0%, #ec4899 100%)' },
   { id: 4, title: 'The Advanced Arts', tagline: 'Master the techniques that crack the hardest problems.',  accent: '#ec4899', gradient: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)' },
 ];
 
@@ -312,7 +318,7 @@ export default function RoadmapPage() {
           <motion.div
             className="absolute left-8 sm:left-1/2 top-0 w-1 -translate-x-1/2 rounded-full pointer-events-none origin-top"
             style={{
-              background: 'linear-gradient(180deg, #22c55e 0%, #06b6d4 25%, #4f9dff 50%, #8b5cf6 75%, #ec4899 100%)',
+              background: 'linear-gradient(180deg, #22c55e 0%, #06b6d4 25%, #2f8fd1 50%, #9d5fd6 75%, #ec4899 100%)',
               boxShadow: '0 0 16px color-mix(in srgb, var(--primary) 45%, transparent)',
               scaleY: reduceMotion ? 1 : spineProgress,
               height: '100%',

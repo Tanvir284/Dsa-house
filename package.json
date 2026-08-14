@@ -7,11 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node tests/dsa-logic.test.js"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "budget": "node scripts/check-bundle-budget.mjs"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.8",
-    "@react-three/fiber": "^9.7.0",
     "@supabase/supabase-js": "^2.106.2",
     "@types/katex": "0.16.7",
     "canvas-confetti": "^1.9.4",
@@ -22,7 +24,6 @@
     "quickjs-emscripten": "^0.32.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "three": "^0.185.1",
     "zustand": "^5.0.13"
   },
   "devDependencies": {
@@ -31,10 +32,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "playwright": "^1.61.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   }
 }

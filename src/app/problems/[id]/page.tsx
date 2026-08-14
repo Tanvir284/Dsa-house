@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { useAppStore } from '@/lib/store';
-import { problems } from '@/data';
+import { problems } from '@/data/problems';
 import { deriveEntryNames, getProblemTestSpec } from '@/data/problem-tests';
 import { CodeRunner } from '@/components/runner/CodeRunner';
 

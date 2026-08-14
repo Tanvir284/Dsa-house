@@ -92,10 +92,11 @@ export default function ForgotPasswordPage() {
 
           {/* Email field */}
           <motion.div variants={fadeUp} className="flex flex-col gap-1.5 text-left">
-            <label className="text-xs font-semibold text-muted-foreground">Email Address</label>
+            <label htmlFor="forgot-email" className="text-xs font-semibold text-muted-foreground">Email Address</label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" aria-hidden="true" />
               <input
+                id="forgot-email"
                 type="email"
                 placeholder="Enter your registered email"
                 value={email}
