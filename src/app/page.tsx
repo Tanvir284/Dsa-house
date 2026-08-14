@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import {
   BookOpen, Map, User, Code, ArrowRight, CheckCircle2, Flame, Sparkles, ChevronRight, Zap,
-  Layers, Calendar, BarChart3, Search, Trophy, Database, Network, Share2, Cpu,
+  Layers, Calendar, BarChart3, Trophy, Database, Network, Share2, Cpu, Timer,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { categories, topics } from '@/data/catalog';
@@ -116,7 +116,7 @@ export default function Home() {
     { icon: Calendar, title: 'Daily Challenge', desc: 'One curated problem per day with XP rewards.', href: '/daily', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
     { icon: Layers, title: 'Pattern Library', desc: 'Structured paths from foundations to advanced patterns.', href: '/patterns', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
     { icon: BarChart3, title: 'Complexity Lab', desc: 'Compare Big-O across algorithms with live estimators.', href: '/labs', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
-    { icon: Search, title: '⌘K Command Palette', desc: 'Instant search across every topic, visualizer, and page.', href: '/topics', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
+    { icon: Timer, title: 'Mock Interview', desc: 'A timed session against a real problem queue, with a rubric report at the end.', href: '/interview', span: 'col-span-12 sm:col-span-6 lg:col-span-3' },
   ];
 
   return (

@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Sun, Moon, BookOpen, Map, Sparkles, Trophy, Bookmark, Menu, X, User, LogOut, Flame,
-  Briefcase, Layers, Calendar, BarChart3, Search, Code,
+  Briefcase, Layers, Calendar, BarChart3, Search, Code, Timer,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import CommandPalette from '@/components/CommandPalette';
@@ -39,7 +39,11 @@ export default function Navbar() {
   const extraLinks = [
     { name: 'Daily', href: '/daily', icon: Calendar },
     { name: 'Labs', href: '/labs', icon: BarChart3 },
-    { name: 'Interview', href: '/interview-prep', icon: Briefcase },
+    // Split in two: 'Prep' is the static pattern cheat-sheet, 'Mock Interview'
+    // is the timed practice session. Same top-level slot both used to share
+    // under one ambiguous "Interview" label.
+    { name: 'Prep', href: '/interview-prep', icon: Briefcase },
+    { name: 'Mock Interview', href: '/interview', icon: Timer },
     { name: 'Bookmarks', href: '/bookmarks', icon: Bookmark },
   ];
 
@@ -105,7 +109,7 @@ export default function Navbar() {
                   </motion.div>
                   <span className="text-base font-bold tracking-tight text-foreground flex items-center gap-0.5 hidden sm:block">
                     <span>DSA</span>
-                    <span className="bg-gradient-to-r from-primary via-[#60a5fa] to-accent bg-clip-text text-transparent font-extrabold font-heading">House</span>
+                    <span className="gradient-text font-extrabold font-heading">House</span>
                   </span>
                 </Link>
 

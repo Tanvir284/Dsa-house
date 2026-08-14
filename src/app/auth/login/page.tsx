@@ -158,7 +158,7 @@ export default function LoginPage() {
           <div className="flex flex-col gap-1">
             <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center justify-center gap-1">
               <span>Welcome to</span>
-              <span className="bg-gradient-to-r from-primary via-[#60a5fa] to-accent bg-clip-text text-transparent font-extrabold">DSA House</span>
+              <span className="gradient-text font-extrabold">DSA House</span>
             </h1>
             <p className="text-xs text-muted-foreground font-medium">
               Sign in to track progress, save bookmarks, and run code
