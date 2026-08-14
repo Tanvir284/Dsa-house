@@ -13,7 +13,7 @@ import {
   Type, Target, Puzzle,
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { categories, topics } from '@/data';
+import { categories, topics } from '@/data/catalog';
 import AmbientOrbField from '@/components/3d/AmbientOrbField';
 
 

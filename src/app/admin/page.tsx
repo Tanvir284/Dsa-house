@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Shield, Plus, Trash2, AlertTriangle, Save, RefreshCw, Lock, User } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { topics, categories } from '@/data';
+import { topics, categories } from '@/data/catalog';
 import { Topic, Difficulty } from '@/types';
 import { canAccessAdmin, getAdminUsernamesHint } from '@/lib/admin';
 

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Layers, ArrowRight, BookOpen, Sparkles } from 'lucide-react';
-import { topics, categories } from '@/data';
+import { topics, categories } from '@/data/catalog';
 import { fadeUp, inViewOnce, staggerContainer } from '@/lib/motion';
 
 const PATTERN_GROUPS = [
@@ -87,7 +87,7 @@ export default function PatternsPage() {
                     <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">{topic.definition}</p>
                     <span className="text-[10px] text-muted-foreground font-semibold">{cat?.title}</span>
                     <div className="flex gap-2 mt-auto pt-2">
-                      <Link href={`/topics/${slug}`} className="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+                      <Link prefetch={false} href={`/topics/${slug}`} className="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
                         Lesson <ArrowRight className="h-3 w-3" />
                       </Link>
                       {hasViz && (

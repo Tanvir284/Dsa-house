@@ -29,7 +29,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useAppStore, UserProfile, ProfileUpdate } from '@/lib/store';
-import { topics, categories } from '@/data';
+import { topics, categories } from '@/data/catalog';
 import {
   ACHIEVEMENTS,
   getCategoryProgress,

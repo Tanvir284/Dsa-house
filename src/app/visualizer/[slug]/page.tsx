@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, use, useCallback, useMemo } from 'react';
+import React, { useState, use, useCallback, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, ChevronLeft, Terminal, Copy, Check, Layers, Activity } from 'lucide-react';
 import { getAlgorithm, isTraceableSlug, parseInput, runAlgorithm, toVisualizerSteps } from '@/lib/trace';
-import { topics, codeSnippets } from '@/data';
+import { topics } from '@/data/catalog';
 import { isVisualizerSlug, visualizerCatalog } from '@/data/visualizers';
-import { CodeLanguage, VisualizerConfig } from '@/types';
+import { CodeLanguage, CodeSnippet, VisualizerConfig } from '@/types';
 
 import VisualizerWrapper from '@/components/visualizers/VisualizerWrapper';
 import ArrayVisualizer from '@/components/visualizers/ArrayVisualizer';
@@ -16,6 +16,34 @@ import LinkedListVisualizer from '@/components/visualizers/LinkedListVisualizer'
 import StackQueueVisualizer from '@/components/visualizers/StackQueueVisualizer';
 import TreeVisualizer from '@/components/visualizers/TreeVisualizer';
 import GraphVisualizer from '@/components/visualizers/GraphVisualizer';
+
+/**
+ * Fetch one topic's reference snippets without pulling the whole curriculum.
+ *
+ * `@/data` builds its content maps at module scope, so a static import costs
+ * ~1.2 MB — the entire authored curriculum — to read a single topic's entry.
+ * Deferring it keeps that weight off the lab's initial load; the snippet panel
+ * simply renders once the data arrives.
+ */
+function useTopicSnippets(topicId: string | undefined): CodeSnippet[] {
+  const [snippets, setSnippets] = useState<CodeSnippet[]>([]);
+
+  useEffect(() => {
+    if (!topicId) {
+      setSnippets([]);
+      return;
+    }
+    let cancelled = false;
+    import('@/data').then(({ codeSnippets }) => {
+      if (!cancelled) setSnippets(codeSnippets[topicId] ?? []);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [topicId]);
+
+  return snippets;
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -37,7 +65,7 @@ function StandaloneVisualizerContent({ slug }: { slug: string }) {
 
   const catalogEntry = useMemo(() => visualizerCatalog.find((e) => e.slug === slug), [slug]);
   const topic = useMemo(() => topics.find((t) => t.slug === slug), [slug]);
-  const snippets = useMemo(() => (topic ? codeSnippets[topic.id] || [] : []), [topic]);
+  const snippets = useTopicSnippets(topic?.id);
   const activeSnippet = useMemo(
     () => snippets.find((snip) => snip.language === activeLang),
     [snippets, activeLang],

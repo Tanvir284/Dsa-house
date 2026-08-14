@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Bookmark, Trash2, ChevronRight } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { topics, categories } from '@/data';
+import { topics, categories } from '@/data/catalog';
 import { fadeUp, inViewOnce, staggerContainer } from '@/lib/motion';
 
 export default function BookmarksPage() {
@@ -70,6 +70,7 @@ export default function BookmarksPage() {
                   </button>
                   <Link
                     href={`/topics/${topic.slug}`}
+                prefetch={false}
                     className="px-4 py-2 text-xs font-semibold rounded-lg btn-primary flex items-center gap-1 cursor-pointer"
                   >
                     Study <ChevronRight className="h-3.5 w-3.5" />

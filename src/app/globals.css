@@ -994,3 +994,94 @@ html {
 .btn-premium-primary:active {
   transform: scale(0.98);
 }
+
+/* ============================================
+   Ambient decoration
+   Replaces the former WebGL scenes. Both effects run entirely on the
+   compositor (transform/opacity only), cost no main-thread time, render
+   during SSR, and stop moving for prefers-reduced-motion.
+   ============================================ */
+
+.ambient-field {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-orb {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.ambient-orb-a {
+  width: 42%;
+  aspect-ratio: 1;
+  top: -8%;
+  right: -6%;
+  background: radial-gradient(circle at 30% 30%, var(--accent-from), transparent 70%);
+  animation: orbDriftA 26s ease-in-out infinite;
+}
+
+.ambient-orb-b {
+  width: 38%;
+  aspect-ratio: 1;
+  bottom: -12%;
+  left: -8%;
+  background: radial-gradient(circle at 60% 40%, var(--accent-to), transparent 70%);
+  animation: orbDriftB 32s ease-in-out infinite;
+}
+
+.ambient-orb-c {
+  width: 30%;
+  aspect-ratio: 1;
+  top: 30%;
+  left: 40%;
+  background: radial-gradient(circle at 50% 50%, var(--accent-from), transparent 72%);
+  opacity: 0.35;
+  animation: orbDriftA 38s ease-in-out infinite reverse;
+}
+
+@keyframes orbDriftA {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-6%, 8%, 0) scale(1.12); }
+}
+
+@keyframes orbDriftB {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50%      { transform: translate3d(7%, -6%, 0) scale(0.95); }
+}
+
+.node-motif {
+  overflow: visible;
+}
+
+.node-motif-rotor {
+  transform-origin: 50% 50%;
+  animation: motifRotate 60s linear infinite;
+}
+
+.node-motif-node {
+  animation: motifPulse 4.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes motifRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes motifPulse {
+  0%, 100% { opacity: 0.65; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-orb,
+  .node-motif-rotor,
+  .node-motif-node {
+    animation: none !important;
+  }
+}

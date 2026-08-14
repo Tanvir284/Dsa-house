@@ -1,4 +1,4 @@
-import { topics, categories } from '@/data';
+import { topics, categories } from '@/data/catalog';
 import { visualizerCatalog } from '@/data/visualizers';
 
 export interface SearchItem {

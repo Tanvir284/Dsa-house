@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Search, CheckCircle2, ChevronRight, Bookmark } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
-import { categories, topics } from '@/data';
+import { categories, topics } from '@/data/catalog';
 import { fadeUp, inViewOnce } from '@/lib/motion';
 
 export default function TopicsPage() {
@@ -118,6 +118,7 @@ export default function TopicsPage() {
               >
               <Link
                 href={`/topics/${topic.slug}`}
+                prefetch={false}
                 className="topic-card group min-h-[14rem] h-full"
               >
                 <div className="flex flex-col gap-3">

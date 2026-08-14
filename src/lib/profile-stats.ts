@@ -4,7 +4,7 @@ import {
   GraduationCap, Bookmark, Star, Sparkles,
 } from 'lucide-react';
 import { CodeLanguage } from '@/types';
-import { categories, topics } from '@/data';
+import { categories, topics } from '@/data/catalog';
 import { UserProfile } from '@/lib/store';
 import { QuizAttempt } from '@/types';
 import { dateKey } from '@/lib/profile-utils';

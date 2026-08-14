@@ -1,7 +1,5 @@
-import { Category, Topic, LessonSection, CodeSnippet, QuizQuestion, Quiz, Problem } from '@/types';
-import expandedTopics from './curriculum_expanded.json';
-import problemsArena from './problems_arena.json';
-import { CATEGORY_IDS, arrayTopic, arraySections, arraySnippets, arrayQuestions,
+import { LessonSection, CodeSnippet, QuizQuestion, Quiz } from '@/types';
+import { arrayTopic, arraySections, arraySnippets, arrayQuestions,
          linkedListTopic, linkedListSections, linkedListSnippets, linkedListQuestions,
          stackTopic, stackSections, stackSnippets, stackQuestions,
          queueTopic, queueSections, queueSnippets, queueQuestions } from './curriculum/linear';
@@ -51,47 +49,11 @@ const extendedModules: CurriculumModule[] = [
   ...stringsModules,
 ];
 
-export const categories: Category[] = [
-  {
-    id: CATEGORY_IDS.linear,
-    slug: 'linear',
-    title: 'Linear Data Structures',
-    description: 'Arrays, linked lists, stacks, and queues — the building blocks of memory-efficient sequential storage.',
-    display_order: 1,
-  },
-  {
-    id: CATEGORY_IDS.trees,
-    slug: 'trees',
-    title: 'Trees',
-    description: 'Hierarchical structures: binary trees, BSTs, and heap-based priority systems.',
-    display_order: 2,
-  },
-  {
-    id: CATEGORY_IDS.graphs,
-    slug: 'graphs',
-    title: 'Graphs',
-    description: 'Networks of nodes and edges with BFS, DFS, and real-world routing applications.',
-    display_order: 3,
-  },
-  {
-    id: CATEGORY_IDS.algorithms,
-    slug: 'algorithms',
-    title: 'Algorithms',
-    description: 'Classic search and sort algorithms with rigorous complexity analysis.',
-    display_order: 4,
-  },
-  {
-    id: CATEGORY_IDS.patterns,
-    slug: 'patterns',
-    title: 'Advanced Patterns',
-    description: 'Hash maps, heaps, tries, DP, greedy, sliding window, two pointers, and backtracking.',
-    display_order: 5,
-  },
-];
+// Catalogue metadata is defined in the light module so listing pages can
+// import it without this file's content maps. Re-exported for compatibility.
+export { categories, topics } from './catalog';
+import { topics } from './catalog';
 
-export const topics: Topic[] = (expandedTopics as Topic[]).sort((a, b) => a.display_order - b.display_order);
-
-export const problems: Problem[] = problemsArena as Problem[];
 
 
 export const lessonSections: Record<string, LessonSection[]> = {
