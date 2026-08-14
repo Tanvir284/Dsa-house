@@ -58,6 +58,9 @@ function assertTraceInvariants(trace: Trace, seed: number): void {
 
   // Values seen when each index was first declared final.
   const sealedAt = new Map<number, number>();
+  // Indices discard() has ruled out — a search that re-examines one of these
+  // has stopped narrowing correctly.
+  const discardedAt = new Set<number>();
   let previous: number[] | null = null;
 
   for (const frame of trace.frames) {
@@ -109,6 +112,18 @@ function assertTraceInvariants(trace: Trace, seed: number): void {
     }
     frame.states.forEach((state, i) => {
       if (state === 'sorted' && !sealedAt.has(i)) sealedAt.set(i, frame.values[i]);
+    });
+
+    // A ruled-out index must actually stay ruled out — binary/jump search
+    // should never read or compare a cell after discarding it.
+    for (const index of discardedAt) {
+      expect(
+        frame.touched.includes(index),
+        `${context}: frame ${frame.index} touched index ${index}, which was already discarded`,
+      ).toBe(false);
+    }
+    frame.states.forEach((state, i) => {
+      if (state === 'discarded') discardedAt.add(i);
     });
 
     previous = frame.values;

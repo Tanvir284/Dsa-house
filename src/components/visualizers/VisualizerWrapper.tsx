@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, SkipForward, SkipBack, RotateCcw, Sliders, List, HelpCircle, Code, Rabbit, Turtle, Gauge } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { VisualizerStep, VisualizerConfig } from '@/types';
 import Tooltip from './_shared/Tooltip';
-import { staggerContainer, riseItem, textSwap, springSnappy } from './_shared/vizMotion';
+import { staggerContainer, riseItem, springSnappy } from './_shared/vizMotion';
 import AmbientOrbField from '@/components/3d/AmbientOrbField';
 
 const SPEED_PRESETS = [
@@ -395,19 +395,33 @@ export default function VisualizerWrapper({
             are unreadable to a screen reader. `role="status"` + `aria-live`
             on the persisting wrapper means every step change is announced,
             whether the user steps manually or lets it play.
+
+            Deliberately not wrapped in AnimatePresence: with `mode="wait"`
+            here, stepping through a visualizer got stuck showing the first
+            frame's narration forever — the "Step: N / M" counter and the
+            rendered bars (both driven by the same `currentStep`) updated
+            correctly on every click, confirming the underlying data was
+            right, but the exit transition this wrapper waits on apparently
+            never resolved, so it never advanced to the entering child. This
+            is the same failure mode already documented for PageTransition
+            (see docs/ARCHITECTURE.md's accessibility section) — an
+            AnimatePresence exit-completion signal that doesn't fire
+            reliably — hitting a *direct* motion child this time, not one
+            behind a wrapping component boundary. A plain keyed `motion.p`
+            still remounts and replays its own enter animation on every step
+            via ordinary React reconciliation; the only thing given up is the
+            outgoing text's exit animation, which is a small price for
+            narration that actually updates.
           */}
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={currentStepIndex}
-              variants={textSwap}
-              initial="hidden"
-              animate="show"
-              exit="exit"
-              className="text-sm font-semibold leading-relaxed text-foreground/95"
-            >
-              {currentStep.explanation}
-            </motion.p>
-          </AnimatePresence>
+          <motion.p
+            key={currentStepIndex}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="text-sm font-semibold leading-relaxed text-foreground/95"
+          >
+            {currentStep.explanation}
+          </motion.p>
         </div>
       </motion.div>
 

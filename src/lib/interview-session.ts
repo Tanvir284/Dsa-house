@@ -37,9 +37,16 @@ export const DIFFICULTY_MIX_LABELS: Record<DifficultyMix, string> = {
   challenge: 'Challenge (Medium/Hard heavy)',
 };
 
-/** XP awarded per solved problem, by difficulty — mirrors the weight given
- * to harder problems elsewhere (quizzes, daily challenge). */
-const XP_BY_DIFFICULTY: Record<ProblemDifficulty, number> = {
+/**
+ * XP awarded per solved problem, by difficulty — mirrors the weight given to
+ * harder problems elsewhere (quizzes, daily challenge). Exported so the page
+ * can award this difficulty-weighted amount directly for problems that
+ * bypass `toggleProblemCompletion` (a re-solved problem that was already
+ * marked complete before the session started), without recomputing the
+ * table or double-crediting the flat PROBLEM_COMPLETION_XP that toggle
+ * already grants for a genuinely new completion.
+ */
+export const XP_BY_DIFFICULTY: Record<ProblemDifficulty, number> = {
   Easy: 40,
   Medium: 70,
   Hard: 120,
@@ -173,6 +180,33 @@ function shuffle<T>(arr: T[], next: () => number): T[] {
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
+}
+
+/**
+ * Fill in an 'unattempted' result for every queued problem the session
+ * didn't reach yet — used whenever a session ends before the whole queue is
+ * resolved, whether the clock ran out or the user ended it early, so the
+ * summary always accounts for the full queue rather than just what was
+ * explicitly solved or skipped.
+ */
+export function padUnattempted(
+  results: SessionProblemResult[],
+  queue: Problem[],
+  currentIndex: number,
+  currentStepStartedAt: number,
+  now: number,
+): SessionProblemResult[] {
+  const padded = [...results];
+  for (let i = currentIndex; i < queue.length; i++) {
+    if (!padded.some((r) => r.problemId === queue[i].id)) {
+      padded.push({
+        problemId: queue[i].id,
+        outcome: 'unattempted',
+        timeSpentMs: i === currentIndex ? now - currentStepStartedAt : 0,
+      });
+    }
+  }
+  return padded;
 }
 
 /** Total XP a finished session earns, by summing solved-problem XP. */

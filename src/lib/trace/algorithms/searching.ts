@@ -88,10 +88,12 @@ export const binarySearch: AlgorithmDefinition = {
 
       if (comparison < 0) {
         t.at(5);
+        t.discard(low, mid);
         low = mid + 1;
         t.note(`a[${mid}] is too small, so discard everything at or below index ${mid}.`);
       } else {
         t.at(6);
+        t.discard(mid, high);
         high = mid - 1;
         t.note(`a[${mid}] is too large, so discard everything at or above index ${mid}.`);
       }
@@ -141,6 +143,7 @@ export const jumpSearch: AlgorithmDefinition = {
     t.at(2);
     while (a.cmp(Math.min(step, n) - 1, target) < 0) {
       t.at(3);
+      t.discard(prev, Math.min(step, n) - 1);
       prev = step;
       step += jump;
       t.mark('prev', prev);
@@ -160,6 +163,7 @@ export const jumpSearch: AlgorithmDefinition = {
     t.at(5);
     while (a.cmp(prev, target) < 0) {
       t.at(6);
+      t.discard(prev, prev);
       prev += 1;
       t.mark('prev', prev);
 

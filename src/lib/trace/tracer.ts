@@ -27,7 +27,7 @@ export const DEFAULT_FRAME_BUDGET = 20_000;
 export const MAX_INPUT_LENGTH = 200;
 
 function emptyMetrics(): TraceMetrics {
-  return { reads: 0, writes: 0, comparisons: 0, swaps: 0, maxDepth: 0, frames: 0 };
+  return { reads: 0, writes: 0, comparisons: 0, swaps: 0, maxDepth: 0 };
 }
 
 class Tracer implements TracerApi {
@@ -36,6 +36,7 @@ class Tracer implements TracerApi {
 
   private values: number[] = [];
   private sealed = new Set<number>();
+  private discarded = new Set<number>();
   private pivotIndex: number | null = null;
   private markers: Record<string, number> = {};
   private rangeBounds: [number, number] | null = null;
@@ -94,6 +95,13 @@ class Tracer implements TracerApi {
     this.emit('found', [index], explanation ?? `Found the target at index ${index}.`);
   }
 
+  discard(lo: number, hi: number): void {
+    for (let i = lo; i <= hi; i++) {
+      if (i >= 0 && i < this.values.length) this.discarded.add(i);
+    }
+    this.emit('mark', [], `Indices ${lo}–${hi} can no longer contain the target — ruled out.`);
+  }
+
   /* ---- internals used by TracedArray ---------------------------------- */
 
   /** @internal */
@@ -112,7 +120,7 @@ class Tracer implements TracerApi {
   }
 
   /** @internal */
-  _count(key: keyof Omit<TraceMetrics, 'maxDepth' | 'frames'>): void {
+  _count(key: keyof Omit<TraceMetrics, 'maxDepth'>): void {
     this.metrics[key] += 1;
   }
 
@@ -140,11 +148,10 @@ class Tracer implements TracerApi {
       }
       if (this.pivotIndex === i) return 'pivot';
       if (this.sealed.has(i)) return 'sorted';
+      if (this.discarded.has(i)) return 'discarded';
       if (this.rangeBounds && i >= this.rangeBounds[0] && i <= this.rangeBounds[1]) return 'range';
       return 'default';
     });
-
-    this.metrics.frames += 1;
 
     this.frames.push({
       index: this.frames.length,

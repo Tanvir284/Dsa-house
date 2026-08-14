@@ -4,7 +4,7 @@ import React, { useState, use, useCallback, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Sparkles, ChevronLeft, Terminal, Copy, Check, Layers, Activity } from 'lucide-react';
+import { Sparkles, ChevronLeft, Terminal, Copy, Check, Layers, Activity, AlertTriangle } from 'lucide-react';
 import { getAlgorithm, isTraceableSlug, parseInput, runAlgorithm, toVisualizerSteps } from '@/lib/trace';
 import { topics } from '@/data/catalog';
 import { isVisualizerSlug, visualizerCatalog } from '@/data/visualizers';
@@ -155,6 +155,19 @@ function StandaloneVisualizerContent({ slug }: { slug: string }) {
           </dl>
         )}
       </div>
+
+      {trace?.truncated && (
+        <div
+          role="status"
+          className="flex items-start gap-2.5 px-4 py-3 rounded-xl border border-medium/30 bg-[color-mix(in_srgb,var(--medium)_10%,transparent)] text-xs text-foreground"
+        >
+          <AlertTriangle className="h-4 w-4 text-medium shrink-0 mt-0.5" aria-hidden="true" />
+          <span>
+            This run generated more steps than this sandbox records — the trace below stops early
+            and the final result may not reflect the full run. Try a shorter input.
+          </span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-7 gap-6 items-start w-full">
         <div className="lg:col-span-7 flex flex-col gap-6 w-full">

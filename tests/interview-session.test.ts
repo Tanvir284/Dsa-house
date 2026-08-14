@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildSessionQueue,
+  padUnattempted,
   scoreSession,
   summarizeSession,
   type CompletedSession,
@@ -170,5 +171,53 @@ describe('summarizeSession', () => {
       ]),
     );
     expect(summary.avgTimePerAttemptedMs).toBe(75_000);
+  });
+});
+
+describe('padUnattempted', () => {
+  const queue = [
+    makeProblem('a', 'Easy'),
+    makeProblem('b', 'Medium'),
+    makeProblem('c', 'Hard'),
+    makeProblem('d', 'Easy'),
+  ];
+
+  it('adds an unattempted result for every queued problem not yet in results', () => {
+    const existing = [result('a', 'solved'), result('b', 'skipped')];
+    const padded = padUnattempted(existing, queue, 2, 1_000, 5_000);
+
+    expect(padded).toHaveLength(4);
+    expect(padded.slice(2)).toEqual([
+      { problemId: 'c', outcome: 'unattempted', timeSpentMs: 4_000 },
+      { problemId: 'd', outcome: 'unattempted', timeSpentMs: 0 },
+    ]);
+  });
+
+  it('does not duplicate or overwrite a result that already exists', () => {
+    const existing = [result('a', 'solved'), result('b', 'skipped'), result('c', 'solved')];
+    const padded = padUnattempted(existing, queue, 0, 1_000, 5_000);
+
+    expect(padded).toEqual([...existing, { problemId: 'd', outcome: 'unattempted', timeSpentMs: 0 }]);
+  });
+
+  it('only the current in-progress problem gets partial elapsed time; later ones get 0', () => {
+    // currentIndex=1 means 'a' (index 0) is already resolved and not padded;
+    // padding starts at 'b', the in-progress problem.
+    const padded = padUnattempted([], queue, 1, 2_000, 6_000);
+    expect(padded[0]).toEqual({ problemId: 'b', outcome: 'unattempted', timeSpentMs: 4_000 });
+    expect(padded[1]).toEqual({ problemId: 'c', outcome: 'unattempted', timeSpentMs: 0 });
+    expect(padded[2].timeSpentMs).toBe(0);
+  });
+
+  it('does not mutate the original results array', () => {
+    const existing = [result('a', 'solved')];
+    padUnattempted(existing, queue, 1, 1_000, 2_000);
+    expect(existing).toHaveLength(1);
+  });
+
+  it('is a no-op when every queued problem already has a result', () => {
+    const existing = queue.map((p) => result(p.id, 'solved'));
+    const padded = padUnattempted(existing, queue, 0, 1_000, 2_000);
+    expect(padded).toEqual(existing);
   });
 });

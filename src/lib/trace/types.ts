@@ -52,8 +52,6 @@ export interface TraceMetrics {
   swaps: number;
   /** Peak depth of the logical call stack. */
   maxDepth: number;
-  /** Total frames emitted. */
-  frames: number;
 }
 
 /** A single entry on the logical call stack, for recursive algorithms. */
@@ -166,6 +164,15 @@ export interface TracerApi {
   note(explanation: string): void;
   /** Emit a terminal "found it" frame at `index`. */
   found(index: number, explanation?: string): void;
+  /**
+   * Permanently mark an inclusive index range as ruled out of consideration
+   * — the search half a comparison just eliminated, or a jump-search block
+   * that's been skipped past. Distinct from `seal`: sealing claims a cell is
+   * in its *final position* (a sorting concept), which is the wrong claim
+   * for "this range can no longer contain the target." Renders as
+   * `'discarded'`, not `'sorted'`.
+   */
+  discard(lo: number, hi: number): void;
 }
 
 export interface TracedArrayApi {

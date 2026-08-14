@@ -7,11 +7,11 @@ import {
   Timer, Play, CheckCircle2, SkipForward, Flag, RotateCcw, Trophy,
   Target, TrendingUp, Clock, ExternalLink, History, ChevronRight,
 } from 'lucide-react';
-import { useAppStore } from '@/lib/store';
+import { useAppStore, PROBLEM_COMPLETION_XP } from '@/lib/store';
 import { problems } from '@/data/problems';
 import {
   SESSION_DURATIONS_MIN, DIFFICULTY_MIX_LABELS,
-  buildSessionQueue, scoreSession, summarizeSession, loadSessionHistory, saveSessionToHistory,
+  buildSessionQueue, padUnattempted, scoreSession, summarizeSession, loadSessionHistory, saveSessionToHistory,
   type SessionDurationMin, type DifficultyMix, type SessionConfig,
   type SessionProblemResult, type CompletedSession, type ProblemOutcome,
 } from '@/lib/interview-session';
@@ -59,6 +59,17 @@ export default function InterviewPage() {
   const stepStartRef = useRef<number>(0);
   const configRef = useRef<SessionConfig | null>(null);
   const endedByTimeoutRef = useRef(false);
+  // Guards every path that can end a session (advance() on the last problem,
+  // the countdown reaching zero, endEarly()) against running twice. Without
+  // it, a rapid double-click on "Mark Solved" for the last problem could
+  // fire finishSession twice against the same stale `completedProblems`
+  // closure — the second toggleProblemCompletion call would then see the
+  // problem as already complete (from the first call's live store update)
+  // and toggle it back off, un-completing what the summary still shows as
+  // solved. A single guard at the one function every ending path funnels
+  // through is the deep fix; per-button `disabled` state wouldn't have
+  // covered the timeout-vs-manual-end race.
+  const isFinishingRef = useRef(false);
 
   useEffect(() => {
     // Reading localStorage is the external-system case effects are for; it
@@ -71,27 +82,51 @@ export default function InterviewPage() {
 
   const finishSession = useCallback(
     (finalResults: SessionProblemResult[], byTimeout: boolean) => {
+      if (isFinishingRef.current) return;
+      isFinishingRef.current = true;
+
       const config = configRef.current;
       if (!config) return;
 
-      const xp = scoreSession(finalResults, problemsById);
+      // toggleProblemCompletion (src/lib/store.ts) already grants
+      // PROBLEM_COMPLETION_XP, records activity, and updates the streak the
+      // moment a problem transitions from incomplete to complete. Awarding
+      // this session's own difficulty-weighted XP on top of that for the
+      // same transition would double-count it — a solved-for-the-first-time
+      // problem earned both rewards, while a problem that happened to
+      // already be complete earned only one, so identical performance paid
+      // out inconsistently. Newly-solved problems are credited via the
+      // toggle's flat award; only *re-solving* a problem that was already
+      // complete earns the session's own difficulty-weighted credit, since
+      // toggling it would incorrectly mark it incomplete again.
+      const newlySolved = finalResults.filter(
+        (r) => r.outcome === 'solved' && !completedProblems.includes(r.problemId),
+      );
+      const reSolved = finalResults.filter(
+        (r) => r.outcome === 'solved' && completedProblems.includes(r.problemId),
+      );
+
+      for (const r of newlySolved) {
+        toggleProblemCompletion(r.problemId);
+      }
+
+      const reSolveXp = scoreSession(reSolved, problemsById);
+      if (reSolveXp > 0) addXp(reSolveXp);
+      if (reSolved.length > 0) recordActivity(reSolved.length);
+
+      // Honest total of what the profile actually gained from this session,
+      // combining both reward paths above — not a recomputed nominal score.
+      const xpAwarded = newlySolved.length * PROBLEM_COMPLETION_XP + reSolveXp;
+
       const session: CompletedSession = {
         id: `session-${Date.now()}`,
         config,
         startedAt: new Date(sessionStartRef.current).toISOString(),
         endedAt: new Date().toISOString(),
         results: finalResults,
-        xpAwarded: xp,
+        xpAwarded,
         endedByTimeout: byTimeout,
       };
-
-      for (const r of finalResults) {
-        if (r.outcome === 'solved' && !completedProblems.includes(r.problemId)) {
-          toggleProblemCompletion(r.problemId);
-        }
-      }
-      if (xp > 0) addXp(xp);
-      recordActivity(finalResults.filter((r) => r.outcome === 'solved').length);
 
       setHistory(saveSessionToHistory(session));
       setLastSession(session);
@@ -121,17 +156,7 @@ export default function InterviewPage() {
 
   useEffect(() => {
     if (phase === 'active' && remainingMs <= 0 && endedByTimeoutRef.current) {
-      const now = Date.now();
-      const padded = [...results];
-      for (let i = currentIndex; i < queue.length; i++) {
-        if (!padded.some((r) => r.problemId === queue[i].id)) {
-          padded.push({
-            problemId: queue[i].id,
-            outcome: 'unattempted',
-            timeSpentMs: i === currentIndex ? now - stepStartRef.current : 0,
-          });
-        }
-      }
+      const padded = padUnattempted(results, queue, currentIndex, stepStartRef.current, Date.now());
       finishSession(padded, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -144,6 +169,7 @@ export default function InterviewPage() {
 
     configRef.current = config;
     endedByTimeoutRef.current = false;
+    isFinishingRef.current = false;
     sessionStartRef.current = Date.now();
     stepStartRef.current = Date.now();
     setQueue(builtQueue);
@@ -172,17 +198,7 @@ export default function InterviewPage() {
   };
 
   const endEarly = () => {
-    const now = Date.now();
-    const padded = [...results];
-    for (let i = currentIndex; i < queue.length; i++) {
-      if (!padded.some((r) => r.problemId === queue[i].id)) {
-        padded.push({
-          problemId: queue[i].id,
-          outcome: 'unattempted',
-          timeSpentMs: i === currentIndex ? now - stepStartRef.current : 0,
-        });
-      }
-    }
+    const padded = padUnattempted(results, queue, currentIndex, stepStartRef.current, Date.now());
     finishSession(padded, false);
   };
 

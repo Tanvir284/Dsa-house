@@ -4,7 +4,7 @@ import React, { useState, use, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookMarked, CheckCircle2, Copy, Check, ChevronLeft, ChevronRight, Sparkles, Terminal, BookOpen, Trophy, ArrowRight } from 'lucide-react';
+import { BookMarked, CheckCircle2, Copy, Check, ChevronLeft, ChevronRight, Sparkles, Terminal, BookOpen, Trophy, ArrowRight, AlertTriangle } from 'lucide-react';
 import { useAppStore } from '@/lib/store';
 import { topics, categories, lessonSections, codeSnippets, quizzes, quizQuestions } from '@/data';
 import { getAlgorithm, parseInput, runAlgorithm, toVisualizerSteps } from '@/lib/trace';
@@ -85,7 +85,14 @@ function TopicPageContent({ slug }: { slug: string }) {
   // Visualizer step-player configurations
   const [customInput, setCustomInput] = useState<string | null>(null);
   const [visualizerIndex, setVisualizerIndex] = useState<number>(0);
-  const [bsTarget, setBsTarget] = useState<number>(60); // Binary search specific target
+  // Seeded from the algorithm's own declared default target (not hardcoded)
+  // so every usesTarget algorithm — not just binary search — opens on a
+  // target that's actually present in its default input. `TopicPageContent`
+  // is remounted per topic via `key={slug}` above, so this only needs to be
+  // correct at mount time, matching the pattern in visualizer/[slug]/page.tsx.
+  const [bsTarget, setBsTarget] = useState<number>(
+    () => (topic ? getAlgorithm(topic.slug)?.defaultTarget : undefined) ?? 0,
+  );
 
   // Quiz progression states
   const [currentQuizIdx, setCurrentQuizIdx] = useState<number>(0);
@@ -94,16 +101,21 @@ function TopicPageContent({ slug }: { slug: string }) {
   const [correctCount, setCorrectCount] = useState<number>(0);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
 
-  // Run the algorithm and derive the player steps from the recording.
-  const visualizerSteps: VisualizerStep[] = useMemo(() => {
+  // Run the algorithm and keep the raw trace (not just the adapted steps) so
+  // a truncated run — a custom input large enough to exceed the frame
+  // budget — can be surfaced instead of silently showing a partial result.
+  const trace = useMemo(() => {
     const algorithm = topic ? getAlgorithm(topic.slug) : undefined;
-    if (!algorithm) return [];
+    if (!algorithm) return null;
 
     const parsed = customInput ? parseInput(customInput) : null;
-    return toVisualizerSteps(
-      runAlgorithm(algorithm, parsed ?? algorithm.defaultInput, { target: bsTarget }),
-    );
+    return runAlgorithm(algorithm, parsed ?? algorithm.defaultInput, { target: bsTarget });
   }, [topic, customInput, bsTarget]);
+
+  const visualizerSteps: VisualizerStep[] = useMemo(
+    () => (trace ? toVisualizerSteps(trace) : []),
+    [trace],
+  );
 
   const visualizerConfig = useMemo(() => (topic ? configFor(topic.slug) : null), [topic]);
 
@@ -436,7 +448,17 @@ function TopicPageContent({ slug }: { slug: string }) {
 
         {/* RIGHT COLUMN: Visualizer Sandbox & Code Matrix (span 4) */}
         <div className="lg:col-span-4 flex flex-col gap-6 w-full">
-          
+
+          {trace?.truncated && (
+            <div
+              role="status"
+              className="flex items-start gap-2.5 px-4 py-3 rounded-xl border border-medium/30 bg-[color-mix(in_srgb,var(--medium)_10%,transparent)] text-xs text-foreground"
+            >
+              <AlertTriangle className="h-4 w-4 text-medium shrink-0 mt-0.5" aria-hidden="true" />
+              <span>This run generated more steps than the sandbox records — try a shorter input.</span>
+            </div>
+          )}
+
           {/* Top Panel: Visualizer Laboratory Arena */}
           <div className="card flex flex-col min-h-[380px] relative">
             <div className="px-5 py-3 border-b border-border flex justify-between items-center">

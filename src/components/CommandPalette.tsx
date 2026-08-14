@@ -28,6 +28,7 @@ export default function CommandPalette({ startOpen = false, onRequestClose }: Co
   const inputRef = useRef<HTMLInputElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const wasOpen = useRef(open);
 
   const close = () => {
@@ -57,6 +58,17 @@ export default function CommandPalette({ startOpen = false, onRequestClose }: Co
     }
     wasOpen.current = open;
   }, [open]);
+
+  // Keep the highlighted option scrolled into view. The list is
+  // max-h-[360px] overflow-y-auto with up to 14 results, so arrow-key
+  // navigation can otherwise move aria-activedescendant past the visible
+  // viewport with no visual indication of where it went.
+  useEffect(() => {
+    if (!open) return;
+    listRef.current
+      ?.querySelector<HTMLElement>(`#command-palette-option-${highlightedIndex}`)
+      ?.scrollIntoView({ block: 'nearest' });
+  }, [open, highlightedIndex]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -93,6 +105,33 @@ export default function CommandPalette({ startOpen = false, onRequestClose }: Co
     }
   };
 
+  // Wraps Tab/Shift+Tab between the panel's first and last focusable
+  // elements. `role="dialog" aria-modal="true"` on its own is a promise to
+  // assistive tech that background content is unreachable while open — it
+  // doesn't enforce that promise. Without this, Tab from the last result
+  // (or Shift+Tab from the search input) lands on whatever's next in DOM
+  // order outside the dialog (e.g. the navbar's theme toggle), which is only
+  // visually covered by the backdrop, not actually removed from the tab
+  // sequence.
+  const handlePanelKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key !== 'Tab') return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+
   const iconFor = (type: SearchItem['type']) => {
     if (type === 'topic') return BookOpen;
     if (type === 'visualizer') return Sparkles;
@@ -123,11 +162,13 @@ export default function CommandPalette({ startOpen = false, onRequestClose }: Co
       onClick={close}
     >
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Search"
         className="glass-panel w-full max-w-xl shadow-2xl overflow-hidden animate-scale-in"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={handlePanelKeyDown}
       >
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
           <Search className="h-4 w-4 text-primary shrink-0" aria-hidden="true" />

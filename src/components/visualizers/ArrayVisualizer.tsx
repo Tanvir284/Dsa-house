@@ -16,10 +16,19 @@ const STATE_LABEL: Record<string, string> = {
   swap: 'Swapping',
   sorted: 'Sorted',
   active: 'Active',
+  pivot: 'Pivot',
+  found: 'Found',
+  discarded: 'Ruled out',
   idle: 'Idle',
 };
 
 // Maps an element state to the bar fill / border / glow using cognitive color vars.
+//
+// 'pivot' and 'found' are CellState values the tracer engine (src/lib/trace)
+// emits — quick sort's a.pivot(hi) and every search's t.found(index) — that
+// had no case here, so a learner running Quick Sort couldn't tell which bar
+// was the pivot, and a successful search's target rendered with no
+// highlight at all.
 function barStyle(state?: string): React.CSSProperties {
   switch (state) {
     case 'compare':
@@ -45,6 +54,26 @@ function barStyle(state?: string): React.CSSProperties {
         borderColor: 'var(--viz-active)',
         boxShadow: '0 0 16px color-mix(in srgb, var(--viz-active) 40%, transparent)',
       };
+    case 'pivot':
+      return {
+        background: 'linear-gradient(to top, color-mix(in srgb, var(--viz-pivot) 70%, transparent), color-mix(in srgb, var(--viz-pivot) 35%, transparent))',
+        borderColor: 'var(--viz-pivot)',
+        boxShadow: '0 0 18px color-mix(in srgb, var(--viz-pivot) 45%, transparent)',
+      };
+    case 'found':
+      return {
+        background: 'linear-gradient(to top, color-mix(in srgb, var(--complete) 65%, transparent), color-mix(in srgb, var(--complete) 30%, transparent))',
+        borderColor: 'var(--complete)',
+        boxShadow: '0 0 20px color-mix(in srgb, var(--complete) 55%, transparent)',
+      };
+    case 'discarded':
+      // Neutral and receding, not the sorted-green treatment — a discarded
+      // search cell hasn't been placed correctly, it's been ruled out.
+      return {
+        background: 'linear-gradient(to top, color-mix(in srgb, var(--viz-idle) 80%, transparent), color-mix(in srgb, var(--viz-idle) 40%, transparent))',
+        borderColor: 'color-mix(in srgb, var(--viz-idle) 60%, transparent)',
+        opacity: 0.45,
+      };
     default:
       return {
         background: 'linear-gradient(to top, color-mix(in srgb, var(--primary) 22%, transparent), color-mix(in srgb, var(--primary) 6%, transparent))',
@@ -64,6 +93,12 @@ function cardStyle(state?: string): React.CSSProperties {
       return { borderColor: 'color-mix(in srgb, var(--viz-sorted) 30%, transparent)', background: 'color-mix(in srgb, var(--viz-sorted) 6%, transparent)', color: 'var(--muted-foreground)', opacity: 0.6 };
     case 'active':
       return { borderColor: 'var(--viz-active)', background: 'color-mix(in srgb, var(--viz-active) 15%, transparent)', color: 'var(--viz-active)' };
+    case 'pivot':
+      return { borderColor: 'var(--viz-pivot)', background: 'color-mix(in srgb, var(--viz-pivot) 15%, transparent)', color: 'var(--viz-pivot)' };
+    case 'found':
+      return { borderColor: 'var(--complete)', background: 'color-mix(in srgb, var(--complete) 18%, transparent)', color: 'var(--complete)' };
+    case 'discarded':
+      return { borderColor: 'color-mix(in srgb, var(--viz-idle) 60%, transparent)', background: 'color-mix(in srgb, var(--viz-idle) 30%, transparent)', color: 'var(--muted-foreground)', opacity: 0.5 };
     default:
       return {};
   }
